@@ -1,4 +1,4 @@
-var virt = require("../../../src/index"),
+var virt = require("../../../virt"),
     TodoList = require("./todo_list");
 
 

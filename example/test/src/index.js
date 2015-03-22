@@ -36,7 +36,22 @@ function renderCounter(count) {
     );
 }
 
+var dir = 1,
+    count = 0;
+
+function render() {
+    if (dir === 1 && count >= 5) {
+        dir = -1;
+    } else if (dir === -1 && count <= 0) {
+        dir = 1;
+    }
+
+    count += dir;
+
+    virtDOMRender(renderCounter(count), app);
+    window.requestAnimationFrame(render, app);
+}
+
 eventListener.on(environment.window, "load", function() {
-    virtDOMRender(renderCounter(0), app);
-    virtDOMRender(renderCounter(1), app);
+    render();
 });

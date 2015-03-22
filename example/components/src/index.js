@@ -1,7 +1,7 @@
 var environment = require("environment"),
     eventListener = require("event_listener"),
-    virt = require("../../../src/index"),
-    virtDOM = require("../../../src/virt_dom"),
+    virt = require("../../../virt"),
+    virtDOM = require("../../../src/index"),
     App = require("./app");
 
 

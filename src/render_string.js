@@ -1,6 +1,7 @@
 var virt = require("../virt"),
     getViewKey = require("../../virt/src/utils/get_view_key"),
 
+    isArray = require("is_array"),
     map = require("map"),
     extend = require("extend"),
     isString = require("is_string"),
@@ -33,7 +34,18 @@ var View = virt.View,
     };
 
 
-module.exports = function render(view, id) {
+module.exports = function(view, id) {
+    if (isArray(view)) {
+        return map(view, function(v, i) {
+            return render(v, id + "." + getViewKey(v, i));
+        }).join("");
+    } else {
+        return render(view, id);
+    }
+};
+
+
+function render(view, id) {
     var type;
 
     if (!isView(view)) {
@@ -44,7 +56,7 @@ module.exports = function render(view, id) {
         return (
             closedTags[type] !== true ?
             contentTag(type, map(view.children, function(child, i) {
-                return render(child, id +"."+ getViewKey(child, i));
+                return render(child, id + "." + getViewKey(child, i));
             }).join(""), id, view.props) :
             closedTag(type, id, view.props)
         );
@@ -80,7 +92,7 @@ function tagOptions(options) {
 }
 
 function dataId(id) {
-    return ' ' + DOM_ID_NAME + '="' + id +'"';
+    return ' ' + DOM_ID_NAME + '="' + id + '"';
 }
 
 function closedTag(type, id, options) {

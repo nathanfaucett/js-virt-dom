@@ -18,13 +18,13 @@ function render(nextView, containerDOMNode) {
 
     if (id === null) {
         rootNode = new virt.Root();
-        rootNode.renderer.adaptor = new Adaptor(containerDOMNode, rootNode);
+        rootNode.adaptor = new Adaptor(containerDOMNode, rootNode);
         id = rootNode.id;
+        global.root = rootNode;
         rootNodesById[id] = rootNode;
     } else {
         rootNode = rootNodesById[id];
     }
 
-    virt.render(nextView, rootNode, id);
+    rootNode.render(nextView, id);
 }
-

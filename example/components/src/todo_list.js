@@ -1,4 +1,4 @@
-var virt = require("../../../src/index"),
+var virt = require("../../../virt"),
     map = require("map"),
     dispatcher = require("./dispatcher"),
     TodoStore = require("./todo_store"),
