@@ -1,14 +1,14 @@
-var virt = require("../virt"),
-    getViewKey = require("../../virt/src/utils/get_view_key"),
+var virt = require("virt"),
+    getViewKey = require("virt/utils/get_view_key"),
 
     isArray = require("is_array"),
     map = require("map"),
-    extend = require("extend"),
     isString = require("is_string"),
     isObject = require("is_object"),
     isNullOrUndefined = require("is_null_or_undefined"),
-    events = require("./events"),
-    DOM_ID_NAME = require("./dom_id_name");
+
+    events = require("../events"),
+    DOM_ID_NAME = require("../dom_id_name");
 
 
 var View = virt.View,
@@ -61,7 +61,7 @@ function render(view, id) {
             closedTag(type, id, view.props)
         );
     }
-};
+}
 
 function baseTagOptions(options) {
     var attributes = "",

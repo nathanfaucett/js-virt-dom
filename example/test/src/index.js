@@ -37,7 +37,7 @@ function renderCounter(count) {
 }
 
 var dir = 1,
-    count = 0;
+    count = -1;
 
 function render() {
     if (dir === 1 && count >= 5) {

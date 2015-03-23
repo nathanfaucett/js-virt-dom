@@ -5,7 +5,7 @@ var getNodeById = require("./utils/get_node_by_id"),
 module.exports = applyPatches;
 
 
-function applyPatches(patches, ownerDocument) {
+function applyPatches(patches, rootDOMNode, ownerDocument) {
     var hash = patches.hash,
         ids = patches.ids,
         length = ids.length - 1,
@@ -15,20 +15,16 @@ function applyPatches(patches, ownerDocument) {
         i = -1;
         while (i++ < length) {
             id = ids[i];
-            applyPatchIndices(getNodeById(id), hash[id], id, ownerDocument);
+            applyPatchIndices(getNodeById(id) || rootDOMNode, hash[id], id, ownerDocument);
         }
     }
 }
 
 function applyPatchIndices(DOMNode, patchArray, id, ownerDocument) {
-    var i, length;
-
-    if (DOMNode) {
-        i = -1;
+    var i = -1,
         length = patchArray.length - 1;
 
-        while (i++ < length) {
-            applyPatch(patchArray[i], DOMNode, id, ownerDocument);
-        }
+    while (i++ < length) {
+        applyPatch(patchArray[i], DOMNode, id, ownerDocument);
     }
 }

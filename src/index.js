@@ -1,7 +1,8 @@
-var virt = require("../virt"),
+var virt = require("virt"),
     Adaptor = require("./adaptor"),
     getRootNodeInContainer = require("./utils/get_root_node_in_container"),
-    getNodeId = require("./utils/get_node_id");
+    getNodeId = require("./utils/get_node_id"),
+    getNodeById = require("./utils/get_node_by_id");
 
 
 var rootNodesById = {};
@@ -28,3 +29,7 @@ function render(nextView, containerDOMNode) {
 
     rootNode.render(nextView, id);
 }
+
+render.findDOMNode = function(component) {
+    return (component && component.__node) ? getNodeById(component.__node.id) : null;
+};

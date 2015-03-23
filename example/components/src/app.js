@@ -1,5 +1,6 @@
 var virt = require("../../../virt"),
-    TodoList = require("./todo_list");
+    TodoList = require("./todo_list"),
+    TodoForm = require("./todo_form");
 
 
 module.exports = App;
@@ -15,6 +16,7 @@ App.prototype.render = function() {
         virt.createView("div", {
                 className: "app"
             },
+            virt.createView(TodoForm),
             virt.createView(TodoList)
         )
     );

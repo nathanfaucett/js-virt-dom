@@ -1,5 +1,9 @@
-var consts = require("../../virt/src/patches/consts"),
+var consts = require("virt/patches/consts"),
     createDOMElement = require("./utils/create_dom_element"),
+    renderString = require("./utils/render_string"),
+    addDOMNode = require("./utils/add_dom_node"),
+    removeDOMNode = require("./utils/remove_dom_node"),
+    getNodeById = require("./utils/get_node_by_id"),
     applyProperties = require("./apply_properties");
 
 
@@ -7,19 +11,19 @@ var consts = require("../../virt/src/patches/consts"),
 module.exports = applyPatch;
 
 
-function applyPatch(patch, node, id) {
+function applyPatch(patch, node, id, ownerDocument) {
     switch (patch.type) {
         case consts.REMOVE:
-            remove(node, patch.previous);
+            remove(node, patch.childId, patch.index);
             break;
         case consts.INSERT:
-            insert(node, patch.next, patch.id);
+            insert(node, patch.childId, patch.index, patch.next, ownerDocument);
             break;
         case consts.TEXT:
-            text(node, patch.text, patch.parentId, patch.index);
+            text(node, patch.index, patch.next);
             break;
         case consts.REPLACE:
-            replace(node, patch.next, patch.parentId, patch.index);
+            replace(node, patch.childId, patch.index, patch.next, ownerDocument);
             break;
         case consts.ORDER:
             order(node, patch.order);
@@ -30,34 +34,49 @@ function applyPatch(patch, node, id) {
     }
 }
 
-function remove(node, previous) {
-    var parentNode = node.parentNode;
+function remove(parentNode, id, index) {
+    var node;
 
-    if (parentNode) {
+    if (id === null) {
+        node = parentNode.childNodes[index];
+    } else {
+        node = getNodeById(id);
+    }
+
+    if (node) {
+        removeDOMNode(node);
         parentNode.removeChild(node);
     }
 }
 
-function insert(parentNode, view, id) {
-    var newNode = createDOMElement(view, id);
-    parentNode.appendChild(newNode);
+function insert(parentNode, id, index, view, ownerDocument) {
+    var node = createDOMElement(view, id, ownerDocument, false);
+
+    if (view.children) {
+        node.innerHTML = renderString(view.children, id);
+        addDOMNode(node);
+    }
+
+    parentNode.appendChild(node);
 }
 
-function text(parentNode, patch, id, index) {
-    var textNode = parentNode.childNodes[index],
-        newNode;
+function text(parentNode, index, value) {
+    var textNode = parentNode.childNodes[index];
 
-    if (textNode.nodeType === 3) {
-        textNode.nodeValue = patch;
-    } else {
-        newNode = createDOMElement(patch, id);
-        parentNode.replaceChild(newNode, textNode);
+    if (textNode) {
+        textNode.nodeValue = value;
     }
 }
 
-function replace(parentNode, view, id, index) {
-    var newNode = createDOMElement(view, id);
-    parentNode.replaceChild(newNode, parentNode.childNodes[index]);
+function replace(parentNode, id, index, view, ownerDocument) {
+    var node = createDOMElement(view, id, ownerDocument, false);
+
+    if (view.children) {
+        node.innerHTML = renderString(view.children, id);
+        addDOMNode(node);
+    }
+
+    parentNode.replaceChild(node, parentNode.childNodes[index]);
 }
 
 var order_children = [];

@@ -1,10 +1,8 @@
-var isString = require("is_string"),
-
-    DOM_ID_NAME = require("../dom_id_name"),
+var DOM_ID_NAME = require("../dom_id_name"),
     nodeCache = require("./node_cache"),
 
-    virt = require("../../virt"),
-    getViewKey = require("../../../virt/src/utils/get_view_key");
+    virt = require("virt"),
+    getViewKey = require("virt/utils/get_view_key");
 
 
 var View = virt.View,
@@ -33,7 +31,7 @@ function createDOMElement(view, id, ownerDocument, recurse) {
 
             while (i++ < length) {
                 child = children[i];
-                node.appendChild(createDOMElement(child, id + "." + getViewKey(child.key, i), ownerDocument));
+                node.appendChild(createDOMElement(child, id + "." + getViewKey(child, i), ownerDocument));
             }
         }
 

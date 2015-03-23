@@ -1,6 +1,6 @@
 var has = require("has"),
     nodeCache = require("./node_cache"),
-    DOM_ID_NAME = require("../dom_id_name");
+    getNodeAttributeId = require("./get_node_attribute_id");
 
 
 module.exports = getNodeId;
@@ -27,8 +27,4 @@ function getId(node) {
     }
 
     return id;
-}
-
-function getNodeAttributeId(node) {
-    return node && node.getAttribute && node.getAttribute(DOM_ID_NAME) || "";
 }
