@@ -1,4 +1,4 @@
-var virt = require("../../../virt"),
+var virt = require("virt"),
     map = require("map"),
     dispatcher = require("./dispatcher"),
     TodoStore = require("./todo_store"),
@@ -6,12 +6,6 @@ var virt = require("../../../virt"),
 
 
 var TodoListPrototype;
-
-
-dispatcher.handleViewAction({
-    actionType: TodoStore.consts.TODO_CREATE,
-    text: "todo item 1"
-});
 
 
 module.exports = TodoList;

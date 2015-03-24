@@ -2,13 +2,11 @@ var getNodeById = require("./utils/get_node_by_id"),
     applyPatch = require("./apply_patch");
 
 
-module.exports = applyPatches;
+module.exports = applyTransaction;
 
 
-function applyPatches(patches, rootDOMNode, ownerDocument) {
-    var hash = patches.hash,
-        ids = patches.ids,
-        length = ids.length - 1,
+function applyTransaction(ids, hash, rootDOMNode, ownerDocument) {
+    var length = ids.length - 1,
         id, i;
 
     if (length !== -1) {

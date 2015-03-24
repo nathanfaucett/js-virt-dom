@@ -19,47 +19,37 @@ var _todoId = 1,
 
 
 function create(text, callback) {
-    setTimeout(function() {
-        var id = _todoId++,
-            todo = _todos[id] = {
-                id: id,
-                text: text
-            };
+    var id = _todoId++,
+        todo = _todos[id] = {
+            id: id,
+            text: text
+        };
 
-        callback(undefined, todo);
-    }, Math.random() * 100);
+    callback(undefined, todo);
 }
 
 function update(id, text, callback) {
-    setTimeout(function() {
-        var todo = _todos[id];
+    var todo = _todos[id];
 
-        todo.text = text;
+    todo.text = text;
 
-        callback(undefined, todo);
-    }, Math.random() * 100);
+    callback(undefined, todo);
 }
 
 function destroy(id, callback) {
-    setTimeout(function() {
-        var todo = _todos[id];
+    var todo = _todos[id];
 
-        delete _todos[id];
+    delete _todos[id];
 
-        callback(undefined, todo);
-    }, Math.random() * 100);
+    callback(undefined, todo);
 }
 
 TodoStore.all = function(callback) {
-    setTimeout(function() {
-        callback(undefined, values(_todos));
-    }, Math.random() * 100);
+    callback(undefined, values(_todos));
 };
 
 TodoStore.show = function(id, callback) {
-    setTimeout(function() {
-        callback(undefined, _todos[id]);
-    }, Math.random() * 100);
+    callback(undefined, _todos[id]);
 };
 
 TodoStore.addChangeListener = function(callback) {

@@ -42,8 +42,8 @@ function(require, exports, module, global) {
 var environment = require(1),
     eventListener = require(2),
     virt = require(8),
-    virtDOM = require(52),
-    App = require(88);
+    virtDOM = require(51),
+    App = require(67);
 
 
 var app = document.getElementById("app");
@@ -793,21 +793,15 @@ module.exports = isNode;
 },
 function(require, exports, module, global) {
 
-module.exports = require(9);
-
-
-},
-function(require, exports, module, global) {
-
-var View = require(10);
+var View = require(9);
 
 
 var virt = exports;
 
 
-virt.Root = require(26);
+virt.Root = require(25);
 
-virt.Component = require(43);
+virt.Component = require(42);
 
 virt.View = View;
 virt.createView = View.create;
@@ -817,16 +811,16 @@ virt.createFactory = View.createFactory;
 },
 function(require, exports, module, global) {
 
-var isPrimitive = require(11),
+var isPrimitive = require(10),
     isFunction = require(5),
-    isArray = require(13),
-    isString = require(16),
-    isObjectLike = require(15),
-    isNumber = require(17),
-    fastSlice = require(18),
-    has = require(19),
-    map = require(20),
-    events = require(25);
+    isArray = require(12),
+    isString = require(15),
+    isObjectLike = require(14),
+    isNumber = require(16),
+    fastSlice = require(17),
+    has = require(18),
+    map = require(19),
+    events = require(24);
 
 
 var ViewPrototype;
@@ -924,13 +918,17 @@ function propsToJSON(props) {
     var localHas = has,
         localEvents = events,
         out = {},
-        key;
+        key, value;
 
     for (key in props) {
-        if (localHas(localEvents, key)) {
-            out[key] = true;
-        } else {
-            out[key] = props[key];
+        if (localHas(props, key)) {
+            value = props[key];
+
+            if (localHas(localEvents, key)) {
+                out[key] = true;
+            } else if (!isFunction(value)) {
+                out[key] = value;
+            }
         }
     }
 
@@ -1005,7 +1003,7 @@ function insureValidChildren(children) {
 },
 function(require, exports, module, global) {
 
-var isNullOrUndefined = require(12);
+var isNullOrUndefined = require(11);
 
 
 module.exports = function isPrimitive(obj) {
@@ -1025,8 +1023,8 @@ module.exports = function isNullOrUndefined(obj) {
 },
 function(require, exports, module, global) {
 
-var isLength = require(14),
-    isObjectLike = require(15);
+var isLength = require(13),
+    isObjectLike = require(14);
 
 
 var objectArray = "[object Array]",
@@ -1109,10 +1107,10 @@ module.exports = function has(obj, key) {
 },
 function(require, exports, module, global) {
 
-var keys = require(21),
-    isNullOrUndefined = require(12),
-    fastBindThis = require(23),
-    isArrayLike = require(24);
+var keys = require(20),
+    isNullOrUndefined = require(11),
+    fastBindThis = require(22),
+    isArrayLike = require(23);
 
 
 function mapArray(array, callback) {
@@ -1152,8 +1150,8 @@ module.exports = function map(object, callback, thisArg) {
 },
 function(require, exports, module, global) {
 
-var has = require(19),
-    isNative = require(22),
+var has = require(18),
+    isNative = require(21),
     isObject = require(4);
 
 
@@ -1263,8 +1261,8 @@ module.exports = function fastBindThis(callback, thisArg, length) {
 },
 function(require, exports, module, global) {
 
-var isLength = require(14),
-    isObjectLike = require(15);
+var isLength = require(13),
+    isObjectLike = require(14);
 
 
 module.exports = function isArrayLike(obj) {
@@ -1333,9 +1331,9 @@ module.exports = {
 },
 function(require, exports, module, global) {
 
-var Patches = require(27),
-    shouldUpdate = require(39),
-    Node = require(40);
+var Transaction = require(26),
+    shouldUpdate = require(38),
+    Node = require(39);
 
 
 var RootPrototype,
@@ -1384,15 +1382,15 @@ RootPrototype.removeNode = function(node) {
 RootPrototype.__handle = function() {
     var _this = this,
         transactions = this.__transactions,
-        patches;
+        transaction;
 
     if (transactions.length !== 0 && this.__currentTransaction === null) {
-        this.__currentTransaction = patches = transactions.shift();
+        this.__currentTransaction = transaction = transactions.shift();
 
-        this.adaptor.handle(patches, function() {
+        this.adaptor.handle(transaction, function() {
 
-            patches.queue.notifyAll();
-            patches.destroy();
+            transaction.queue.notifyAll();
+            transaction.destroy();
 
             _this.__currentTransaction = null;
             _this.__handle();
@@ -1400,9 +1398,18 @@ RootPrototype.__handle = function() {
     }
 };
 
+RootPrototype.update = function(node) {
+    var transactions = this.__transactions,
+        transaction = Transaction.create();
+
+    node.update(node.currentView, transaction);
+    transactions[transactions.length] = transaction;
+    this.__handle();
+};
+
 RootPrototype.render = function(nextView, id) {
     var transactions = this.__transactions,
-        patches = Patches.create(),
+        transaction = Transaction.create(),
         node;
 
     id = id || this.id;
@@ -1411,23 +1418,23 @@ RootPrototype.render = function(nextView, id) {
     if (node) {
         if (shouldUpdate(node.renderedView, nextView)) {
 
-            node.update(nextView, patches);
+            node.update(nextView, transaction);
 
-            transactions[transactions.length] = patches;
+            transactions[transactions.length] = transaction;
             this.__handle();
 
             return;
         } else {
-            node.unmount(patches);
+            node.unmount(transaction);
         }
     }
 
     node = Node.create(nextView);
     node.id = id;
     this.appendNode(node);
-    node.mount(patches);
+    node.mount(transaction);
 
-    transactions[transactions.length] = patches;
+    transactions[transactions.length] = transaction;
     this.__handle();
 };
 
@@ -1435,114 +1442,118 @@ RootPrototype.render = function(nextView, id) {
 },
 function(require, exports, module, global) {
 
-var createPool = require(28),
-    Queue = require(30),
-    consts = require(31),
-    InsertPatch = require(33),
-    OrderPatch = require(34),
-    PropsPatch = require(35),
-    RemovePatch = require(36),
-    ReplacePatch = require(37),
-    TextPatch = require(38);
+var createPool = require(27),
+    Queue = require(29),
+    consts = require(30),
+    InsertPatch = require(32),
+    OrderPatch = require(33),
+    PropsPatch = require(34),
+    RemovePatch = require(35),
+    ReplacePatch = require(36),
+    TextPatch = require(37);
 
 
-module.exports = Patches;
+module.exports = Transaction;
 
 
-function Patches() {
+function Transaction() {
+
     this.queue = Queue.getPooled();
-    this.ids = [];
-    this.hash = null;
+
+    this.removeIds = [];
+    this.removeHash = {};
+
+    this.patchIds = [];
+    this.patchHash = {};
 }
-createPool(Patches);
-Patches.consts = consts;
+createPool(Transaction);
+Transaction.consts = consts;
 
-Patches.create = function() {
-    return Patches.getPooled().construct();
+Transaction.create = function() {
+    return Transaction.getPooled();
 };
 
-Patches.prototype.destroy = function() {
-    Patches.release(this);
+Transaction.prototype.destroy = function() {
+    Transaction.release(this);
 };
 
-Patches.prototype.construct = function() {
-    var ids = this.ids;
-
-    this.hash = {};
-    if (ids.length !== 0) {
-        ids.length = 0;
-    }
-
-    return this;
-};
-
-Patches.prototype.destructor = function() {
-    var hash = this.hash,
-        ids = this.ids,
-        i = -1,
+function clearTransaction(ids, hash) {
+    var i = -1,
         il = ids.length - 1,
-        index, patches, j, jl;
+        index, transaction, j, jl;
 
     while (i++ < il) {
         index = ids[i];
-        patches = hash[index];
+        transaction = hash[index];
 
         j = -1;
-        jl = patches.length - 1;
+        jl = transaction.length - 1;
         while (j++ < jl) {
-            patches[j].destroy();
+            transaction[j].destroy();
         }
+
+        delete hash[index];
     }
 
-    this.hash = null;
-    this.ids.length = 0;
+    ids.length = 0;
+}
 
+Transaction.prototype.destructor = function() {
+    clearTransaction(this.patchIds, this.patchHash);
+    clearTransaction(this.removeIds, this.removeHash);
     return this;
 };
 
-Patches.prototype.insert = function(id, childId, index, next) {
+Transaction.prototype.insert = function(id, childId, index, next) {
     return this.append(InsertPatch.create(id, childId, index, next));
 };
 
-Patches.prototype.order = function(id, order) {
+Transaction.prototype.order = function(id, order) {
     return this.append(OrderPatch.create(id, order));
 };
 
-Patches.prototype.props = function(id, previous, props) {
+Transaction.prototype.props = function(id, previous, props) {
     return this.append(PropsPatch.create(id, previous, props));
 };
 
-Patches.prototype.remove = function(id, childId, index) {
-    return this.append(RemovePatch.create(id, childId, index));
-};
-
-Patches.prototype.replace = function(id, childId, index, next) {
+Transaction.prototype.replace = function(id, childId, index, next) {
     return this.append(ReplacePatch.create(id, childId, index, next));
 };
 
-Patches.prototype.text = function(id, index, next) {
+Transaction.prototype.text = function(id, index, next) {
     return this.append(TextPatch.create(id, index, next));
 };
 
-Patches.prototype.append = function(value) {
+Transaction.prototype.remove = function(id, childId, index) {
+    return this.appendRemove(RemovePatch.create(id, childId, index));
+};
+
+function append(ids, hash, value) {
     var id = value.id,
-        ids = this.ids,
-        hash = this.hash,
         patchArray = hash[id];
 
     if (!patchArray) {
         patchArray = hash[id] = [];
         ids[ids.length] = id;
     }
-    patchArray[patchArray.length] = value;
 
-    return this;
+    patchArray[patchArray.length] = value;
+}
+
+Transaction.prototype.append = function(value) {
+    append(this.patchIds, this.patchHash, value);
 };
 
-Patches.prototype.toJSON = function() {
+Transaction.prototype.appendRemove = function(value) {
+    append(this.removeIds, this.removeHash, value);
+};
+
+Transaction.prototype.toJSON = function() {
     return {
-        ids: this.ids,
-        hash: this.hash
+        removeIds: this.removeIds,
+        removeHash: this.removeHash,
+        patchIds: this.patchIds,
+        patchHash: this.patchHash
     };
 };
 
@@ -1551,8 +1562,8 @@ Patches.prototype.toJSON = function() {
 function(require, exports, module, global) {
 
 var isFunction = require(5),
-    isNumber = require(17),
-    defineProperty = require(29);
+    isNumber = require(16),
+    defineProperty = require(28);
 
 
 var descriptor = {
@@ -1734,8 +1745,8 @@ module.exports = function createPool(Constructor, poolSize) {
 function(require, exports, module, global) {
 
 var isFunction = require(5),
-    isObjectLike = require(15),
-    isNative = require(22);
+    isObjectLike = require(14),
+    isNative = require(21);
 
 
 var defineProperty;
@@ -1758,7 +1769,7 @@ module.exports = defineProperty;
 },
 function(require, exports, module, global) {
 
-var createPool = require(28);
+var createPool = require(27);
 
 
 module.exports = Queue;
@@ -1800,7 +1811,7 @@ Queue.prototype.reset = Queue.prototype.destructor;
 },
 function(require, exports, module, global) {
 
-var keyMirror = require(32);
+var keyMirror = require(31);
 
 
 module.exports = keyMirror([
@@ -1816,8 +1827,8 @@ module.exports = keyMirror([
 },
 function(require, exports, module, global) {
 
-var keys = require(21),
-    isArrayLike = require(24);
+var keys = require(20),
+    isArrayLike = require(23);
 
 
 function keyMirrorArray(array) {
@@ -1856,8 +1867,8 @@ module.exports = function keyMirror(object) {
 },
 function(require, exports, module, global) {
 
-var createPool = require(28),
-    consts = require(31);
+var createPool = require(27),
+    consts = require(30);
 
 
 module.exports = InsertPatch;
@@ -1897,8 +1908,8 @@ InsertPatch.prototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(28),
-    consts = require(31);
+var createPool = require(27),
+    consts = require(30);
 
 
 module.exports = OrderPatch;
@@ -1932,8 +1943,8 @@ OrderPatch.prototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(28),
-    consts = require(31);
+var createPool = require(27),
+    consts = require(30);
 
 
 module.exports = PropsPatch;
@@ -1970,8 +1981,8 @@ PropsPatch.prototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(28),
-    consts = require(31);
+var createPool = require(27),
+    consts = require(30);
 
 
 module.exports = RemovePatch;
@@ -2008,8 +2019,8 @@ RemovePatch.prototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(28),
-    consts = require(31);
+var createPool = require(27),
+    consts = require(30);
 
 
 module.exports = ReplacePatch;
@@ -2049,8 +2060,8 @@ ReplacePatch.prototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(28),
-    consts = require(31);
+var createPool = require(27),
+    consts = require(30);
 
 
 module.exports = TextPatch;
@@ -2087,9 +2098,9 @@ TextPatch.prototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var isString = require(16),
-    isNumber = require(17),
-    isNullOrUndefined = require(12);
+var isString = require(15),
+    isNumber = require(16),
+    isNullOrUndefined = require(11);
 
 
 module.exports = shouldUpdate;
@@ -2114,12 +2125,12 @@ function shouldUpdate(previous, next) {
 },
 function(require, exports, module, global) {
 
-var indexOf = require(41),
-    map = require(20),
+var indexOf = require(40),
+    map = require(19),
     isFunction = require(5),
-    getComponentClassForType = require(42),
-    View = require(10),
-    getViewKey = require(48),
+    getComponentClassForType = require(41),
+    View = require(9),
+    getViewKey = require(47),
     diff;
 
 
@@ -2167,37 +2178,37 @@ NodePrototype.appendNode = function(node) {
     this.root.appendNode(node);
 };
 
-NodePrototype.removeNode = function(node, patches) {
+NodePrototype.removeNode = function(node, transaction) {
     var children = this.children,
         nodeChildren = node.children,
         i = -1,
         il = nodeChildren.length - 1;
 
     while (i++ < il) {
-        node.removeNode(nodeChildren[i], patches);
+        node.removeNode(nodeChildren[i], transaction);
     }
 
-    node.__unmount(patches);
+    node.__unmount(transaction);
     node.parent = null;
     children.splice(indexOf(children, node), 1);
     this.root.removeNode(node);
 };
 
-NodePrototype.mount = function(patches) {
-    patches.insert(this.parent ? this.parent.id : this.id, this.id, 0, this.__renderRecurse(patches));
+NodePrototype.mount = function(transaction) {
+    transaction.insert(this.parent ? this.parent.id : this.id, this.id, 0, this.__renderRecurse(transaction));
 };
 
-NodePrototype.__mount = function(patches) {
+NodePrototype.__mount = function(transaction) {
     var component = this.component;
 
     component.componentWillMount();
 
-    patches.queue.enqueue(function onMount() {
+    transaction.queue.enqueue(function onMount() {
         component.componentDidMount();
     });
 };
 
-NodePrototype.__renderRecurse = function(patches) {
+NodePrototype.__renderRecurse = function(transaction) {
     var _this = this,
         parentId = this.id,
         renderedView = this.render();
@@ -2212,51 +2223,60 @@ NodePrototype.__renderRecurse = function(patches) {
             node.id = parentId + "." + getViewKey(child, index);
             _this.appendNode(node);
 
-            return node.__renderRecurse(patches);
+            return node.__renderRecurse(transaction);
         }
     });
 
     this.renderedView = renderedView;
-    this.__mount(patches);
+    this.__mount(transaction);
 
     return renderedView;
 };
 
-NodePrototype.unmount = function(patches) {
+NodePrototype.unmount = function(transaction) {
     var parentId = this.parent ? this.parent.id : this.id;
 
     if (this.parent !== null) {
-        this.parent.removeNode(this, patches);
+        this.parent.removeNode(this, transaction);
     } else {
         this.root.removeNode(this);
     }
 
-    patches.remove(parentId, this.id, 0);
+    transaction.remove(parentId, this.id, 0);
 };
 
-NodePrototype.__unmount = function(patches) {
+NodePrototype.__unmount = function(transaction) {
     var component = this.component;
 
     component.componentWillUnmount();
 
-    patches.queue.enqueue(function onUnmount() {
+    transaction.queue.enqueue(function onUnmount() {
         component.componentDidUnmount();
     });
 };
 
-diff = require(49);
+diff = require(48);
 
-NodePrototype.update = function(nextView, patches) {
+NodePrototype.update = function(nextView, transaction) {
+    var component = this.component;
+
+    this.__update(
+        component.props, nextView.props,
+        component.children, nextView.children,
+        component.__previousState, component.state,
+        nextView,
+        transaction
+    );
+};
+
+NodePrototype.__update = function(
+    previousProps, nextProps,
+    previousChildren, nextChildren,
+    previousState, nextState,
+    currentView,
+    transaction
+) {
     var component = this.component,
-
-        nextState = component.state,
-        nextProps = nextView.props,
-        nextChildren = nextView.children,
-
-        previousProps = component.props,
-        previousChildren = component.children,
-        previousState = component.__previousState,
-
         renderedView;
 
     component.componentWillReceiveProps(nextProps, nextChildren);
@@ -2269,14 +2289,16 @@ NodePrototype.update = function(nextView, patches) {
         component.componentWillUpdate();
 
         renderedView = this.render();
-        diff(this, this.renderedView, renderedView, patches);
+        diff(this, this.renderedView, renderedView, transaction);
         this.renderedView = renderedView;
     } else {
         component.props = nextProps;
         component.children = nextChildren;
     }
 
-    patches.queue.enqueue(function onUpdate() {
+    this.currentView = currentView;
+
+    transaction.queue.enqueue(function onUpdate() {
         component.componentDidUpdate(previousProps, previousChildren, previousState);
     });
 };
@@ -2295,8 +2317,8 @@ NodePrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var isLength = require(14),
-    isObjectLike = require(15);
+var isLength = require(13),
+    isObjectLike = require(14);
 
 
 function arrayIndexOf(array, value, fromIndex) {
@@ -2320,8 +2342,8 @@ module.exports = function indexOf(array, value, fromIndex) {
 },
 function(require, exports, module, global) {
 
-var View = require(10),
-    Component = require(43);
+var View = require(9),
+    Component = require(42);
 
 
 var nativeComponents = {};
@@ -2357,8 +2379,8 @@ function createNativeComponentForType(type) {
 },
 function(require, exports, module, global) {
 
-var inherits = require(44),
-    extend = require(46);
+var inherits = require(43),
+    extend = require(45);
 
 
 var ComponentPrototype;
@@ -2397,12 +2419,12 @@ ComponentPrototype.setState = function(state) {
     this.__previousState = this.state;
     this.state = extend({}, this.state, state);
 
-    node.root.render(node.renderedView, this.id);
+    node.root.update(node);
 };
 
 ComponentPrototype.forceUpdate = function() {
     var node = this.__node;
-    node.root.render(node.renderedView, this.id);
+    node.root.update(node);
 };
 
 ComponentPrototype.componentDidMount = function() {};
@@ -2427,10 +2449,10 @@ ComponentPrototype.shouldComponentUpdate = function( /* nextProps, nextChildren,
 },
 function(require, exports, module, global) {
 
-var create = require(45),
-    extend = require(46),
-    mixin = require(47),
-    defineProperty = require(29);
+var create = require(44),
+    extend = require(45),
+    mixin = require(46),
+    defineProperty = require(28);
 
 
 var descriptor = {
@@ -2487,7 +2509,7 @@ module.exports = Object.create || (function() {
 },
 function(require, exports, module, global) {
 
-var keys = require(21);
+var keys = require(20);
 
 
 function baseExtend(a, b) {
@@ -2517,8 +2539,8 @@ module.exports = function extend(out) {
 },
 function(require, exports, module, global) {
 
-var keys = require(21),
-    isNullOrUndefined = require(12);
+var keys = require(20),
+    isNullOrUndefined = require(11);
 
 
 function baseMixin(a, b) {
@@ -2551,7 +2573,7 @@ module.exports = function mixin(out) {
 },
 function(require, exports, module, global) {
 
-var isNullOrUndefined = require(12);
+var isNullOrUndefined = require(11);
 
 
 var reEscape = /[=.:]/g;
@@ -2582,11 +2604,11 @@ function wrapKey(key) {
 },
 function(require, exports, module, global) {
 
-var getViewKey = require(48),
-    shouldUpdate = require(39),
-    isNullOrUndefined = require(12),
-    diffProps = require(50),
-    View = require(10),
+var getViewKey = require(47),
+    shouldUpdate = require(38),
+    isNullOrUndefined = require(11),
+    diffProps = require(49),
+    View = require(9),
     Node;
 
 
@@ -2596,20 +2618,20 @@ var isPrimativeView = View.isPrimativeView;
 module.exports = diff;
 
 
-Node = require(40);
+Node = require(39);
 
 
-function diff(node, previous, next, patches) {
+function diff(node, previous, next, transaction) {
     var propsDiff = diffProps(previous.props, next.props);
 
     if (propsDiff !== null) {
-        patches.props(node.id, previous.props, propsDiff);
+        transaction.props(node.id, previous.props, propsDiff);
     }
 
-    return diffChildren(node, previous, next, patches);
+    return diffChildren(node, previous, next, transaction);
 }
 
-function diffChildren(node, previous, next, patches) {
+function diffChildren(node, previous, next, transaction) {
     var previousChildren = previous.children,
         nextChildren = reorder(previousChildren, next.children),
         previousLength = previousChildren.length,
@@ -2619,62 +2641,62 @@ function diffChildren(node, previous, next, patches) {
         il = (previousLength > nextLength ? previousLength : nextLength) - 1;
 
     while (i++ < il) {
-        diffChild(node, previousChildren[i], nextChildren[i], patches, parentId, i);
+        diffChild(node, previousChildren[i], nextChildren[i], transaction, parentId, i);
     }
 
     if (nextChildren.moves) {
-        patches.order(parentId, nextChildren.moves);
+        transaction.order(parentId, nextChildren.moves);
     }
 }
 
-function diffChild(parentNode, previousChild, nextChild, patches, parentId, index) {
+function diffChild(parentNode, previousChild, nextChild, transaction, parentId, index) {
     var node, id;
 
     if (previousChild !== nextChild) {
         if (isNullOrUndefined(previousChild)) {
             if (isPrimativeView(nextChild)) {
-                patches.insert(parentId, null, index, nextChild);
+                transaction.insert(parentId, null, index, nextChild);
             } else {
                 node = Node.create(nextChild);
                 id = node.id = parentId + "." + getViewKey(nextChild, index);
                 parentNode.appendNode(node);
-                patches.insert(parentId, id, index, node.__renderRecurse(patches));
+                transaction.insert(parentId, id, index, node.__renderRecurse(transaction));
             }
         } else if (isPrimativeView(previousChild)) {
             if (isNullOrUndefined(nextChild)) {
-                patches.remove(parentId, null, index);
+                transaction.remove(parentId, null, index);
             } else if (isPrimativeView(nextChild)) {
-                patches.text(parentId, index, nextChild);
+                transaction.text(parentId, index, nextChild);
             } else {
                 node = Node.create(nextChild);
                 id = node.id = parentId + "." + getViewKey(nextChild, index);
                 parentNode.appendNode(node);
-                patches.replace(parentId, id, index, node.__renderRecurse(patches));
+                transaction.replace(parentId, id, index, node.__renderRecurse(transaction));
             }
         } else {
             if (isNullOrUndefined(nextChild)) {
                 id = parentId + "." + getViewKey(previousChild, index);
                 node = parentNode.root.childHash[id];
-                node.unmount(patches);
+                node.unmount(transaction);
             } else if (isPrimativeView(nextChild)) {
-                patches.replace(parentId, null, index, nextChild);
+                transaction.replace(parentId, null, index, nextChild);
             } else {
                 id = parentId + "." + getViewKey(previousChild, index);
                 node = parentNode.root.childHash[id];
 
                 if (node) {
                     if (shouldUpdate(previousChild, nextChild)) {
-                        node.update(nextChild, patches);
+                        node.update(nextChild, transaction);
                         return;
                     } else {
-                        node.unmount(patches);
+                        node.unmount(transaction);
                     }
                 }
 
                 node = Node.create(nextChild);
                 id = node.id = parentId + "." + getViewKey(nextChild, index);
                 parentNode.appendNode(node);
-                patches.insert(parentId, id, index, node.__renderRecurse(patches));
+                transaction.insert(parentId, id, index, node.__renderRecurse(transaction));
             }
         }
     }
@@ -2787,8 +2809,8 @@ function keyIndex(children) {
 function(require, exports, module, global) {
 
 var isObject = require(4),
-    getPrototypeOf = require(51),
-    isNullOrUndefined = require(12);
+    getPrototypeOf = require(50),
+    isNullOrUndefined = require(11);
 
 
 module.exports = diffProps;
@@ -2842,7 +2864,7 @@ function diffProps(previous, next) {
 function(require, exports, module, global) {
 
 var isObject = require(4),
-    isNative = require(22);
+    isNative = require(21);
 
 
 var nativeGetPrototypeOf = Object.getPrototypeOf;
@@ -2866,11 +2888,11 @@ module.exports = function getPrototypeOf(obj) {
 },
 function(require, exports, module, global) {
 
-var virt = require(53),
-    Adaptor = require(72),
-    getRootNodeInContainer = require(87),
-    getNodeId = require(83),
-    getNodeById = require(74);
+var virt = require(8),
+    Adaptor = require(52),
+    getRootNodeInContainer = require(66),
+    getNodeId = require(62),
+    getNodeById = require(54);
 
 
 var rootNodesById = {};
@@ -2889,7 +2911,6 @@ function render(nextView, containerDOMNode) {
         rootNode = new virt.Root();
         rootNode.adaptor = new Adaptor(containerDOMNode, rootNode);
         id = rootNode.id;
-        global.root = rootNode;
         rootNodesById[id] = rootNode;
     } else {
         rootNode = rootNodesById[id];
@@ -2906,1340 +2927,7 @@ render.findDOMNode = function(component) {
 },
 function(require, exports, module, global) {
 
-var View = require(54);
-
-
-var virt = exports;
-
-
-virt.Root = require(56);
-
-virt.Component = require(68);
-
-virt.View = View;
-virt.createView = View.create;
-virt.createFactory = View.createFactory;
-
-
-},
-function(require, exports, module, global) {
-
-var isPrimitive = require(11),
-    isFunction = require(5),
-    isArray = require(13),
-    isString = require(16),
-    isObjectLike = require(15),
-    isNumber = require(17),
-    fastSlice = require(18),
-    has = require(19),
-    map = require(20),
-    events = require(55);
-
-
-var ViewPrototype;
-
-
-module.exports = View;
-
-
-function View(type, key, ref, props, children) {
-    this.type = type;
-    this.key = key;
-    this.ref = ref;
-    this.props = props;
-    this.children = children;
-}
-
-ViewPrototype = View.prototype;
-
-ViewPrototype.__View__ = true;
-
-ViewPrototype.toJSON = function() {
-    return toJSON(this);
-};
-
-View.isView = isView;
-View.isPrimativeView = isPrimativeView;
-View.isViewComponent = isViewComponent;
-View.isViewJSON = isViewJSON;
-
-View.create = function(type, config, children) {
-    var isConfigArray = isArray(config),
-        argumentsLength = arguments.length;
-
-    if (isChild(config) || isConfigArray) {
-        if (isConfigArray) {
-            children = config;
-        } else if (argumentsLength > 1) {
-            children = fastSlice(arguments, 1);
-        }
-        config = null;
-    } else {
-        if (!isArray(children) && argumentsLength > 2) {
-            children = fastSlice(arguments, 2);
-        }
-    }
-
-    return construct(type, config, children);
-};
-
-View.createFactory = function(type) {
-    return function factory(config, children) {
-        var isConfigArray = isArray(config),
-            argumentsLength = arguments.length;
-
-        if (isChild(config) || isConfigArray) {
-            if (isConfigArray) {
-                children = config;
-            } else if (argumentsLength > 0) {
-                children = fastSlice(arguments);
-            }
-            config = null;
-        } else {
-            if (!isArray(children) && argumentsLength > 1) {
-                children = fastSlice(arguments, 1);
-            }
-        }
-
-        return construct(type, config, children);
-    };
-};
-
-function construct(type, config, children) {
-    var props = {},
-        key = null,
-        ref = null,
-        configKey;
-
-    if (config) {
-        key = config.key != null ? config.key : null;
-        ref = config.ref != null ? config.ref : null;
-
-        for (configKey in config) {
-            if (has(config, configKey)) {
-                if (!(configKey === "key" || configKey === "ref")) {
-                    props[configKey] = config[configKey];
-                }
-            }
-        }
-    }
-
-    return new View(type, key, ref, props, insureValidChildren(children));
-}
-
-function propsToJSON(props) {
-    var localHas = has,
-        localEvents = events,
-        out = {},
-        key;
-
-    for (key in props) {
-        if (localHas(localEvents, key)) {
-            out[key] = true;
-        } else {
-            out[key] = props[key];
-        }
-    }
-
-    return out;
-}
-
-function toJSON(view) {
-    if (isPrimitive(view)) {
-        return view;
-    } else {
-        return {
-            type: view.type,
-            key: view.key,
-            ref: view.ref,
-            props: propsToJSON(view.props),
-            children: map(view.children, toJSON)
-        };
-    }
-}
-
-function isView(obj) {
-    return isObjectLike(obj) && obj.__View__ === true;
-}
-
-function isViewComponent(obj) {
-    return isView(obj) && isFunction(obj.type);
-}
-
-function isViewJSON(obj) {
-    return (
-        isObjectLike(obj) &&
-        isString(obj.type) &&
-        isObjectLike(obj.props) &&
-        isArray(obj.children)
-    );
-}
-
-function isPrimativeView(object) {
-    return isString(object) || isNumber(object);
-}
-
-function isChild(object) {
-    return isView(object) || isPrimativeView(object);
-}
-
-function insureValidChildren(children) {
-    var i, il, child;
-
-    if (isArray(children)) {
-        i = -1;
-        il = children.length - 1;
-
-        while (i++ < il) {
-            child = children[i];
-
-            if (isView(child)) {
-                continue;
-            } else if (isPrimativeView(child)) {
-                children[i] = child;
-            } else {
-                throw new TypeError("child of a View must be a String, Number or a View");
-            }
-        }
-    } else {
-        children = [];
-    }
-
-    return children;
-}
-
-
-},
-function(require, exports, module, global) {
-
-module.exports = {
-    // Clipboard Events
-    onCopy: "copy",
-    onCut: "cut",
-    onPaste: "paste",
-
-    // Keyboard Events
-    onKeydown: "keydown",
-    onKeyup: "keyup",
-    onKeypress: "keypress",
-
-    // Focus Events
-    onFocus: "focus",
-    onBlur: "blur",
-
-    // Form Events
-    onChange: "change",
-    onInput: "input",
-    onSubmit: "submit",
-
-    // Mouse Events
-    onClick: "click",
-    onDoubleClick: "doubleclick",
-    onMouseDown: "mousedown",
-    onMouseEnter: "mouseenter",
-    onMouseLeave: "mouseleave",
-    onMouseMove: "mousemove",
-    onMouseOut: "mouseout",
-    onMouseOver: "mouseover",
-    onMouseUp: "mouseup",
-
-    // Drag Events
-    onDrag: "drag",
-    onDragEnd: "dragend",
-    onDragEnter: "dragenter",
-    onDragExit: "dragexit",
-    onDragLeave: "dragleave",
-    onDragOver: "dragover",
-    onDragStart: "dragstart",
-    onDragDrop: "dragdrop",
-
-    // Touch Events
-    onTouchCancel: "touchcancel",
-    onTouchEnd: "touchend",
-    onTouchMove: "touchmove",
-    onTouchStart: "touchstart",
-
-    // Scroll Event
-    onScroll: "scroll",
-
-    // Wheel Event
-    onWheel: "wheel"
-};
-
-
-},
-function(require, exports, module, global) {
-
-var Patches = require(57),
-    shouldUpdate = require(65),
-    Node = require(66);
-
-
-var RootPrototype,
-    ROOT_ID = 0;
-
-
-module.exports = Root;
-
-
-function Root() {
-
-    this.id = "." + (ROOT_ID++).toString(36);
-    this.childHash = {};
-    this.adaptor = null;
-
-    this.__transactions = [];
-    this.__currentTransaction = null;
-}
-
-RootPrototype = Root.prototype;
-
-RootPrototype.appendNode = function(node) {
-    var id = node.id,
-        childHash = this.childHash;
-
-    if (childHash[id] === undefined) {
-        node.root = this;
-        childHash[id] = node;
-    } else {
-        throw new Error("Root appendNode(node) trying to override node at " + id);
-    }
-};
-
-RootPrototype.removeNode = function(node) {
-    var id = node.id,
-        childHash = this.childHash;
-
-    if (childHash[id] !== undefined) {
-        node.parent = null;
-        delete childHash[id];
-    } else {
-        throw new Error("Root removeNode(node) trying to remove node that does not exists with id " + id);
-    }
-};
-
-RootPrototype.__handle = function() {
-    var _this = this,
-        transactions = this.__transactions,
-        patches;
-
-    if (transactions.length !== 0 && this.__currentTransaction === null) {
-        this.__currentTransaction = patches = transactions.shift();
-
-        this.adaptor.handle(patches, function() {
-
-            patches.queue.notifyAll();
-            patches.destroy();
-
-            _this.__currentTransaction = null;
-            _this.__handle();
-        });
-    }
-};
-
-RootPrototype.render = function(nextView, id) {
-    var transactions = this.__transactions,
-        patches = Patches.create(),
-        node;
-
-    id = id || this.id;
-    node = this.childHash[id];
-
-    if (node) {
-        if (shouldUpdate(node.renderedView, nextView)) {
-
-            node.update(nextView, patches);
-
-            transactions[transactions.length] = patches;
-            this.__handle();
-
-            return;
-        } else {
-            node.unmount(patches);
-        }
-    }
-
-    node = Node.create(nextView);
-    node.id = id;
-    this.appendNode(node);
-    node.mount(patches);
-
-    transactions[transactions.length] = patches;
-    this.__handle();
-};
-
-
-},
-function(require, exports, module, global) {
-
-var createPool = require(28),
-    Queue = require(30),
-    consts = require(58),
-    InsertPatch = require(59),
-    OrderPatch = require(60),
-    PropsPatch = require(61),
-    RemovePatch = require(62),
-    ReplacePatch = require(63),
-    TextPatch = require(64);
-
-
-module.exports = Patches;
-
-
-function Patches() {
-    this.queue = Queue.getPooled();
-    this.ids = [];
-    this.hash = null;
-}
-createPool(Patches);
-Patches.consts = consts;
-
-Patches.create = function() {
-    return Patches.getPooled().construct();
-};
-
-Patches.prototype.destroy = function() {
-    Patches.release(this);
-};
-
-Patches.prototype.construct = function() {
-    var ids = this.ids;
-
-    this.hash = {};
-    if (ids.length !== 0) {
-        ids.length = 0;
-    }
-
-    return this;
-};
-
-Patches.prototype.destructor = function() {
-    var hash = this.hash,
-        ids = this.ids,
-        i = -1,
-        il = ids.length - 1,
-        index, patches, j, jl;
-
-    while (i++ < il) {
-        index = ids[i];
-        patches = hash[index];
-
-        j = -1;
-        jl = patches.length - 1;
-        while (j++ < jl) {
-            patches[j].destroy();
-        }
-    }
-
-    this.hash = null;
-    this.ids.length = 0;
-
-    return this;
-};
-
-Patches.prototype.insert = function(id, childId, index, next) {
-    return this.append(InsertPatch.create(id, childId, index, next));
-};
-
-Patches.prototype.order = function(id, order) {
-    return this.append(OrderPatch.create(id, order));
-};
-
-Patches.prototype.props = function(id, previous, props) {
-    return this.append(PropsPatch.create(id, previous, props));
-};
-
-Patches.prototype.remove = function(id, childId, index) {
-    return this.append(RemovePatch.create(id, childId, index));
-};
-
-Patches.prototype.replace = function(id, childId, index, next) {
-    return this.append(ReplacePatch.create(id, childId, index, next));
-};
-
-Patches.prototype.text = function(id, index, next) {
-    return this.append(TextPatch.create(id, index, next));
-};
-
-Patches.prototype.append = function(value) {
-    var id = value.id,
-        ids = this.ids,
-        hash = this.hash,
-        patchArray = hash[id];
-
-    if (!patchArray) {
-        patchArray = hash[id] = [];
-        ids[ids.length] = id;
-    }
-    patchArray[patchArray.length] = value;
-
-    return this;
-};
-
-Patches.prototype.toJSON = function() {
-    return {
-        ids: this.ids,
-        hash: this.hash
-    };
-};
-
-
-},
-function(require, exports, module, global) {
-
-var keyMirror = require(32);
-
-
-module.exports = keyMirror([
-    "TEXT",
-    "REPLACE",
-    "PROPS",
-    "ORDER",
-    "INSERT",
-    "REMOVE"
-]);
-
-
-},
-function(require, exports, module, global) {
-
-var createPool = require(28),
-    consts = require(58);
-
-
-module.exports = InsertPatch;
-
-
-function InsertPatch() {
-    this.type = consts.INSERT;
-    this.id = null;
-    this.childId = null;
-    this.index = null;
-    this.next = null;
-}
-createPool(InsertPatch);
-
-InsertPatch.create = function(id, childId, index, next) {
-    var patch = InsertPatch.getPooled();
-    patch.id = id;
-    patch.childId = childId;
-    patch.index = index;
-    patch.next = next;
-    return patch;
-};
-
-InsertPatch.prototype.destructor = function() {
-    this.id = null;
-    this.childId = null;
-    this.index = null;
-    this.next = null;
-    return this;
-};
-
-InsertPatch.prototype.destroy = function() {
-    return InsertPatch.release(this);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var createPool = require(28),
-    consts = require(58);
-
-
-module.exports = OrderPatch;
-
-
-function OrderPatch() {
-    this.type = consts.ORDER;
-    this.id = null;
-    this.order = null;
-}
-createPool(OrderPatch);
-
-OrderPatch.create = function(id, order) {
-    var patch = OrderPatch.getPooled();
-    patch.id = id;
-    patch.order = order;
-    return patch;
-};
-
-OrderPatch.prototype.destructor = function() {
-    this.id = null;
-    this.order = null;
-    return this;
-};
-
-OrderPatch.prototype.destroy = function() {
-    return OrderPatch.release(this);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var createPool = require(28),
-    consts = require(58);
-
-
-module.exports = PropsPatch;
-
-
-function PropsPatch() {
-    this.type = consts.PROPS;
-    this.id = null;
-    this.previous = null;
-    this.next = null;
-}
-createPool(PropsPatch);
-
-PropsPatch.create = function(id, previous, next) {
-    var patch = PropsPatch.getPooled();
-    patch.id = id;
-    patch.previous = previous;
-    patch.next = next;
-    return patch;
-};
-
-PropsPatch.prototype.destructor = function() {
-    this.id = null;
-    this.previous = null;
-    this.next = null;
-    return this;
-};
-
-PropsPatch.prototype.destroy = function() {
-    return PropsPatch.release(this);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var createPool = require(28),
-    consts = require(58);
-
-
-module.exports = RemovePatch;
-
-
-function RemovePatch() {
-    this.type = consts.REMOVE;
-    this.id = null;
-    this.childId = null;
-    this.index = null;
-}
-createPool(RemovePatch);
-
-RemovePatch.create = function(id, childId, index) {
-    var patch = RemovePatch.getPooled();
-    patch.id = id;
-    patch.childId = childId;
-    patch.index = index;
-    return patch;
-};
-
-RemovePatch.prototype.destructor = function() {
-    this.id = null;
-    this.childId = null;
-    this.index = null;
-    return this;
-};
-
-RemovePatch.prototype.destroy = function() {
-    return RemovePatch.release(this);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var createPool = require(28),
-    consts = require(58);
-
-
-module.exports = ReplacePatch;
-
-
-function ReplacePatch() {
-    this.type = consts.REPLACE;
-    this.id = null;
-    this.childId = null;
-    this.index = null;
-    this.next = null;
-}
-createPool(ReplacePatch);
-
-ReplacePatch.create = function(id, childId, index, next) {
-    var patch = ReplacePatch.getPooled();
-    patch.id = id;
-    patch.childId = childId;
-    patch.index = index;
-    patch.next = next;
-    return patch;
-};
-
-ReplacePatch.prototype.destructor = function() {
-    this.id = null;
-    this.childId = null;
-    this.index = null;
-    this.next = null;
-    return this;
-};
-
-ReplacePatch.prototype.destroy = function() {
-    return ReplacePatch.release(this);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var createPool = require(28),
-    consts = require(58);
-
-
-module.exports = TextPatch;
-
-
-function TextPatch() {
-    this.type = consts.TEXT;
-    this.id = null;
-    this.index = null;
-    this.next = null;
-}
-createPool(TextPatch);
-
-TextPatch.create = function(id, index, next) {
-    var patch = TextPatch.getPooled();
-    patch.id = id;
-    patch.index = index;
-    patch.next = next;
-    return patch;
-};
-
-TextPatch.prototype.destructor = function() {
-    this.id = null;
-    this.index = null;
-    this.next = null;
-    return this;
-};
-
-TextPatch.prototype.destroy = function() {
-    return TextPatch.release(this);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var isString = require(16),
-    isNumber = require(17),
-    isNullOrUndefined = require(12);
-
-
-module.exports = shouldUpdate;
-
-
-function shouldUpdate(previous, next) {
-    if (isNullOrUndefined(previous) || isNullOrUndefined(next)) {
-        return false;
-    } else {
-        if (isString(previous) || isNumber(previous)) {
-            return isString(next) || isNumber(next);
-        } else {
-            return (
-                previous.type === next.type &&
-                previous.key === next.key
-            );
-        }
-    }
-}
-
-
-},
-function(require, exports, module, global) {
-
-var indexOf = require(41),
-    map = require(20),
-    isFunction = require(5),
-    getComponentClassForType = require(67),
-    View = require(54),
-    getViewKey = require(69),
-    diff;
-
-
-var NodePrototype,
-    isPrimativeView = View.isPrimativeView;
-
-
-module.exports = Node;
-
-
-function Node() {
-    this.id = null;
-    this.parent = null;
-    this.children = [];
-    this.root = null;
-    this.component = null;
-    this.currentView = null;
-}
-
-NodePrototype = Node.prototype;
-
-Node.create = function(view) {
-    var node = new Node(),
-        Class, component;
-
-    if (isFunction(view.type)) {
-        Class = view.type;
-    } else {
-        Class = getComponentClassForType(view.type);
-    }
-
-    component = new Class(view.props, view.children);
-    component.__node = node;
-    node.component = component;
-    node.currentView = view;
-
-    return node;
-};
-
-NodePrototype.appendNode = function(node) {
-    var children = this.children;
-
-    node.parent = this;
-    children[children.length] = node;
-    this.root.appendNode(node);
-};
-
-NodePrototype.removeNode = function(node, patches) {
-    var children = this.children,
-        nodeChildren = node.children,
-        i = -1,
-        il = nodeChildren.length - 1;
-
-    while (i++ < il) {
-        node.removeNode(nodeChildren[i], patches);
-    }
-
-    node.__unmount(patches);
-    node.parent = null;
-    children.splice(indexOf(children, node), 1);
-    this.root.removeNode(node);
-};
-
-NodePrototype.mount = function(patches) {
-    patches.insert(this.parent ? this.parent.id : this.id, this.id, 0, this.__renderRecurse(patches));
-};
-
-NodePrototype.__mount = function(patches) {
-    var component = this.component;
-
-    component.componentWillMount();
-
-    patches.queue.enqueue(function onMount() {
-        component.componentDidMount();
-    });
-};
-
-NodePrototype.__renderRecurse = function(patches) {
-    var _this = this,
-        parentId = this.id,
-        renderedView = this.render();
-
-    renderedView.children = map(renderedView.children, function(child, index) {
-        var node;
-
-        if (isPrimativeView(child)) {
-            return child;
-        } else {
-            node = Node.create(child);
-            node.id = parentId + "." + getViewKey(child, index);
-            _this.appendNode(node);
-
-            return node.__renderRecurse(patches);
-        }
-    });
-
-    this.renderedView = renderedView;
-    this.__mount(patches);
-
-    return renderedView;
-};
-
-NodePrototype.unmount = function(patches) {
-    var parentId = this.parent ? this.parent.id : this.id;
-
-    if (this.parent !== null) {
-        this.parent.removeNode(this, patches);
-    } else {
-        this.root.removeNode(this);
-    }
-
-    patches.remove(parentId, this.id, 0);
-};
-
-NodePrototype.__unmount = function(patches) {
-    var component = this.component;
-
-    component.componentWillUnmount();
-
-    patches.queue.enqueue(function onUnmount() {
-        component.componentDidUnmount();
-    });
-};
-
-diff = require(70);
-
-NodePrototype.update = function(nextView, patches) {
-    var component = this.component,
-
-        nextState = component.state,
-        nextProps = nextView.props,
-        nextChildren = nextView.children,
-
-        previousProps = component.props,
-        previousChildren = component.children,
-        previousState = component.__previousState,
-
-        renderedView;
-
-    component.componentWillReceiveProps(nextProps, nextChildren);
-
-    if (component.shouldComponentUpdate(nextProps, nextChildren, nextState)) {
-
-        component.props = nextProps;
-        component.children = nextChildren;
-
-        component.componentWillUpdate();
-
-        renderedView = this.render();
-        diff(this, this.renderedView, renderedView, patches);
-        this.renderedView = renderedView;
-    } else {
-        component.props = nextProps;
-        component.children = nextChildren;
-    }
-
-    patches.queue.enqueue(function onUpdate() {
-        component.componentDidUpdate(previousProps, previousChildren, previousState);
-    });
-};
-
-NodePrototype.render = function() {
-    var currentView = this.currentView,
-        renderedView = this.component.render();
-
-    renderedView.key = currentView.key;
-    renderedView.ref = currentView.ref;
-
-    return renderedView;
-};
-
-
-},
-function(require, exports, module, global) {
-
-var View = require(54),
-    Component = require(68);
-
-
-var nativeComponents = {};
-
-
-module.exports = getComponentClassForType;
-
-
-function getComponentClassForType(type) {
-    var Class = nativeComponents[type];
-
-    if (Class) {
-        return Class;
-    } else {
-        return (nativeComponents[type] = createNativeComponentForType(type));
-    }
-}
-
-function createNativeComponentForType(type) {
-    function NativeComponent(props, children) {
-        Component.call(this, props, children);
-    }
-    Component.extend(NativeComponent);
-
-    NativeComponent.prototype.render = function() {
-        return new View(type, null, null, this.props, this.children);
-    };
-
-    return NativeComponent;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var inherits = require(44),
-    extend = require(46);
-
-
-var ComponentPrototype;
-
-
-module.exports = Component;
-
-
-function Component(props, children) {
-    this.__node = null;
-    this.__previousState = null;
-    this.props = props;
-    this.children = children;
-    this.state = null;
-}
-
-ComponentPrototype = Component.prototype;
-
-Component.extend = function(child, displayName) {
-    inherits(child, this);
-    child.displayName = child.prototype.displayName = displayName || ComponentPrototype.displayName;
-    return child;
-};
-
-ComponentPrototype.displayName = "Component";
-ComponentPrototype.propTypes = {};
-ComponentPrototype.contextTypes = {};
-
-ComponentPrototype.render = function() {
-    throw new Error("render() render must be defined on Components");
-};
-
-ComponentPrototype.setState = function(state) {
-    var node = this.__node;
-
-    this.__previousState = this.state;
-    this.state = extend({}, this.state, state);
-
-    node.root.render(node.renderedView, this.id);
-};
-
-ComponentPrototype.forceUpdate = function() {
-    var node = this.__node;
-    node.root.render(node.renderedView, this.id);
-};
-
-ComponentPrototype.componentDidMount = function() {};
-
-ComponentPrototype.componentDidUnmount = function() {};
-
-ComponentPrototype.componentDidUpdate = function( /* previousProps, previousChildren, previousState */ ) {};
-
-ComponentPrototype.componentWillMount = function() {};
-
-ComponentPrototype.componentWillUnmount = function() {};
-
-ComponentPrototype.componentWillReceiveProps = function( /* nextProps, nextChildren */ ) {};
-
-ComponentPrototype.componentWillUpdate = function( /* nextProps, nextChildren, nextState */ ) {};
-
-ComponentPrototype.shouldComponentUpdate = function( /* nextProps, nextChildren, nextState */ ) {
-    return true;
-};
-
-
-},
-function(require, exports, module, global) {
-
-var isNullOrUndefined = require(12);
-
-
-var reEscape = /[=.:]/g;
-
-
-module.exports = getViewKey;
-
-
-function getViewKey(view, index) {
-    var key = view.key;
-
-    if (isNullOrUndefined(key)) {
-        return index.toString(36);
-    } else {
-        return wrapKey(escapeKey(key));
-    }
-}
-
-function escapeKey(key) {
-    return (key + "").replace(reEscape, "$");
-}
-
-function wrapKey(key) {
-    return "$" + key;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var getViewKey = require(69),
-    shouldUpdate = require(65),
-    isNullOrUndefined = require(12),
-    diffProps = require(71),
-    View = require(54),
-    Node;
-
-
-var isPrimativeView = View.isPrimativeView;
-
-
-module.exports = diff;
-
-
-Node = require(66);
-
-
-function diff(node, previous, next, patches) {
-    var propsDiff = diffProps(previous.props, next.props);
-
-    if (propsDiff !== null) {
-        patches.props(node.id, previous.props, propsDiff);
-    }
-
-    return diffChildren(node, previous, next, patches);
-}
-
-function diffChildren(node, previous, next, patches) {
-    var previousChildren = previous.children,
-        nextChildren = reorder(previousChildren, next.children),
-        previousLength = previousChildren.length,
-        nextLength = nextChildren.length,
-        parentId = node.id,
-        i = -1,
-        il = (previousLength > nextLength ? previousLength : nextLength) - 1;
-
-    while (i++ < il) {
-        diffChild(node, previousChildren[i], nextChildren[i], patches, parentId, i);
-    }
-
-    if (nextChildren.moves) {
-        patches.order(parentId, nextChildren.moves);
-    }
-}
-
-function diffChild(parentNode, previousChild, nextChild, patches, parentId, index) {
-    var node, id;
-
-    if (previousChild !== nextChild) {
-        if (isNullOrUndefined(previousChild)) {
-            if (isPrimativeView(nextChild)) {
-                patches.insert(parentId, null, index, nextChild);
-            } else {
-                node = Node.create(nextChild);
-                id = node.id = parentId + "." + getViewKey(nextChild, index);
-                parentNode.appendNode(node);
-                patches.insert(parentId, id, index, node.__renderRecurse(patches));
-            }
-        } else if (isPrimativeView(previousChild)) {
-            if (isNullOrUndefined(nextChild)) {
-                patches.remove(parentId, null, index);
-            } else if (isPrimativeView(nextChild)) {
-                patches.text(parentId, index, nextChild);
-            } else {
-                node = Node.create(nextChild);
-                id = node.id = parentId + "." + getViewKey(nextChild, index);
-                parentNode.appendNode(node);
-                patches.replace(parentId, id, index, node.__renderRecurse(patches));
-            }
-        } else {
-            if (isNullOrUndefined(nextChild)) {
-                id = parentId + "." + getViewKey(previousChild, index);
-                node = parentNode.root.childHash[id];
-                node.unmount(patches);
-            } else if (isPrimativeView(nextChild)) {
-                patches.replace(parentId, null, index, nextChild);
-            } else {
-                id = parentId + "." + getViewKey(previousChild, index);
-                node = parentNode.root.childHash[id];
-
-                if (node) {
-                    if (shouldUpdate(previousChild, nextChild)) {
-                        node.update(nextChild, patches);
-                        return;
-                    } else {
-                        node.unmount(patches);
-                    }
-                }
-
-                node = Node.create(nextChild);
-                id = node.id = parentId + "." + getViewKey(nextChild, index);
-                parentNode.appendNode(node);
-                patches.insert(parentId, id, index, node.__renderRecurse(patches));
-            }
-        }
-    }
-}
-
-function reorder(previousChildren, nextChildren) {
-    var previousKeys, nextKeys, previousMatch, nextMatch, key, previousLength, nextLength,
-        length, shuffle, freeIndex, i, moveIndex, moves, removes, reverse, hasMoves, move, freeChild;
-
-    nextKeys = keyIndex(nextChildren);
-    if (nextKeys === null) {
-        return nextChildren;
-    }
-
-    previousKeys = keyIndex(previousChildren);
-    if (previousKeys === null) {
-        return nextChildren;
-    }
-
-    nextMatch = {};
-    previousMatch = {};
-
-    for (key in nextKeys) {
-        nextMatch[nextKeys[key]] = previousKeys[key];
-    }
-
-    for (key in previousKeys) {
-        previousMatch[previousKeys[key]] = nextKeys[key];
-    }
-
-    previousLength = previousChildren.length;
-    nextLength = nextChildren.length;
-    length = previousLength > nextLength ? previousLength : nextLength;
-    shuffle = [];
-    freeIndex = 0;
-    i = 0;
-    moveIndex = 0;
-    moves = {};
-    removes = moves.removes = {};
-    reverse = moves.reverse = {};
-    hasMoves = false;
-
-    while (freeIndex < length) {
-        move = previousMatch[i];
-
-        if (move !== undefined) {
-            shuffle[i] = nextChildren[move];
-
-            if (move !== moveIndex) {
-                moves[move] = moveIndex;
-                reverse[moveIndex] = move;
-                hasMoves = true;
-            }
-
-            moveIndex++;
-        } else if (i in previousMatch) {
-            shuffle[i] = undefined;
-            removes[i] = moveIndex++;
-            hasMoves = true;
-        } else {
-            while (nextMatch[freeIndex] !== undefined) {
-                freeIndex++;
-            }
-
-            if (freeIndex < length) {
-                freeChild = nextChildren[freeIndex];
-
-                if (freeChild) {
-                    shuffle[i] = freeChild;
-                    if (freeIndex !== moveIndex) {
-                        hasMoves = true;
-                        moves[freeIndex] = moveIndex;
-                        reverse[moveIndex] = freeIndex;
-                    }
-                    moveIndex++;
-                }
-                freeIndex++;
-            }
-        }
-        i++;
-    }
-
-    if (hasMoves) {
-        shuffle.moves = moves;
-    }
-
-    return shuffle;
-}
-
-function keyIndex(children) {
-    var i = -1,
-        il = children.length - 1,
-        keys = null,
-        child;
-
-    while (i++ < il) {
-        child = children[i];
-
-        if (!isNullOrUndefined(child.key)) {
-            keys = keys || {};
-            keys[child.key] = i;
-        }
-    }
-
-    return keys;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isObject = require(4),
-    getPrototypeOf = require(51),
-    isNullOrUndefined = require(12);
-
-
-module.exports = diffProps;
-
-
-function diffProps(previous, next) {
-    var result = null,
-        key, previousValue, nextValue, propsDiff;
-
-    for (key in previous) {
-        nextValue = next[key];
-
-        if (isNullOrUndefined(nextValue)) {
-            result = result || {};
-            result[key] = undefined;
-        } else {
-            previousValue = previous[key];
-
-            if (previousValue === nextValue) {
-                continue;
-            } else if (isObject(previousValue) && isObject(nextValue)) {
-                if (getPrototypeOf(previousValue) !== getPrototypeOf(nextValue)) {
-                    result = result || {};
-                    result[key] = nextValue;
-                } else {
-                    propsDiff = diffProps(previousValue, nextValue);
-                    if (propsDiff !== null) {
-                        result = result || {};
-                        result[key] = propsDiff;
-                    }
-                }
-            } else {
-                result = result || {};
-                result[key] = nextValue;
-            }
-        }
-    }
-
-    for (key in next) {
-        if (isNullOrUndefined(previous[key])) {
-            result = result || {};
-            result[key] = next[key];
-        }
-    }
-
-    return result;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var applyPatches = require(73);
+var applyPatches = require(53);
 
 
 var AdaptorPrototype;
@@ -4255,8 +2943,13 @@ function Adaptor(containerDOMNode) {
 
 AdaptorPrototype = Adaptor.prototype;
 
-AdaptorPrototype.handle = function(patches, callback) {
-    applyPatches(patches, this.containerDOMNode, this.ownerDocument);
+AdaptorPrototype.handle = function(transaction, callback) {
+    var containerDOMNode = this.containerDOMNode,
+        ownerDocument = this.ownerDocument;
+
+    applyPatches(transaction.patchIds, transaction.patchHash, containerDOMNode, ownerDocument);
+    applyPatches(transaction.removeIds, transaction.removeHash, containerDOMNode, ownerDocument);
+
     callback();
 };
 
@@ -4264,17 +2957,15 @@ AdaptorPrototype.handle = function(patches, callback) {
 },
 function(require, exports, module, global) {
 
-var getNodeById = require(74),
-    applyPatch = require(76);
+var getNodeById = require(54),
+    applyPatch = require(56);
 
 
-module.exports = applyPatches;
+module.exports = applyTransaction;
 
 
-function applyPatches(patches, rootDOMNode, ownerDocument) {
-    var hash = patches.hash,
-        ids = patches.ids,
-        length = ids.length - 1,
+function applyTransaction(ids, hash, rootDOMNode, ownerDocument) {
+    var length = ids.length - 1,
         id, i;
 
     if (length !== -1) {
@@ -4299,7 +2990,7 @@ function applyPatchIndices(DOMNode, patchArray, id, ownerDocument) {
 },
 function(require, exports, module, global) {
 
-var nodeCache = require(75);
+var nodeCache = require(55);
 
 
 module.exports = getNodeById;
@@ -4319,13 +3010,13 @@ var nodeCache = exports;
 },
 function(require, exports, module, global) {
 
-var consts = require(58),
-    createDOMElement = require(77),
-    renderString = require(79),
-    addDOMNode = require(81),
-    removeDOMNode = require(85),
-    getNodeById = require(74),
-    applyProperties = require(86);
+var consts = require(30),
+    createDOMElement = require(57),
+    renderString = require(59),
+    addDOMNode = require(60),
+    removeDOMNode = require(64),
+    getNodeById = require(54),
+    applyProperties = require(65);
 
 
 
@@ -4448,11 +3139,11 @@ function order(parentNode, orderIndex) {
 },
 function(require, exports, module, global) {
 
-var DOM_ID_NAME = require(78),
-    nodeCache = require(75),
+var DOM_ID_NAME = require(58),
+    nodeCache = require(55),
 
-    virt = require(53),
-    getViewKey = require(69);
+    virt = require(8),
+    getViewKey = require(47);
 
 
 var View = virt.View,
@@ -4501,17 +3192,17 @@ module.exports = "data-virtid";
 },
 function(require, exports, module, global) {
 
-var virt = require(53),
-    getViewKey = require(69),
+var virt = require(8),
+    getViewKey = require(47),
+    events = require(24),
 
-    isArray = require(13),
-    map = require(20),
-    isString = require(16),
+    isArray = require(12),
+    map = require(19),
+    isString = require(15),
     isObject = require(4),
-    isNullOrUndefined = require(12),
+    isNullOrUndefined = require(11),
 
-    events = require(80),
-    DOM_ID_NAME = require(78);
+    DOM_ID_NAME = require(58);
 
 
 var View = virt.View,
@@ -4614,66 +3305,8 @@ function contentTag(type, content, id, options) {
 },
 function(require, exports, module, global) {
 
-module.exports = {
-    // Clipboard Events
-    onCopy: "copy",
-    onCut: "cut",
-    onPaste: "paste",
-
-    // Keyboard Events
-    onKeydown: "keydown",
-    onKeyup: "keyup",
-    onKeypress: "keypress",
-
-    // Focus Events
-    onFocus: "focus",
-    onBlur: "blur",
-
-    // Form Events
-    onChange: "change",
-    onInput: "input",
-    onSubmit: "submit",
-
-    // Mouse Events
-    onClick: "click",
-    onDoubleClick: "doubleclick",
-    onMouseDown: "mousedown",
-    onMouseEnter: "mouseenter",
-    onMouseLeave: "mouseleave",
-    onMouseMove: "mousemove",
-    onMouseOut: "mouseout",
-    onMouseOver: "mouseover",
-    onMouseUp: "mouseup",
-
-    // Drag Events
-    onDrag: "drag",
-    onDragEnd: "dragend",
-    onDragEnter: "dragenter",
-    onDragExit: "dragexit",
-    onDragLeave: "dragleave",
-    onDragOver: "dragover",
-    onDragStart: "dragstart",
-    onDragDrop: "dragdrop",
-
-    // Touch Events
-    onTouchCancel: "touchcancel",
-    onTouchEnd: "touchend",
-    onTouchMove: "touchmove",
-    onTouchStart: "touchstart",
-
-    // Scroll Event
-    onScroll: "scroll",
-
-    // Wheel Event
-    onWheel: "wheel"
-};
-
-
-},
-function(require, exports, module, global) {
-
-var isElement = require(82),
-    getNodeId = require(83);
+var isElement = require(61),
+    getNodeId = require(62);
 
 
 module.exports = addDOMNode;
@@ -4710,9 +3343,9 @@ module.exports = function isElement(obj) {
 },
 function(require, exports, module, global) {
 
-var has = require(19),
-    nodeCache = require(75),
-    getNodeAttributeId = require(84);
+var has = require(18),
+    nodeCache = require(55),
+    getNodeAttributeId = require(63);
 
 
 module.exports = getNodeId;
@@ -4745,7 +3378,7 @@ function getId(node) {
 },
 function(require, exports, module, global) {
 
-var DOM_ID_NAME = require(78);
+var DOM_ID_NAME = require(58);
 
 
 module.exports = getNodeAttributeId;
@@ -4759,9 +3392,9 @@ function getNodeAttributeId(node) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(82),
-    nodeCache = require(75),
-    getNodeAttributeId = require(84);
+var isElement = require(61),
+    nodeCache = require(55),
+    getNodeAttributeId = require(63);
 
 
 module.exports = removeDOMNode;
@@ -4788,11 +3421,11 @@ function removeDOMNodes(nodes) {
 },
 function(require, exports, module, global) {
 
-var isString = require(16),
+var isString = require(15),
     isObject = require(4),
     isFunction = require(5),
-    getPrototypeOf = require(51),
-    events = require(80);
+    getPrototypeOf = require(50),
+    events = require(24);
 
 
 module.exports = applyProperties;
@@ -4922,8 +3555,8 @@ function getRootNodeInContainer(containerNode) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    TodoList = require(89),
-    TodoForm = require(98);
+    TodoList = require(68),
+    TodoForm = require(77);
 
 
 module.exports = App;
@@ -4950,19 +3583,13 @@ App.prototype.render = function() {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    map = require(20),
-    dispatcher = require(90),
-    TodoStore = require(92),
-    TodoItem = require(94);
+    map = require(19),
+    dispatcher = require(69),
+    TodoStore = require(71),
+    TodoItem = require(73);
 
 
 var TodoListPrototype;
-
-
-dispatcher.handleViewAction({
-    actionType: TodoStore.consts.TODO_CREATE,
-    text: "todo item 1"
-});
 
 
 module.exports = TodoList;
@@ -5024,7 +3651,7 @@ TodoListPrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(91);
+var EventEmitter = require(70);
 
 
 var dispatcher = module.exports = new EventEmitter(-1),
@@ -5049,10 +3676,10 @@ dispatcher.handleViewAction = function(action) {
 function(require, exports, module, global) {
 
 var isFunction = require(5),
-    inherits = require(44),
-    fastSlice = require(18),
-    defineProperty = require(29),
-    keys = require(21);
+    inherits = require(43),
+    fastSlice = require(17),
+    defineProperty = require(28),
+    keys = require(20);
 
 
 function EventEmitter(maxListeners) {
@@ -5388,9 +4015,9 @@ module.exports = EventEmitter;
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(91),
-    values = require(93),
-    dispatcher = require(90);
+var EventEmitter = require(70),
+    values = require(72),
+    dispatcher = require(69);
 
 
 var TodoStore = module.exports = new EventEmitter(-1),
@@ -5409,47 +4036,37 @@ var _todoId = 1,
 
 
 function create(text, callback) {
-    setTimeout(function() {
-        var id = _todoId++,
-            todo = _todos[id] = {
-                id: id,
-                text: text
-            };
+    var id = _todoId++,
+        todo = _todos[id] = {
+            id: id,
+            text: text
+        };
 
-        callback(undefined, todo);
-    }, Math.random() * 100);
+    callback(undefined, todo);
 }
 
 function update(id, text, callback) {
-    setTimeout(function() {
-        var todo = _todos[id];
+    var todo = _todos[id];
 
-        todo.text = text;
+    todo.text = text;
 
-        callback(undefined, todo);
-    }, Math.random() * 100);
+    callback(undefined, todo);
 }
 
 function destroy(id, callback) {
-    setTimeout(function() {
-        var todo = _todos[id];
+    var todo = _todos[id];
 
-        delete _todos[id];
+    delete _todos[id];
 
-        callback(undefined, todo);
-    }, Math.random() * 100);
+    callback(undefined, todo);
 }
 
 TodoStore.all = function(callback) {
-    setTimeout(function() {
-        callback(undefined, values(_todos));
-    }, Math.random() * 100);
+    callback(undefined, values(_todos));
 };
 
 TodoStore.show = function(id, callback) {
-    setTimeout(function() {
-        callback(undefined, _todos[id]);
-    }, Math.random() * 100);
+    callback(undefined, _todos[id]);
 };
 
 TodoStore.addChangeListener = function(callback) {
@@ -5490,7 +4107,7 @@ TodoStore.id = dispatcher.register(function(payload) {
 },
 function(require, exports, module, global) {
 
-var keys = require(21);
+var keys = require(20);
 
 
 function objectValues(object, objectKeys) {
@@ -5521,7 +4138,7 @@ module.exports = values;
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(95);
+    propTypes = require(74);
 
 
 var TodoItemPrototype;
@@ -5557,13 +4174,13 @@ TodoItemPrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var isArray = require(13),
-    isRegExp = require(96),
-    isNullOrUndefined = require(12),
-    emptyFunction = require(97),
+var isArray = require(12),
+    isRegExp = require(75),
+    isNullOrUndefined = require(11),
+    emptyFunction = require(76),
     isFunction = require(5),
-    has = require(19),
-    indexOf = require(41);
+    has = require(18),
+    indexOf = require(40);
 
 
 var propTypes = exports,
@@ -5737,7 +4354,7 @@ function getPreciseType(propValue) {
 },
 function(require, exports, module, global) {
 
-var isObjectLike = require(15);
+var isObjectLike = require(14);
 
 
 var objectRegExpStr = "[object RegExp]",
@@ -5779,19 +4396,19 @@ emptyFunction.thatReturnsArgument = function(argument) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    virtDOM = require(52),
+    virtDOM = require(51),
     eventListener = require(2),
-    dispatcher = require(90),
-    TodoStore = require(92);
+    dispatcher = require(69),
+    TodoStore = require(71);
 
 
-var TodoListPrototype;
+var TodoFormPrototype;
 
 
-module.exports = TodoList;
+module.exports = TodoForm;
 
 
-function TodoList(props, children) {
+function TodoForm(props, children) {
     var _this = this;
 
     virt.Component.call(this, props, children);
@@ -5800,21 +4417,23 @@ function TodoList(props, children) {
         return _this.__onSubmit(e);
     };
 }
-virt.Component.extend(TodoList, "TodoList");
+virt.Component.extend(TodoForm, "TodoForm");
 
-TodoListPrototype = TodoList.prototype;
+TodoFormPrototype = TodoForm.prototype;
 
-TodoListPrototype.componentDidMount = function() {
+TodoFormPrototype.componentDidMount = function() {
     var DOMNode = virtDOM.findDOMNode(this);
+    console.log("mount");
     eventListener.on(DOMNode.childNodes[0], "submit", this.onSubmit);
 };
 
-TodoListPrototype.componentWillUnmount = function() {
+TodoFormPrototype.componentWillUnmount = function() {
     var DOMNode = virtDOM.findDOMNode(this);
+    console.log("unmount");
     eventListener.off(DOMNode.childNodes[0], "submit", this.onSubmit);
 };
 
-TodoListPrototype.__onSubmit = function(e) {
+TodoFormPrototype.__onSubmit = function(e) {
     var DOMNode = virtDOM.findDOMNode(this).childNodes[0].childNodes[0],
         value = DOMNode.value;
 
@@ -5829,7 +4448,7 @@ TodoListPrototype.__onSubmit = function(e) {
     }
 };
 
-TodoListPrototype.render = function() {
+TodoFormPrototype.render = function() {
     return (
         virt.createView("div", {
                 className: "todo-form"

@@ -14,7 +14,12 @@ function Adaptor(containerDOMNode) {
 
 AdaptorPrototype = Adaptor.prototype;
 
-AdaptorPrototype.handle = function(patches, callback) {
-    applyPatches(patches, this.containerDOMNode, this.ownerDocument);
+AdaptorPrototype.handle = function(transaction, callback) {
+    var containerDOMNode = this.containerDOMNode,
+        ownerDocument = this.ownerDocument;
+
+    applyPatches(transaction.patchIds, transaction.patchHash, containerDOMNode, ownerDocument);
+    applyPatches(transaction.removeIds, transaction.removeHash, containerDOMNode, ownerDocument);
+
     callback();
 };

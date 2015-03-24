@@ -2,7 +2,7 @@ var isString = require("is_string"),
     isObject = require("is_object"),
     isFunction = require("is_function"),
     getPrototypeOf = require("get_prototype_of"),
-    events = require("./events");
+    events = require("virt/events");
 
 
 module.exports = applyProperties;

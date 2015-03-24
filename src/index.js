@@ -21,7 +21,6 @@ function render(nextView, containerDOMNode) {
         rootNode = new virt.Root();
         rootNode.adaptor = new Adaptor(containerDOMNode, rootNode);
         id = rootNode.id;
-        global.root = rootNode;
         rootNodesById[id] = rootNode;
     } else {
         rootNode = rootNodesById[id];

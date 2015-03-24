@@ -1,17 +1,17 @@
-var virt = require("../../../virt"),
+var virt = require("virt"),
     virtDOM = require("../../../src/index"),
     eventListener = require("event_listener"),
     dispatcher = require("./dispatcher"),
     TodoStore = require("./todo_store");
 
 
-var TodoListPrototype;
+var TodoFormPrototype;
 
 
-module.exports = TodoList;
+module.exports = TodoForm;
 
 
-function TodoList(props, children) {
+function TodoForm(props, children) {
     var _this = this;
 
     virt.Component.call(this, props, children);
@@ -20,21 +20,21 @@ function TodoList(props, children) {
         return _this.__onSubmit(e);
     };
 }
-virt.Component.extend(TodoList, "TodoList");
+virt.Component.extend(TodoForm, "TodoForm");
 
-TodoListPrototype = TodoList.prototype;
+TodoFormPrototype = TodoForm.prototype;
 
-TodoListPrototype.componentDidMount = function() {
+TodoFormPrototype.componentDidMount = function() {
     var DOMNode = virtDOM.findDOMNode(this);
     eventListener.on(DOMNode.childNodes[0], "submit", this.onSubmit);
 };
 
-TodoListPrototype.componentWillUnmount = function() {
+TodoFormPrototype.componentWillUnmount = function() {
     var DOMNode = virtDOM.findDOMNode(this);
     eventListener.off(DOMNode.childNodes[0], "submit", this.onSubmit);
 };
 
-TodoListPrototype.__onSubmit = function(e) {
+TodoFormPrototype.__onSubmit = function(e) {
     var DOMNode = virtDOM.findDOMNode(this).childNodes[0].childNodes[0],
         value = DOMNode.value;
 
@@ -49,7 +49,7 @@ TodoListPrototype.__onSubmit = function(e) {
     }
 };
 
-TodoListPrototype.render = function() {
+TodoFormPrototype.render = function() {
     return (
         virt.createView("div", {
                 className: "todo-form"

@@ -1,4 +1,4 @@
-var consts = require("virt/patches/consts"),
+var consts = require("virt/transaction/consts"),
     createDOMElement = require("./utils/create_dom_element"),
     renderString = require("./utils/render_string"),
     addDOMNode = require("./utils/add_dom_node"),

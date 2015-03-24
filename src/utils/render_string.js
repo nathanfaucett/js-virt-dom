@@ -1,5 +1,6 @@
 var virt = require("virt"),
     getViewKey = require("virt/utils/get_view_key"),
+    events = require("virt/events"),
 
     isArray = require("is_array"),
     map = require("map"),
@@ -7,7 +8,6 @@ var virt = require("virt"),
     isObject = require("is_object"),
     isNullOrUndefined = require("is_null_or_undefined"),
 
-    events = require("../events"),
     DOM_ID_NAME = require("../dom_id_name");
 
 

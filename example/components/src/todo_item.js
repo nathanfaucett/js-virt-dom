@@ -1,4 +1,4 @@
-var virt = require("../../../virt"),
+var virt = require("virt"),
     propTypes = require("prop_types");
 
 
