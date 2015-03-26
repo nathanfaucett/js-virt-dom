@@ -1,0 +1,11 @@
+{
+  "name": "test",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Nathan Faucett",
+  "dependencies": {
+    "environment": "nathanfaucett/environment",
+    "event_listener": "nathanfaucett/event_listener",
+    "react": "^0.13.1"
+  }
+}

@@ -1,6 +1,8 @@
 var DOM_ID_NAME = require("../dom_id_name"),
     nodeCache = require("./node_cache"),
 
+    applyProperties = require("../apply_properties"),
+
     virt = require("virt"),
     getViewKey = require("virt/utils/get_view_key");
 
@@ -13,13 +15,15 @@ var View = virt.View,
 module.exports = createDOMElement;
 
 
-function createDOMElement(view, id, ownerDocument, recurse) {
+function createDOMElement(view, id, ownerDocument, eventHandler, recurse) {
     var node, children, i, length, child;
 
     if (isPrimativeView(view)) {
         return ownerDocument.createTextNode(view);
     } else if (isView(view)) {
         node = ownerDocument.createElement(view.type);
+
+        applyProperties(node, id, view.props, undefined, eventHandler);
 
         node.setAttribute(DOM_ID_NAME, id);
         nodeCache[id] = node;

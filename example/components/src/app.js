@@ -14,6 +14,9 @@ virt.Component.extend(App, "App");
 App.prototype.render = function() {
     return (
         virt.createView("div", {
+                onClick: function(e) {
+                    console.log(e);
+                },
                 className: "app"
             },
             virt.createView(TodoForm),

@@ -1,6 +1,6 @@
 var virt = require("virt"),
     getViewKey = require("virt/utils/get_view_key"),
-    events = require("virt/events"),
+    events = require("virt/event/events"),
 
     isArray = require("is_array"),
     map = require("map"),

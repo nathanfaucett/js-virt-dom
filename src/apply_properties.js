@@ -2,33 +2,33 @@ var isString = require("is_string"),
     isObject = require("is_object"),
     isFunction = require("is_function"),
     getPrototypeOf = require("get_prototype_of"),
-    events = require("virt/events");
+    events = require("virt/event/events");
 
 
 module.exports = applyProperties;
 
 
-function applyProperties(node, props, previous) {
+function applyProperties(node, id, props, previous, eventHandler) {
     var propKey, propValue;
 
     for (propKey in props) {
         propValue = props[propKey];
 
         if (propValue == null && previous != null) {
-            removeProperty(node, previous, propKey);
+            removeProperty(node, id, previous, propKey, eventHandler);
         } else if (isObject(propValue) && !isFunction(propValue)) {
             applyObject(node, previous, propKey, propValue);
         } else if (propValue != null && (!previous || previous[propKey] !== propValue)) {
-            applyProperty(node, propKey, propValue);
+            applyProperty(node, id, propKey, propValue, eventHandler);
         }
     }
 }
 
-function applyProperty(node, propKey, propValue) {
+function applyProperty(node, id, propKey, propValue, eventHandler) {
     var eventType;
 
     if ((eventType = events[propKey]) !== undefined) {
-
+        eventHandler.on(id, eventType);
     } else if (propKey !== "className" && node.setAttribute) {
         node.setAttribute(propKey, propValue);
     } else {
@@ -36,7 +36,7 @@ function applyProperty(node, propKey, propValue) {
     }
 }
 
-function removeProperty(node, previous, propKey) {
+function removeProperty(node, id, previous, propKey, eventHandler) {
     var canRemoveAttribute = !!node.removeAttribute,
         previousValue = previous[propKey],
         keyName, eventType, style;
@@ -56,7 +56,7 @@ function removeProperty(node, previous, propKey) {
             style[keyName] = "";
         }
     } else if ((eventType = events[propKey]) !== undefined) {
-
+        eventHandler.off(id, eventType);
     } else {
         if (propKey !== "className" && canRemoveAttribute) {
             node.removeAttribute(propKey);
