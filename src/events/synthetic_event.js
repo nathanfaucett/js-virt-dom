@@ -1,6 +1,9 @@
 var inherits = require("inherits"),
     createPool = require("create_pool"),
-    getEvent = require("/getters/get_event");
+    getEvent = require("./getters/get_event");
+
+
+var SyntheticEventPrototype;
 
 
 module.exports = SyntheticEvent;
@@ -10,14 +13,7 @@ function SyntheticEvent(nativeEvent, eventHandler) {
     getEvent(this, nativeEvent, eventHandler);
 }
 createPool(SyntheticEvent);
-
-SyntheticEvent.create = function create(nativeTouch, eventHandler) {
-    return this.getPooled(nativeTouch, eventHandler);
-};
-
-SyntheticEvent.prototype.destroy = function() {
-    this.constructor.release(this);
-};
+SyntheticEventPrototype = SyntheticEvent.prototype;
 
 SyntheticEvent.extend = function(child) {
     inherits(child, this);
@@ -25,7 +21,29 @@ SyntheticEvent.extend = function(child) {
     return child;
 };
 
-SyntheticEvent.prototype.preventDefault = function() {
+SyntheticEvent.create = function create(nativeTouch, eventHandler) {
+    return this.getPooled(nativeTouch, eventHandler);
+};
+
+SyntheticEventPrototype.destructor = function() {
+    this.nativeEvent = null;
+    this.type = null;
+    this.target = null;
+    this.currentTarget = null;
+    this.eventPhase = null;
+    this.bubbles = null;
+    this.cancelable = null;
+    this.timeStamp = null;
+    this.defaultPrevented = null;
+    this.propagationStopped = null;
+    this.isTrusted = null;
+};
+
+SyntheticEventPrototype.destroy = function() {
+    this.constructor.release(this);
+};
+
+SyntheticEventPrototype.preventDefault = function() {
     var event = this.nativeEvent;
 
     if (event.preventDefault) {
@@ -37,7 +55,7 @@ SyntheticEvent.prototype.preventDefault = function() {
     this.defaultPrevented = true;
 };
 
-SyntheticEvent.prototype.stopPropagation = function() {
+SyntheticEventPrototype.stopPropagation = function() {
     var event = this.nativeEvent;
 
     if (event.stopPropagation) {
@@ -49,8 +67,8 @@ SyntheticEvent.prototype.stopPropagation = function() {
     this.propagationStopped = true;
 };
 
-SyntheticEvent.prototype.persist = function() {
+SyntheticEventPrototype.persist = function() {
     this.isPersistent = true;
 };
 
-SyntheticEvent.prototype.stopImmediatePropagation = SyntheticEvent.prototype.stopPropagation;
+SyntheticEventPrototype.stopImmediatePropagation = SyntheticEventPrototype.stopPropagation;

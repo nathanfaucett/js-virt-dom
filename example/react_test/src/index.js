@@ -3,7 +3,7 @@ var environment = require("environment"),
     React = require("react");
 
 
-var app = document.getElementById("app");
+var app;
 
 
 function renderSpan(content) {
@@ -52,5 +52,6 @@ function render() {
 }
 
 eventListener.on(environment.window, "load", function() {
+    app = document.getElementById("app");
     render();
 });

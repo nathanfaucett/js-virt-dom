@@ -19,19 +19,21 @@ function TodoForm(props, children) {
     this.onSubmit = function(e) {
         return _this.__onSubmit(e);
     };
+
+    this.onChange = function(e) {
+        return _this.__onChange(e);
+    };
 }
 virt.Component.extend(TodoForm, "TodoForm");
 
 TodoFormPrototype = TodoForm.prototype;
 
 TodoFormPrototype.componentDidMount = function() {
-    var DOMNode = virtDOM.findDOMNode(this);
-    eventListener.on(DOMNode.childNodes[0], "submit", this.onSubmit);
+
 };
 
 TodoFormPrototype.componentWillUnmount = function() {
-    var DOMNode = virtDOM.findDOMNode(this);
-    eventListener.off(DOMNode.childNodes[0], "submit", this.onSubmit);
+
 };
 
 TodoFormPrototype.__onSubmit = function(e) {
@@ -49,16 +51,24 @@ TodoFormPrototype.__onSubmit = function(e) {
     }
 };
 
+TodoFormPrototype.__onChange = function(e) {
+    console.log(e);
+};
+
 TodoFormPrototype.render = function() {
     return (
         virt.createView("div", {
                 className: "todo-form"
             },
-            virt.createView("form",
+            virt.createView("form", {
+                    onSubmit: this.onSubmit
+                },
                 virt.createView("input", {
                     type: "text",
                     name: "name",
-                    placeholder: "Todo"
+                    ref: "name",
+                    placeholder: "Todo",
+                    onChange: this.onChange
                 })
             )
         )

@@ -4,7 +4,7 @@ var environment = require("environment"),
     virtDOMRender = require("../../../src/index");
 
 
-var app = document.getElementById("app");
+var app;
 
 
 function renderSpan(content) {
@@ -53,5 +53,6 @@ function render() {
 }
 
 eventListener.on(environment.window, "load", function() {
+    app = document.getElementById("app");
     render();
 });

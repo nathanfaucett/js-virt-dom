@@ -15,9 +15,8 @@ function getEventModifierState(keyArg) {
 
     if (nativeEvent.getModifierState != null) {
         return nativeEvent.getModifierState(keyArg);
+    } else {
+        keyProp = modifierKeyToProp[keyArg];
+        return keyProp ? !!nativeEvent[keyProp] : false;
     }
-
-    keyProp = modifierKeyToProp[keyArg];
-
-    return keyProp ? !!nativeEvent[keyProp] : false;
 }

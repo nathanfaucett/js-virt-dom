@@ -15,7 +15,7 @@ var View = virt.View,
 module.exports = createDOMElement;
 
 
-function createDOMElement(view, id, ownerDocument, eventHandler, recurse) {
+function createDOMElement(view, id, ownerDocument, recurse) {
     var node, children, i, length, child;
 
     if (isPrimativeView(view)) {
@@ -23,7 +23,7 @@ function createDOMElement(view, id, ownerDocument, eventHandler, recurse) {
     } else if (isView(view)) {
         node = ownerDocument.createElement(view.type);
 
-        applyProperties(node, id, view.props, undefined, eventHandler);
+        applyProperties(node, id, view.props, undefined);
 
         node.setAttribute(DOM_ID_NAME, id);
         nodeCache[id] = node;

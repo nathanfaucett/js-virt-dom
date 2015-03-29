@@ -1,4 +1,4 @@
-var getWindow = require("../utils/get_window"),
+var getWindow = require("../../utils/get_window"),
     getEventTarget = require("./get_event_target");
 
 

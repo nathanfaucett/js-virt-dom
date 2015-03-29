@@ -1,7 +1,7 @@
 var virt = require("virt"),
     getViewKey = require("virt/utils/get_view_key"),
-    events = require("virt/event/events"),
 
+    isFunction = require("is_function"),
     isArray = require("is_array"),
     map = require("map"),
     isString = require("is_string"),
@@ -12,7 +12,7 @@ var virt = require("virt"),
 
 
 var View = virt.View,
-    isView = View.isView,
+    isPrimativeView = View.isPrimativeView,
 
     closedTags = {
         area: true,
@@ -48,7 +48,7 @@ module.exports = function(view, id) {
 function render(view, id) {
     var type;
 
-    if (!isView(view)) {
+    if (isPrimativeView(view)) {
         return view + "";
     } else {
         type = view.type;
@@ -63,14 +63,14 @@ function render(view, id) {
     }
 }
 
-function baseTagOptions(options) {
+function baseTagOptions(id, options) {
     var attributes = "",
         key, value;
 
     for (key in options) {
-        if (!isNullOrUndefined(options[key]) && events[key] === undefined) {
-            value = options[key];
+        value = options[key];
 
+        if (!isNullOrUndefined(value) && !isFunction(value)) {
             if (key === "className") {
                 key = "class";
             }
@@ -86,8 +86,8 @@ function baseTagOptions(options) {
     return attributes;
 }
 
-function tagOptions(options) {
-    var attributes = baseTagOptions(options);
+function tagOptions(id, options) {
+    var attributes = baseTagOptions(id, options);
     return attributes !== "" ? " " + attributes : attributes;
 }
 
@@ -96,12 +96,12 @@ function dataId(id) {
 }
 
 function closedTag(type, id, options) {
-    return "<" + type + (isObject(options) ? tagOptions(options) : "") + dataId(id) + "/>";
+    return "<" + type + (isObject(options) ? tagOptions(id, options) : "") + dataId(id) + "/>";
 }
 
 function contentTag(type, content, id, options) {
     return (
-        "<" + type + (isObject(options) ? tagOptions(options) : "") + dataId(id) + ">" +
+        "<" + type + (isObject(options) ? tagOptions(id, options) : "") + dataId(id) + ">" +
         (isString(content) ? content : "") +
         "</" + type + ">"
     );

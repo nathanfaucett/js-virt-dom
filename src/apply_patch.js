@@ -11,25 +11,25 @@ var consts = require("virt/transaction/consts"),
 module.exports = applyPatch;
 
 
-function applyPatch(patch, node, id, ownerDocument, eventHandler) {
+function applyPatch(patch, node, id, ownerDocument) {
     switch (patch.type) {
         case consts.REMOVE:
             remove(node, patch.childId, patch.index);
             break;
         case consts.INSERT:
-            insert(node, patch.childId, patch.index, patch.next, ownerDocument, eventHandler);
+            insert(node, patch.childId, patch.index, patch.next, ownerDocument);
             break;
         case consts.TEXT:
             text(node, patch.index, patch.next);
             break;
         case consts.REPLACE:
-            replace(node, patch.childId, patch.index, patch.next, ownerDocument, eventHandler);
+            replace(node, patch.childId, patch.index, patch.next, ownerDocument);
             break;
         case consts.ORDER:
             order(node, patch.order);
             break;
         case consts.PROPS:
-            applyProperties(node, patch.id, patch.next, patch.previous, eventHandler);
+            applyProperties(node, patch.id, patch.next, patch.previous);
             break;
     }
 }
@@ -41,16 +41,16 @@ function remove(parentNode, id, index) {
         node = parentNode.childNodes[index];
     } else {
         node = getNodeById(id);
+        removeDOMNodes(node.childNodes);
     }
 
     if (node) {
-        removeDOMNodes(node.childNodes);
         parentNode.removeChild(node);
     }
 }
 
-function insert(parentNode, id, index, view, ownerDocument, eventHandler) {
-    var node = createDOMElement(view, id, ownerDocument, eventHandler, false);
+function insert(parentNode, id, index, view, ownerDocument) {
+    var node = createDOMElement(view, id, ownerDocument, false);
 
     if (view.children) {
         node.innerHTML = renderString(view.children, id);
@@ -68,8 +68,8 @@ function text(parentNode, index, value) {
     }
 }
 
-function replace(parentNode, id, index, view, ownerDocument, eventHandler) {
-    var node = createDOMElement(view, id, ownerDocument, eventHandler, false);
+function replace(parentNode, id, index, view, ownerDocument) {
+    var node = createDOMElement(view, id, ownerDocument, false);
 
     if (view.children) {
         node.innerHTML = renderString(view.children, id);

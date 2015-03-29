@@ -1,7 +1,7 @@
 module.exports = getWheelEvent;
 
 
-function getWheelEvent(obj, nativeEvent, eventHandler) {
+function getWheelEvent(obj, nativeEvent) {
     obj.deltaX = getDeltaX(nativeEvent);
     obj.deltaY = getDeltaY(nativeEvent);
     obj.deltaZ = nativeEvent.deltaZ;

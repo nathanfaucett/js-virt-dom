@@ -5,9 +5,6 @@ var environment = require("environment"),
     App = require("./app");
 
 
-var app = document.getElementById("app");
-
-
 eventListener.on(environment.window, "load", function() {
-    virtDOM(virt.createView(App), app);
+    virtDOM(virt.createView(App), document.getElementById("app"));
 });

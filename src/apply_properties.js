@@ -1,45 +1,40 @@
 var isString = require("is_string"),
     isObject = require("is_object"),
     isFunction = require("is_function"),
-    getPrototypeOf = require("get_prototype_of"),
-    events = require("virt/event/events");
+    getPrototypeOf = require("get_prototype_of");
 
 
 module.exports = applyProperties;
 
 
-function applyProperties(node, id, props, previous, eventHandler) {
+function applyProperties(node, id, props, previous) {
     var propKey, propValue;
 
     for (propKey in props) {
-        propValue = props[propKey];
-
-        if (propValue == null && previous != null) {
-            removeProperty(node, id, previous, propKey, eventHandler);
-        } else if (isObject(propValue) && !isFunction(propValue)) {
-            applyObject(node, previous, propKey, propValue);
-        } else if (propValue != null && (!previous || previous[propKey] !== propValue)) {
-            applyProperty(node, id, propKey, propValue, eventHandler);
+        if (!isFunction((propValue = props[propKey]))) {
+            if (propValue == null && previous != null) {
+                removeProperty(node, id, previous, propKey);
+            } else if (isObject(propValue)) {
+                applyObject(node, previous, propKey, propValue);
+            } else if (propValue != null && (!previous || previous[propKey] !== propValue)) {
+                applyProperty(node, id, propKey, propValue);
+            }
         }
     }
 }
 
-function applyProperty(node, id, propKey, propValue, eventHandler) {
-    var eventType;
-
-    if ((eventType = events[propKey]) !== undefined) {
-        eventHandler.on(id, eventType);
-    } else if (propKey !== "className" && node.setAttribute) {
+function applyProperty(node, id, propKey, propValue) {
+    if (propKey !== "className" && node.setAttribute) {
         node.setAttribute(propKey, propValue);
     } else {
         node[propKey] = propValue;
     }
 }
 
-function removeProperty(node, id, previous, propKey, eventHandler) {
+function removeProperty(node, id, previous, propKey) {
     var canRemoveAttribute = !!node.removeAttribute,
         previousValue = previous[propKey],
-        keyName, eventType, style;
+        keyName, style;
 
     if (propKey === "attributes") {
         for (keyName in previousValue) {
@@ -55,8 +50,6 @@ function removeProperty(node, id, previous, propKey, eventHandler) {
         for (keyName in previousValue) {
             style[keyName] = "";
         }
-    } else if ((eventType = events[propKey]) !== undefined) {
-        eventHandler.off(id, eventType);
     } else {
         if (propKey !== "className" && canRemoveAttribute) {
             node.removeAttribute(propKey);
