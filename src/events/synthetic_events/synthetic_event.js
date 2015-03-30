@@ -1,6 +1,6 @@
 var inherits = require("inherits"),
     createPool = require("create_pool"),
-    getEvent = require("./getters/get_event");
+    getEvent = require("../getters/get_event");
 
 
 var SyntheticEventPrototype;

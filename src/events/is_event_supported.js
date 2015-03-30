@@ -4,6 +4,7 @@ var isFunction = require("is_function"),
 
 
 var document = environment.document,
+
     useHasFeature = (
         document.implementation &&
         document.implementation.hasFeature &&
@@ -19,20 +20,20 @@ function isEventSupported(eventNameSuffix, capture) {
 
     if (!environment.canUseDOM || capture && document.addEventListener == null) {
         return false;
+    } else {
+        eventName = "on" + eventNameSuffix;
+        isSupported = has(document, eventName);
+
+        if (!isSupported) {
+            element = document.createElement("div");
+            element.setAttribute(eventName, "return;");
+            isSupported = isFunction(element[eventName]);
+        }
+
+        if (!isSupported && useHasFeature && eventNameSuffix === "wheel") {
+            isSupported = document.implementation.hasFeature("Events.wheel", "3.0");
+        }
+
+        return isSupported;
     }
-
-    eventName = "on" + eventNameSuffix;
-    isSupported = has(document, eventName);
-
-    if (!isSupported) {
-        element = document.createElement("div");
-        element.setAttribute(eventName, "return;");
-        isSupported = isFunction(element[eventName]);
-    }
-
-    if (!isSupported && useHasFeature && eventNameSuffix === "wheel") {
-        isSupported = document.implementation.hasFeature("Events.wheel", "3.0");
-    }
-
-    return isSupported;
 }

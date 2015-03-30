@@ -11,19 +11,19 @@ var consts = require("virt/transaction/consts"),
 module.exports = applyPatch;
 
 
-function applyPatch(patch, node, id, ownerDocument) {
+function applyPatch(patch, node, id, document) {
     switch (patch.type) {
         case consts.REMOVE:
             remove(node, patch.childId, patch.index);
             break;
         case consts.INSERT:
-            insert(node, patch.childId, patch.index, patch.next, ownerDocument);
+            insert(node, patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
             text(node, patch.index, patch.next);
             break;
         case consts.REPLACE:
-            replace(node, patch.childId, patch.index, patch.next, ownerDocument);
+            replace(node, patch.childId, patch.index, patch.next, document);
             break;
         case consts.ORDER:
             order(node, patch.order);
@@ -49,8 +49,8 @@ function remove(parentNode, id, index) {
     }
 }
 
-function insert(parentNode, id, index, view, ownerDocument) {
-    var node = createDOMElement(view, id, ownerDocument, false);
+function insert(parentNode, id, index, view, document) {
+    var node = createDOMElement(view, id, document, false);
 
     if (view.children) {
         node.innerHTML = renderString(view.children, id);
@@ -68,8 +68,8 @@ function text(parentNode, index, value) {
     }
 }
 
-function replace(parentNode, id, index, view, ownerDocument) {
-    var node = createDOMElement(view, id, ownerDocument, false);
+function replace(parentNode, id, index, view, document) {
+    var node = createDOMElement(view, id, document, false);
 
     if (view.children) {
         node.innerHTML = renderString(view.children, id);

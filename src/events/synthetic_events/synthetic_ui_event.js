@@ -1,4 +1,4 @@
-var getUIEvent = require("./getters/get_ui_event"),
+var getUIEvent = require("../getters/get_ui_event"),
     SyntheticEvent = require("./synthetic_event");
 
 

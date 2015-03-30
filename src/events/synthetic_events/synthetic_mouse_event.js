@@ -1,4 +1,4 @@
-var getMouseEvent = require("./getters/get_mouse_event"),
+var getMouseEvent = require("../getters/get_mouse_event"),
     SyntheticUIEvent = require("./synthetic_ui_event");
 
 
@@ -18,7 +18,7 @@ function SyntheticMouseEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticMouseEvent);
 SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype;
 
-SyntheticMouseEventPrototype.getModifierState = require("./getters/get_event_modifier_state");
+SyntheticMouseEventPrototype.getModifierState = require("../getters/get_event_modifier_state");
 
 SyntheticMouseEventPrototype.destructor = function() {
 

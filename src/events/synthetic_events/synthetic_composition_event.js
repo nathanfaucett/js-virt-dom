@@ -1,4 +1,4 @@
-var getCompositionEvent = require("./getters/get_composition_event"),
+var getCompositionEvent = require("../getters/get_composition_event"),
     SyntheticEvent = require("./synthetic_event");
 
 

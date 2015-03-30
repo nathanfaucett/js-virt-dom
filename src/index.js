@@ -35,9 +35,11 @@ render.renderString = function(view, id) {
 
 render.unmount = function(containerDOMNode) {
     var rootDOMNode = getRootNodeInContainer(containerDOMNode),
-        id = getNodeId(rootDOMNode);
+        id = getNodeId(rootDOMNode),
+        root = rootsById[id];
 
-    if (id !== null) {
+    if (root !== undefined) {
+        root.render(undefined, id);
         delete rootsById[id];
     }
 };

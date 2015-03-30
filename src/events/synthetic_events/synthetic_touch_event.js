@@ -1,4 +1,4 @@
-var getTouchEvent = require("./getters/get_touch_event"),
+var getTouchEvent = require("../getters/get_touch_event"),
     SyntheticUIEvent = require("./synthetic_ui_event"),
     SyntheticTouch = require("./synthetic_touch");
 
@@ -23,7 +23,7 @@ function SyntheticTouchEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticTouchEvent);
 SyntheticTouchEventPrototype = SyntheticTouchEvent.prototype;
 
-SyntheticTouchEventPrototype.getModifierState = require("./getters/get_event_modifier_state");
+SyntheticTouchEventPrototype.getModifierState = require("../getters/get_event_modifier_state");
 
 SyntheticTouchEventPrototype.destructor = function() {
 

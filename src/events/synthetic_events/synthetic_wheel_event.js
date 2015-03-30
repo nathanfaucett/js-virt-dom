@@ -1,4 +1,4 @@
-var getWheelEvent = require("./getters/get_wheel_event"),
+var getWheelEvent = require("../getters/get_wheel_event"),
     SyntheticMouseEvent = require("./synthetic_mouse_event");
 
 

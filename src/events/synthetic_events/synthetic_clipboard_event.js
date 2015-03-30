@@ -1,4 +1,4 @@
-var getClipboardEvent = require("./getters/get_clipboard_event"),
+var getClipboardEvent = require("../getters/get_clipboard_event"),
     SyntheticEvent = require("./synthetic_event");
 
 

@@ -15,13 +15,13 @@ var View = virt.View,
 module.exports = createDOMElement;
 
 
-function createDOMElement(view, id, ownerDocument, recurse) {
+function createDOMElement(view, id, document, recurse) {
     var node, children, i, length, child;
 
     if (isPrimativeView(view)) {
-        return ownerDocument.createTextNode(view);
+        return document.createTextNode(view);
     } else if (isView(view)) {
-        node = ownerDocument.createElement(view.type);
+        node = document.createElement(view.type);
 
         applyProperties(node, id, view.props, undefined);
 
@@ -35,7 +35,7 @@ function createDOMElement(view, id, ownerDocument, recurse) {
 
             while (i++ < length) {
                 child = children[i];
-                node.appendChild(createDOMElement(child, id + "." + getViewKey(child, i), ownerDocument));
+                node.appendChild(createDOMElement(child, id + "." + getViewKey(child, i), document));
             }
         }
 

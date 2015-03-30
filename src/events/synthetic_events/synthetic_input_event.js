@@ -1,4 +1,4 @@
-var getInputEvent = require("./getters/get_input_event"),
+var getInputEvent = require("../getters/get_input_event"),
     SyntheticEvent = require("./synthetic_event");
 
 

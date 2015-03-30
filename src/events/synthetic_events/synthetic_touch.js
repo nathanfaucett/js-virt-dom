@@ -1,4 +1,4 @@
-var getTouch = require("./getters/get_touch"),
+var getTouch = require("../getters/get_touch"),
     createPool = require("create_pool");
 
 

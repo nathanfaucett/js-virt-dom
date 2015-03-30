@@ -1,4 +1,4 @@
-var getKeyboardEvent = require("./getters/get_keyboard_event"),
+var getKeyboardEvent = require("../getters/get_keyboard_event"),
     SyntheticUIEvent = require("./synthetic_ui_event");
 
 
@@ -18,7 +18,7 @@ function SynthetiKeyboardEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SynthetiKeyboardEvent);
 SynthetiKeyboardEventPrototype = SynthetiKeyboardEvent.prototype;
 
-SynthetiKeyboardEventPrototype.getModifierState = require("./getters/get_event_modifier_state");
+SynthetiKeyboardEventPrototype.getModifierState = require("../getters/get_event_modifier_state");
 
 SynthetiKeyboardEventPrototype.destructor = function() {
 

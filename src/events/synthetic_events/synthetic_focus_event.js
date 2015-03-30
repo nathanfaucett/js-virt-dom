@@ -1,4 +1,4 @@
-var getFocusEvent = require("./getters/get_focus_event"),
+var getFocusEvent = require("../getters/get_focus_event"),
     SyntheticUIEvent = require("./synthetic_ui_event");
 
 

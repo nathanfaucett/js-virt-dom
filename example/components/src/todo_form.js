@@ -16,12 +16,16 @@ function TodoForm(props, children) {
 
     virt.Component.call(this, props, children);
 
+    this.state = {
+        name: "Default State"
+    };
+
     this.onSubmit = function(e) {
         return _this.__onSubmit(e);
     };
 
-    this.onChange = function(e) {
-        return _this.__onChange(e);
+    this.onInput = function(e) {
+        return _this.__onInput(e);
     };
 }
 virt.Component.extend(TodoForm, "TodoForm");
@@ -37,7 +41,7 @@ TodoFormPrototype.componentWillUnmount = function() {
 };
 
 TodoFormPrototype.__onSubmit = function(e) {
-    var DOMNode = virtDOM.findDOMNode(this).childNodes[0].childNodes[0],
+    var DOMNode = virtDOM.findDOMNode(this.refs.name),
         value = DOMNode.value;
 
     e.preventDefault();
@@ -51,8 +55,13 @@ TodoFormPrototype.__onSubmit = function(e) {
     }
 };
 
-TodoFormPrototype.__onChange = function(e) {
-    console.log(e);
+TodoFormPrototype.__onInput = function() {
+    var DOMNode = virtDOM.findDOMNode(this.refs.name).value,
+        value = DOMNode.value;
+
+    this.setState({
+        name: value
+    });
 };
 
 TodoFormPrototype.render = function() {
@@ -68,7 +77,8 @@ TodoFormPrototype.render = function() {
                     name: "name",
                     ref: "name",
                     placeholder: "Todo",
-                    onChange: this.onChange
+                    value: this.state.name,
+                    onInput: this.onInput
                 })
             )
         )

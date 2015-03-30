@@ -4,30 +4,32 @@ var has = require("has");
 module.exports = applyEvents;
 
 
-function applyEvents(events, remove) {
+function applyEvents(events, eventHandler, remove) {
     if (remove !== true) {
-        addEvents(events);
+        onEvents(events, eventHandler);
     } else {
-        removeEvents(events);
+        offEvents(events, eventHandler);
     }
 }
 
-function addEvents(events) {
-    var id, type;
+function onEvents(events, eventHandler) {
+    var localHas = has,
+        id;
 
     for (id in events) {
-        if (has(events, id)) {
-            type = events[id];
+        if (localHas(events, id)) {
+            eventHandler.on(id, events[id]);
         }
     }
 }
 
-function removeEvents(events) {
-    var id, type;
+function offEvents(events, eventHandler) {
+    var localHas = has,
+        id;
 
     for (id in events) {
-        if (has(events, id)) {
-            type = events[id];
+        if (localHas(events, id)) {
+            eventHandler.off(id, events[id]);
         }
     }
 }

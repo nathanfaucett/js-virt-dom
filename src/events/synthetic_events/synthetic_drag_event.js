@@ -1,4 +1,4 @@
-var getDragEvent = require("./getters/get_drag_event"),
+var getDragEvent = require("../getters/get_drag_event"),
     SyntheticMouseEvent = require("./synthetic_mouse_event");
 
 

@@ -1,142 +1,157 @@
-var keys = require("keys"),
-    indexOf = require("index_of"),
+var has = require("has"),
     eventListener = require("event_listener"),
+    consts = require("./consts"),
+    eventClassMap = require("./event_class_map"),
+    isEventSupported = require("./is_event_supported");
 
-    getWindow = require("../utils/get_window"),
-    getNodeById = require("../utils/get_node_by_id");
 
-
-var EventHandlerPrototype,
-
-    captureEventHandlers = {
-        blur: true,
-        focus: true,
-        error: true,
-        load: true,
-        resize: true,
-        scroll: true
-    },
-
-    windowEventHandlers = {
-        devicemotion: true
-    };
+var topLevelTypes = consts.topLevelTypes,
+    topLevelToEvent = consts.topLevelToEvent,
+    EventHandlerPrototype;
 
 
 module.exports = EventHandler;
 
 
-function EventHandler(adaptor, document) {
-    var window = getWindow(document),
-        viewport = {
-            currentScrollLeft: 0,
-            currentScrollTop: 0
-        };
-
-    this.adaptor = adaptor;
+function EventHandler(document, window) {
+    var viewport = {
+        currentScrollLeft: 0,
+        currentScrollTop: 0
+    };
 
     this.document = document;
     this.window = window;
     this.viewport = viewport;
+    this.handleDispatch = null;
+
+    this.__isListening = {};
+    this.__listening = {};
+    this.__listeningCount = {};
 
     function callback() {
         viewport.currentScrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
         viewport.currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
     }
 
+    this.__callback = callback;
     eventListener.on(window, "scroll resize", callback);
-
-    this.__captured = {};
-    this.__handlers = {};
-    this.__count = {};
-    this.__ids = {};
 }
 
 EventHandlerPrototype = EventHandler.prototype;
 
-EventHandlerPrototype.on = function(id, type) {
-    var count = this.__count,
-        ids = this.__ids,
-        captured, eventList;
+EventHandlerPrototype.clear = function() {
+    var listening = this.__listening,
+        listeningCount = this.__listeningCount,
+        isListening = this.__isListening,
+        localHas = has,
+        type;
 
-    if (captureEventHandlers[type] === undefined) {
-        if (count[type] === undefined) {
-            this.__handlers[type] = createEventHandler(
-                this, type, windowEventHandlers[type] ? this.window : this.document, false
-            );
-            count[type] = 1;
-        } else {
-            count[type] += 1;
-        }
-    } else {
-        captured = this.__captured[type] || (this.__captured[type] = {});
-
-        if (captured[id] === undefined) {
-            captured[id] = createEventHandler(this, type, getNodeById(id), true);
+    for (type in listening) {
+        if (localHas(listening, type)) {
+            listening[type]();
+            delete isListening[type];
+            delete listeningCount[type];
+            delete listening[type];
         }
     }
 
-    eventList = ids[id] || (ids[id] = []);
-    eventList[eventList.length] = type;
+    eventListener.off(this.window, "scroll resize", this.__callback);
 };
 
-EventHandlerPrototype.off = function(id, type) {
-    var count = this.__count,
-        ids = this.__ids,
-        handlers, captured, eventList;
+EventHandlerPrototype.on = function(id, topLevelType) {
+    var document = this.document,
+        window = this.window,
+        isListening = this.__isListening,
+        listeningCount = this.__listeningCount;
 
-    if (captureEventHandlers[type] === undefined) {
-        if (count[type] !== undefined) {
-            count[type] -= 1;
-
-            if (count[type] === 0) {
-                handlers = this.__handlers;
-                eventListener.off(windowEventHandlers[type] ? this.window : this.document, type, handlers[type]);
-                delete handlers[type];
-                delete count[type];
+    if (isListening[topLevelType] === undefined) {
+        if (topLevelType === topLevelTypes.topWheel) {
+            if (isEventSupported("wheel")) {
+                this.trapBubbledEvent(topLevelTypes.topWheel, "wheel", document);
+            } else if (isEventSupported("mousewheel")) {
+                this.trapBubbledEvent(topLevelTypes.topWheel, "mousewheel", document);
+            } else {
+                this.trapBubbledEvent(topLevelTypes.topWheel, "DOMMouseScroll", document);
             }
-        }
-    } else {
-        captured = this.__captured[type];
+        } else if (topLevelType === topLevelTypes.topScroll) {
+            if (isEventSupported("scroll", true)) {
+                this.trapCapturedEvent(topLevelTypes.topScroll, "scroll", document);
+            } else {
+                this.trapBubbledEvent(topLevelTypes.topScroll, "scroll", window);
+            }
+        } else if (
+            topLevelType === topLevelTypes.topFocus ||
+            topLevelType === topLevelTypes.topBlur
+        ) {
+            if (isEventSupported("focus", true)) {
+                this.trapBubbledEvent(topLevelTypes.topFocus, "focus", document);
+                this.trapBubbledEvent(topLevelTypes.topBlur, "blur", document);
+            } else if (isEventSupported("focusin")) {
+                this.trapBubbledEvent(topLevelTypes.topFocus, "focusin", document);
+                this.trapBubbledEvent(topLevelTypes.topBlur, "focusout", document);
+            }
 
-        if (captured !== undefined && captured[id] !== undefined) {
-            eventListener.off(getNodeById(id), type, captured[id]);
-            delete captured[id];
+            isListening[topLevelTypes.topFocus] = true;
+            isListening[topLevelTypes.topBlur] = true;
+        } else {
+            this.trapBubbledEvent(topLevelType, topLevelToEvent[topLevelType], document);
         }
+
+        isListening[topLevelType] = true;
     }
 
-    eventList = ids[id];
+    listeningCount[topLevelType] = (listeningCount[topLevelType] || 0) + 1;
+};
 
-    if (eventList !== undefined) {
-        eventList.splice(indexOf(eventList, type), 1);
+EventHandlerPrototype.off = function(id, topLevelType) {
+    var listening = this.__listening,
+        listeningCount = this.__listeningCount;
 
-        if (eventList.length === 0) {
-            delete ids[id];
-        }
+    listeningCount[topLevelType] -= 1;
+
+    if (listeningCount[topLevelType] <= 0) {
+        delete listeningCount[topLevelType];
+        listening[topLevelType]();
+        delete listening[topLevelType];
     }
 };
 
-EventHandlerPrototype.allOff = function() {
-    var ids = keys(this.__ids),
-        i = -1,
-        il = ids.length - 1;
+EventHandlerPrototype.trapBubbledEvent = function(topType, type, element) {
+    var _this = this,
+        listening = this.__listening;
 
-    while (i++ < il) {
-        console.log(ids[i]);
+    function handler(nativeEvent) {
+        _this.dispatchEvent(topType, nativeEvent);
     }
+
+    eventListener.on(element, type, handler);
+
+    function removeBubbledEvent() {
+        eventListener.off(element, type, handler);
+    }
+    listening[topType] = removeBubbledEvent;
+
+    return removeBubbledEvent;
 };
 
-function createEventHandler(_this, type, element, capture) {
-    var adaptor = _this.adaptor;
+EventHandlerPrototype.trapCapturedEvent = function(topType, type, element) {
+    var _this = this,
+        listening = this.__listening;
 
-    function handler(e) {
-        adaptor.emitEvent(type, e);
+    function handler(nativeEvent) {
+        _this.dispatchEvent(topType, nativeEvent);
     }
 
-    if (capture) {
-        eventListener.capture(element, type, handler);
-    } else {
-        eventListener.on(element, type, handler);
-    }
+    eventListener.capture(element, type, handler);
 
-    return handler;
-}
+    function removeCapturedEvent() {
+        eventListener.off(element, type, handler);
+    }
+    listening[topType] = removeCapturedEvent;
+
+    return removeCapturedEvent;
+};
+
+EventHandlerPrototype.dispatchEvent = function(topType, nativeEvent) {
+    this.handleDispatch(topType, eventClassMap[topType].getPooled(nativeEvent, this), nativeEvent);
+};
