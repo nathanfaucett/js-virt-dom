@@ -20,13 +20,20 @@ function TodoList(props, children) {
         list: []
     };
 
-    this.onChange = function() {
-        _this.__onChange();
+    this.onChange = function(e) {
+        return _this.__onChange(e);
     };
 }
 virt.Component.extend(TodoList, "TodoList");
 
 TodoListPrototype = TodoList.prototype;
+
+TodoListPrototype.onDestroy = function(id) {
+    dispatcher.handleViewAction({
+        actionType: TodoStore.consts.TODO_DESTROY,
+        id: id
+    });
+};
 
 TodoListPrototype.__onChange = function() {
     var _this = this;
@@ -48,6 +55,8 @@ TodoListPrototype.componentWillUnmount = function() {
 };
 
 TodoListPrototype.render = function() {
+    var _this = this;
+
     return (
         virt.createView("div", {
                 className: "todo-list"
@@ -56,6 +65,9 @@ TodoListPrototype.render = function() {
                 return virt.createView(TodoItem, {
                     key: item.id,
                     id: item.id,
+                    onDestroy: function() {
+                        _this.onDestroy(item.id);
+                    },
                     text: item.text
                 });
             })

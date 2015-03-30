@@ -24,6 +24,8 @@ function EventHandler(document, window) {
     this.viewport = viewport;
     this.handleDispatch = null;
 
+    console.log(this);
+
     this.__isListening = {};
     this.__listening = {};
     this.__listeningCount = {};
@@ -44,14 +46,14 @@ EventHandlerPrototype.clear = function() {
         listeningCount = this.__listeningCount,
         isListening = this.__isListening,
         localHas = has,
-        type;
+        topLevelType;
 
-    for (type in listening) {
-        if (localHas(listening, type)) {
-            listening[type]();
-            delete isListening[type];
-            delete listeningCount[type];
-            delete listening[type];
+    for (topLevelType in listening) {
+        if (localHas(listening, topLevelType)) {
+            listening[topLevelType]();
+            delete isListening[topLevelType];
+            delete listeningCount[topLevelType];
+            delete listening[topLevelType];
         }
     }
 
@@ -64,7 +66,7 @@ EventHandlerPrototype.on = function(id, topLevelType) {
         isListening = this.__isListening,
         listeningCount = this.__listeningCount;
 
-    if (isListening[topLevelType] === undefined) {
+    if (!isListening[topLevelType]) {
         if (topLevelType === topLevelTypes.topWheel) {
             if (isEventSupported("wheel")) {
                 this.trapBubbledEvent(topLevelTypes.topWheel, "wheel", document);
@@ -105,23 +107,26 @@ EventHandlerPrototype.on = function(id, topLevelType) {
 
 EventHandlerPrototype.off = function(id, topLevelType) {
     var listening = this.__listening,
+        isListening = this.__isListening,
         listeningCount = this.__listeningCount;
 
-    listeningCount[topLevelType] -= 1;
+    if (listeningCount[topLevelType] > 0) {
+        listeningCount[topLevelType] -= 1;
 
-    if (listeningCount[topLevelType] <= 0) {
-        delete listeningCount[topLevelType];
-        listening[topLevelType]();
-        delete listening[topLevelType];
+        if (listeningCount[topLevelType] === 0) {
+            isListening[topLevelType] = false;
+            listening[topLevelType]();
+            delete listening[topLevelType];
+        }
     }
 };
 
-EventHandlerPrototype.trapBubbledEvent = function(topType, type, element) {
+EventHandlerPrototype.trapBubbledEvent = function(topLevelType, type, element) {
     var _this = this,
         listening = this.__listening;
 
     function handler(nativeEvent) {
-        _this.dispatchEvent(topType, nativeEvent);
+        _this.dispatchEvent(topLevelType, nativeEvent);
     }
 
     eventListener.on(element, type, handler);
@@ -129,17 +134,17 @@ EventHandlerPrototype.trapBubbledEvent = function(topType, type, element) {
     function removeBubbledEvent() {
         eventListener.off(element, type, handler);
     }
-    listening[topType] = removeBubbledEvent;
+    listening[topLevelType] = removeBubbledEvent;
 
     return removeBubbledEvent;
 };
 
-EventHandlerPrototype.trapCapturedEvent = function(topType, type, element) {
+EventHandlerPrototype.trapCapturedEvent = function(topLevelType, type, element) {
     var _this = this,
         listening = this.__listening;
 
     function handler(nativeEvent) {
-        _this.dispatchEvent(topType, nativeEvent);
+        _this.dispatchEvent(topLevelType, nativeEvent);
     }
 
     eventListener.capture(element, type, handler);
@@ -147,11 +152,11 @@ EventHandlerPrototype.trapCapturedEvent = function(topType, type, element) {
     function removeCapturedEvent() {
         eventListener.off(element, type, handler);
     }
-    listening[topType] = removeCapturedEvent;
+    listening[topLevelType] = removeCapturedEvent;
 
     return removeCapturedEvent;
 };
 
-EventHandlerPrototype.dispatchEvent = function(topType, nativeEvent) {
-    this.handleDispatch(topType, eventClassMap[topType].getPooled(nativeEvent, this), nativeEvent);
+EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
+    this.handleDispatch(topLevelType, eventClassMap[topLevelType].getPooled(nativeEvent, this), nativeEvent);
 };

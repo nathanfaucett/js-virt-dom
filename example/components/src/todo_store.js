@@ -10,7 +10,7 @@ var TodoStore = module.exports = new EventEmitter(-1),
 TodoStore.consts = {
     TODO_CREATE: "TODO_CREATE",
     TODO_UPDATE: "TODO_UPDATE",
-    TODO_DELETE: "TODO_DELETE"
+    TODO_DESTROY: "TODO_DESTROY"
 };
 
 
@@ -78,7 +78,7 @@ TodoStore.id = dispatcher.register(function(payload) {
                 TodoStore.emitChange();
             });
             break;
-        case TodoStore.consts.TODO_DELETE:
+        case TodoStore.consts.TODO_DESTROY:
             destroy(action.id, function() {
                 TodoStore.emitChange();
             });

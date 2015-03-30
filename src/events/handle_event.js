@@ -7,9 +7,9 @@ var has = require("has"),
 module.exports = handleEvent;
 
 
-function handleEvent(topType, event, nativeEvent, events) {
+function handleEvent(topLevelType, event, nativeEvent, events) {
     var path = getPath(nativeEvent),
-        eventIds = events[topType],
+        eventIds = events[topLevelType],
         elements = getElements(eventIds),
         id, element;
 

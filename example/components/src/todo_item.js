@@ -17,6 +17,7 @@ TodoItemPrototype = TodoItem.prototype;
 
 TodoItem.propTypes = {
     id: propTypes.number.isRequired,
+    onDestroy: propTypes.func.isRequired,
     text: propTypes.string.isRequired
 };
 
@@ -26,7 +27,12 @@ TodoItemPrototype.render = function() {
                 id: this.props.id,
                 className: "todo-item"
             },
-            virt.createView("p", this.props.text)
+            virt.createView("p",
+                this.props.text,
+                virt.createView("span", {
+                    onClick: this.props.onDestroy
+                }, " x ")
+            )
         )
     );
 };
