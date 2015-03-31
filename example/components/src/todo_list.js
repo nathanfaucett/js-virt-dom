@@ -11,10 +11,10 @@ var TodoListPrototype;
 module.exports = TodoList;
 
 
-function TodoList(props, children) {
+function TodoList(props, children, context) {
     var _this = this;
 
-    virt.Component.call(this, props, children);
+    virt.Component.call(this, props, children, context);
 
     this.state = {
         list: []

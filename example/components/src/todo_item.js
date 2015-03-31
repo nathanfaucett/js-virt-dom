@@ -8,8 +8,8 @@ var TodoItemPrototype;
 module.exports = TodoItem;
 
 
-function TodoItem(props, children) {
-    virt.Component.call(this, props, children);
+function TodoItem(props, children, context) {
+    virt.Component.call(this, props, children, context);
 }
 virt.Component.extend(TodoItem, "TodoItem");
 
@@ -19,6 +19,10 @@ TodoItem.propTypes = {
     id: propTypes.number.isRequired,
     onDestroy: propTypes.func.isRequired,
     text: propTypes.string.isRequired
+};
+
+TodoItem.contextTypes = {
+    ctx: propTypes.object.isRequired
 };
 
 TodoItemPrototype.render = function() {

@@ -24,8 +24,6 @@ function EventHandler(document, window) {
     this.viewport = viewport;
     this.handleDispatch = null;
 
-    console.log(this);
-
     this.__isListening = {};
     this.__listening = {};
     this.__listeningCount = {};

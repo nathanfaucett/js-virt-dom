@@ -11,10 +11,10 @@ var TodoFormPrototype;
 module.exports = TodoForm;
 
 
-function TodoForm(props, children) {
+function TodoForm(props, children, context) {
     var _this = this;
 
-    virt.Component.call(this, props, children);
+    virt.Component.call(this, props, children, context);
 
     this.state = {
         name: "Default State"
