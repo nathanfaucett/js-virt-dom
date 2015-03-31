@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "test": "comn -f example/test/src/index.js -o example/test/index.js",
+    "replace": "comn -f example/replace/src/index.js -o example/replace/index.js",
     "react_test": "comn -f example/react_test/src/index.js -o example/react_test/index.js",
     "components": "comn -f example/components/src/index.js -o example/components/index.js"
   },

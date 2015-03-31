@@ -766,10 +766,13 @@ module.exports = {
 },
 function(require, exports, module, global) {
 
+var isFunction = require(5);
+
+
 var isNode;
 
 
-if (typeof(Node) !== "undefined") {
+if (typeof(Node) !== "undefined" && isFunction(Node)) {
     isNode = function isNode(obj) {
         return obj instanceof Node;
     };
@@ -5389,8 +5392,9 @@ function(require, exports, module, global) {
 
 var virt = require(8),
     propTypes = require(110),
-    TodoList = require(113),
-    TodoForm = require(119);
+    dispatcher = require(113),
+
+    views = require(115);
 
 
 var AppPrototype;
@@ -5401,12 +5405,32 @@ module.exports = App;
 
 function App(props, children, context) {
     virt.Component.call(this, props, children, context);
+
+    this.state = {
+        viewState: "layout_one",
+        render: views.layout_one
+    };
 }
 virt.Component.extend(App, "App");
 AppPrototype = App.prototype;
 
 App.childContextTypes = {
     ctx: propTypes.object
+};
+
+AppPrototype.componentDidMount = function() {
+    var _this = this;
+
+    dispatcher.register(function(payload) {
+        var action = payload.action;
+
+        if (action.actionType === "ROUTE_STATE_CHANGE") {
+            _this.setState({
+                viewState: action.state,
+                render: views[action.state]
+            });
+        }
+    });
 };
 
 AppPrototype.getChildContext = function() {
@@ -5422,8 +5446,7 @@ AppPrototype.render = function() {
         virt.createView("div", {
                 className: "app"
             },
-            virt.createView(TodoForm),
-            virt.createView(TodoList)
+            this.state.render()
         )
     );
 };
@@ -5653,103 +5676,20 @@ emptyFunction.thatReturnsArgument = function(argument) {
 },
 function(require, exports, module, global) {
 
-var virt = require(8),
-    map = require(19),
-    dispatcher = require(114),
-    TodoStore = require(116),
-    TodoItem = require(118);
+var EventEmitter = require(114);
 
 
-var TodoListPrototype;
-
-
-module.exports = TodoList;
-
-
-function TodoList(props, children, context) {
-    var _this = this;
-
-    virt.Component.call(this, props, children, context);
-
-    this.state = {
-        list: []
-    };
-
-    this.onChange = function(e) {
-        return _this.__onChange(e);
-    };
-}
-virt.Component.extend(TodoList, "TodoList");
-
-TodoListPrototype = TodoList.prototype;
-
-TodoListPrototype.onDestroy = function(id) {
-    dispatcher.handleViewAction({
-        actionType: TodoStore.consts.TODO_DESTROY,
-        id: id
-    });
-};
-
-TodoListPrototype.__onChange = function() {
-    var _this = this;
-
-    TodoStore.all(function(err, todos) {
-        _this.setState({
-            list: todos
-        });
-    });
-};
-
-TodoListPrototype.componentDidMount = function() {
-    TodoStore.addChangeListener(this.onChange);
-    this.onChange();
-};
-
-TodoListPrototype.componentWillUnmount = function() {
-    TodoStore.removeChangeListener(this.onChange);
-};
-
-TodoListPrototype.render = function() {
-    var _this = this;
-
-    return (
-        virt.createView("div", {
-                className: "todo-list"
-            },
-            map(this.state.list, function(item) {
-                return virt.createView(TodoItem, {
-                    key: item.id,
-                    id: item.id,
-                    onDestroy: function() {
-                        _this.onDestroy(item.id);
-                    },
-                    text: item.text
-                });
-            })
-        )
-    );
-};
-
-
-},
-function(require, exports, module, global) {
-
-var EventEmitter = require(115);
-
-
-var dispatcher = module.exports = new EventEmitter(-1),
-    DISPATCH = "DISPATCH",
-    VIEW_ACTION = "VIEW_ACTION";
+var dispatcher = module.exports = new EventEmitter(-1);
 
 
 dispatcher.register = function(callback) {
-    dispatcher.on(DISPATCH, callback);
+    dispatcher.on("dispatch", callback);
     return callback;
 };
 
 dispatcher.handleViewAction = function(action) {
-    dispatcher.emit(DISPATCH, {
-        type: VIEW_ACTION,
+    dispatcher.emit("dispatch", {
+        type: "VIEW_ACTION",
         action: action
     });
 };
@@ -5761,7 +5701,6 @@ function(require, exports, module, global) {
 var isFunction = require(5),
     inherits = require(49),
     fastSlice = require(17),
-    defineProperty = require(29),
     keys = require(20);
 
 
@@ -5798,22 +5737,22 @@ EventEmitter.prototype.once = function(name, listener) {
     var _this = this;
 
     function once() {
-        var length = arguments.length;
 
         _this.off(name, once);
 
-        if (length === 0) {
-            return listener();
-        } else if (length === 1) {
-            return listener(arguments[0]);
-        } else if (length === 2) {
-            return listener(arguments[0], arguments[1]);
-        } else if (length === 3) {
-            return listener(arguments[0], arguments[1], arguments[2]);
-        } else if (length === 4) {
-            return listener(arguments[0], arguments[1], arguments[2], arguments[3]);
-        } else {
-            return listener.apply(null, arguments);
+        switch (arguments.length) {
+            case 0:
+                return listener();
+            case 1:
+                return listener(arguments[0]);
+            case 2:
+                return listener(arguments[0], arguments[1]);
+            case 3:
+                return listener(arguments[0], arguments[1], arguments[2]);
+            case 4:
+                return listener(arguments[0], arguments[1], arguments[2], arguments[3]);
+            default:
+                return listener.apply(null, arguments);
         }
     }
 
@@ -5904,7 +5843,7 @@ EventEmitter.prototype.removeAllListeners = function() {
 };
 
 function emit(eventList, args) {
-    var a1, a2, a3, a4,
+    var a1, a2, a3, a4, a5,
         length = eventList.length - 1,
         i = -1,
         event;
@@ -5955,6 +5894,18 @@ function emit(eventList, args) {
                 }
             }
             break;
+        case 5:
+            a1 = args[0];
+            a2 = args[1];
+            a3 = args[2];
+            a4 = args[3];
+            a5 = args[4];
+            while (i++ < length) {
+                if ((event = eventList[i])) {
+                    event(a1, a2, a3, a4, a5);
+                }
+            }
+            break;
         default:
             while (i++ < length) {
                 if ((event = eventList[i])) {
@@ -5981,10 +5932,44 @@ EventEmitter.prototype.emit = function(name) {
     return this.emitArgs(name, fastSlice(arguments, 1));
 };
 
+function createFunctionCaller(args) {
+    switch (args.length) {
+        case 0:
+            return function functionCaller(fn) {
+                return fn();
+            };
+        case 1:
+            return function functionCaller(fn) {
+                return fn(args[0]);
+            };
+        case 2:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1]);
+            };
+        case 3:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2]);
+            };
+        case 4:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2], args[3]);
+            };
+        case 5:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2], args[3], args[4]);
+            };
+        default:
+            return function functionCaller(fn) {
+                return fn.apply(null, args);
+            };
+    }
+}
+
 function emitAsync(eventList, args, callback) {
     var length = eventList.length,
         index = 0,
-        called = false;
+        called = false,
+        functionCaller;
 
     function next(err) {
         if (called !== true) {
@@ -5992,12 +5977,13 @@ function emitAsync(eventList, args, callback) {
                 called = true;
                 callback(err);
             } else {
-                eventList[index++].apply(null, args);
+                functionCaller(eventList[index++]);
             }
         }
     }
 
     args[args.length] = next;
+    functionCaller = createFunctionCaller(args);
     next();
 }
 
@@ -6042,10 +6028,10 @@ EventEmitter.prototype.setMaxListeners = function(value) {
 };
 
 
-defineConstructorProperty(EventEmitter, "defaultMaxListeners", 10);
+inherits.defineProperty(EventEmitter, "defaultMaxListeners", 10);
 
 
-defineConstructorProperty(EventEmitter, "listeners", function(obj, name) {
+inherits.defineProperty(EventEmitter, "listeners", function(obj, name) {
     var eventList;
 
     if (obj == null) {
@@ -6056,7 +6042,7 @@ defineConstructorProperty(EventEmitter, "listeners", function(obj, name) {
     return eventList ? eventList.slice() : [];
 });
 
-defineConstructorProperty(EventEmitter, "listenerCount", function(obj, name) {
+inherits.defineProperty(EventEmitter, "listenerCount", function(obj, name) {
     var eventList;
 
     if (obj == null) {
@@ -6067,7 +6053,7 @@ defineConstructorProperty(EventEmitter, "listenerCount", function(obj, name) {
     return eventList ? eventList.length : 0;
 });
 
-defineConstructorProperty(EventEmitter, "setMaxListeners", function(value) {
+inherits.defineProperty(EventEmitter, "setMaxListeners", function(value) {
     if ((value = +value) !== value) {
         throw new TypeError("EventEmitter.setMaxListeners(value) value must be a number");
     }
@@ -6082,182 +6068,79 @@ EventEmitter.extend = function(child) {
 };
 
 
-function defineConstructorProperty(object, name, value) {
-    defineProperty(object, name, {
-        configurable: true,
-        enumerable: false,
-        writable: true,
-        value: value
-    });
-}
-
-
 module.exports = EventEmitter;
 
 
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(115),
-    values = require(117),
-    dispatcher = require(114);
+var virt = require(8),
+    LayoutOne = require(116),
+    LayoutTwo = require(117);
 
 
-var TodoStore = module.exports = new EventEmitter(-1),
-    CHANGE = "CHANGE";
+var views = exports;
 
 
-TodoStore.consts = {
-    TODO_CREATE: "TODO_CREATE",
-    TODO_UPDATE: "TODO_UPDATE",
-    TODO_DESTROY: "TODO_DESTROY"
+views.layout_one = function() {
+    return virt.createView(LayoutOne);
 };
 
-
-var _todoId = 1,
-    _todos = {};
-
-
-function create(text, callback) {
-    var id = _todoId++,
-        todo = _todos[id] = {
-            id: id,
-            text: text
-        };
-
-    callback(undefined, todo);
-}
-
-function update(id, text, callback) {
-    var todo = _todos[id];
-
-    todo.text = text;
-
-    callback(undefined, todo);
-}
-
-function destroy(id, callback) {
-    var todo = _todos[id];
-
-    delete _todos[id];
-
-    callback(undefined, todo);
-}
-
-TodoStore.all = function(callback) {
-    callback(undefined, values(_todos));
+views.layout_two = function() {
+    return virt.createView(LayoutTwo);
 };
-
-TodoStore.show = function(id, callback) {
-    callback(undefined, _todos[id]);
-};
-
-TodoStore.addChangeListener = function(callback) {
-    TodoStore.on(CHANGE, callback);
-};
-
-TodoStore.removeChangeListener = function(callback) {
-    TodoStore.off(CHANGE, callback);
-};
-
-TodoStore.emitChange = function() {
-    TodoStore.emit(CHANGE);
-};
-
-TodoStore.id = dispatcher.register(function(payload) {
-    var action = payload.action;
-
-    switch (action.actionType) {
-        case TodoStore.consts.TODO_CREATE:
-            create(action.text, function() {
-                TodoStore.emitChange();
-            });
-            break;
-        case TodoStore.consts.TODO_UPDATE:
-            update(action.id, action.text, function() {
-                TodoStore.emitChange();
-            });
-            break;
-        case TodoStore.consts.TODO_DESTROY:
-            destroy(action.id, function() {
-                TodoStore.emitChange();
-            });
-            break;
-    }
-});
-
-
-},
-function(require, exports, module, global) {
-
-var keys = require(20);
-
-
-function objectValues(object, objectKeys) {
-    var length = objectKeys.length,
-        results = new Array(length),
-        i = -1,
-        il = length - 1;
-
-    while (i++ < il) {
-        results[i] = object[objectKeys[i]];
-    }
-
-    return results;
-}
-
-
-function values(object) {
-    return objectValues(object, keys(object));
-}
-
-values.objectValues = objectValues;
-
-
-module.exports = values;
 
 
 },
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(110);
+    propTypes = require(110),
+    dispatcher = require(113);
 
 
-var TodoItemPrototype;
+var LayoutOnePrototype;
 
 
-module.exports = TodoItem;
+module.exports = LayoutOne;
 
 
-function TodoItem(props, children, context) {
+function LayoutOne(props, children, context) {
+    var _this = this;
+
     virt.Component.call(this, props, children, context);
+
+    this.onClick = function(e) {
+        return _this.__onClick(e);
+    };
 }
-virt.Component.extend(TodoItem, "TodoItem");
+virt.Component.extend(LayoutOne, "LayoutOne");
+LayoutOnePrototype = LayoutOne.prototype;
 
-TodoItemPrototype = TodoItem.prototype;
-
-TodoItem.propTypes = {
-    id: propTypes.number.isRequired,
-    onDestroy: propTypes.func.isRequired,
-    text: propTypes.string.isRequired
+LayoutOne.contextTypes = {
+    ctx: propTypes.object
 };
 
-TodoItem.contextTypes = {
-    ctx: propTypes.object.isRequired
+LayoutOnePrototype.__onClick = function() {
+    dispatcher.handleViewAction({
+        actionType: "ROUTE_STATE_CHANGE",
+        state: "layout_two"
+    });
 };
 
-TodoItemPrototype.render = function() {
+LayoutOnePrototype.render = function() {
     return (
         virt.createView("div", {
-                id: this.props.id,
-                className: "todo-item"
+                className: "layout-one"
             },
-            virt.createView("p",
-                this.props.text,
-                virt.createView("span", {
-                    onClick: this.props.onDestroy
-                }, " x ")
+            virt.createView("div", {
+                    className: "wrap"
+                },
+                virt.createView("h1", "Layout One"),
+                virt.createView("a", {
+                    href: "#",
+                    onClick: this.onClick
+                }, "View Layout Two")
             )
         )
     );
@@ -6268,87 +6151,52 @@ TodoItemPrototype.render = function() {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    virtDOM = require(57),
-    eventListener = require(2),
-    dispatcher = require(114),
-    TodoStore = require(116);
+    propTypes = require(110),
+    dispatcher = require(113);
 
 
-var TodoFormPrototype;
+var LayoutTwoPrototype;
 
 
-module.exports = TodoForm;
+module.exports = LayoutTwo;
 
 
-function TodoForm(props, children, context) {
+function LayoutTwo(props, children, context) {
     var _this = this;
 
     virt.Component.call(this, props, children, context);
 
-    this.state = {
-        name: "Default State"
-    };
-
-    this.onSubmit = function(e) {
-        return _this.__onSubmit(e);
-    };
-
-    this.onInput = function(e) {
-        return _this.__onInput(e);
+    this.onClick = function(e) {
+        return _this.__onClick(e);
     };
 }
-virt.Component.extend(TodoForm, "TodoForm");
+virt.Component.extend(LayoutTwo, "LayoutTwo");
+LayoutTwoPrototype = LayoutTwo.prototype;
 
-TodoFormPrototype = TodoForm.prototype;
-
-TodoFormPrototype.componentDidMount = function() {
-
+LayoutTwo.contextTypes = {
+    ctx: propTypes.object
 };
 
-TodoFormPrototype.componentWillUnmount = function() {
-
-};
-
-TodoFormPrototype.__onSubmit = function(e) {
-    var DOMNode = virtDOM.findDOMNode(this.refs.name),
-        value = DOMNode.value;
-
-    e.preventDefault();
-
-    if (value) {
-        dispatcher.handleViewAction({
-            actionType: TodoStore.consts.TODO_CREATE,
-            text: value
-        });
-        DOMNode.value = "";
-    }
-};
-
-TodoFormPrototype.__onInput = function() {
-    var DOMNode = virtDOM.findDOMNode(this.refs.name).value,
-        value = DOMNode.value;
-
-    this.setState({
-        name: value
+LayoutTwoPrototype.__onClick = function() {
+    dispatcher.handleViewAction({
+        actionType: "ROUTE_STATE_CHANGE",
+        state: "layout_one"
     });
 };
 
-TodoFormPrototype.render = function() {
+LayoutTwoPrototype.render = function() {
     return (
         virt.createView("div", {
-                className: "todo-form"
+                className: "layout-two"
             },
-            virt.createView("form", {
-                    onSubmit: this.onSubmit
+            virt.createView("div", {
+                    className: "wrap"
                 },
-                virt.createView("input", {
-                    type: "text",
-                    name: "name",
-                    ref: "name",
-                    placeholder: "Todo",
-                    value: this.state.name,
-                    onInput: this.onInput
-                })
+                virt.createView("h1", "Layout Two"),
+                virt.createView("a", {
+                    href: "#",
+                    onClick: this.onClick
+                }, "View Layout One")
             )
         )
     );
