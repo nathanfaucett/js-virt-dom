@@ -41,8 +41,7 @@ AdaptorPrototype.handle = function(transaction, callback) {
         document = this.document;
 
     applyPatches(transaction.patches, containerDOMNode, document);
-    applyEvents(transaction.events, eventHandler, false);
-    applyEvents(transaction.eventsRemove, eventHandler, true);
+    applyEvents(transaction.events, eventHandler);
     applyPatches(transaction.removes, containerDOMNode, document);
 
     callback();

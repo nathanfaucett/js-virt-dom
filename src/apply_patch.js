@@ -16,6 +16,9 @@ function applyPatch(patch, node, id, document) {
         case consts.REMOVE:
             remove(node, patch.childId, patch.index);
             break;
+        case consts.MOUNT:
+            mount(node, patch.next, id);
+            break;
         case consts.INSERT:
             insert(node, patch.childId, patch.index, patch.next, document);
             break;
@@ -44,9 +47,16 @@ function remove(parentNode, id, index) {
         removeDOMNodes(node.childNodes);
     }
 
-    if (node) {
+    if (parentNode !== node) {
         parentNode.removeChild(node);
+    } else {
+        node.parentNode.removeChild(node);
     }
+}
+
+function mount(parentNode, view, id) {
+    parentNode.innerHTML = renderString(view, id);
+    addDOMNodes(parentNode.childNodes);
 }
 
 function insert(parentNode, id, index, view, document) {

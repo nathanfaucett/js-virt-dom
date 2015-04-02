@@ -27,12 +27,14 @@ TodoItem.contextTypes = {
 
 TodoItemPrototype.render = function() {
     return (
-        virt.createView("div", {
+        virt.createView("li", {
                 id: this.props.id,
                 className: "todo-item"
             },
-            virt.createView("p",
-                this.props.text,
+            virt.createView("p", {
+                    dangerouslySetInnerHTML: true
+                },
+                "<span>" + this.props.text + "</span>",
                 virt.createView("span", {
                     onClick: this.props.onDestroy
                 }, " x ")

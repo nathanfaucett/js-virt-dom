@@ -26,7 +26,6 @@ function EventHandler(document, window) {
 
     this.__isListening = {};
     this.__listening = {};
-    this.__listeningCount = {};
 
     function callback() {
         viewport.currentScrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
@@ -41,7 +40,6 @@ EventHandlerPrototype = EventHandler.prototype;
 
 EventHandlerPrototype.clear = function() {
     var listening = this.__listening,
-        listeningCount = this.__listeningCount,
         isListening = this.__isListening,
         localHas = has,
         topLevelType;
@@ -49,20 +47,18 @@ EventHandlerPrototype.clear = function() {
     for (topLevelType in listening) {
         if (localHas(listening, topLevelType)) {
             listening[topLevelType]();
-            delete isListening[topLevelType];
-            delete listeningCount[topLevelType];
             delete listening[topLevelType];
+            delete isListening[topLevelType];
         }
     }
 
     eventListener.off(this.window, "scroll resize", this.__callback);
 };
 
-EventHandlerPrototype.on = function(id, topLevelType) {
+EventHandlerPrototype.listenTo = function(id, topLevelType) {
     var document = this.document,
         window = this.window,
-        isListening = this.__isListening,
-        listeningCount = this.__listeningCount;
+        isListening = this.__isListening;
 
     if (!isListening[topLevelType]) {
         if (topLevelType === topLevelTypes.topWheel) {
@@ -98,24 +94,6 @@ EventHandlerPrototype.on = function(id, topLevelType) {
         }
 
         isListening[topLevelType] = true;
-    }
-
-    listeningCount[topLevelType] = (listeningCount[topLevelType] || 0) + 1;
-};
-
-EventHandlerPrototype.off = function(id, topLevelType) {
-    var listening = this.__listening,
-        isListening = this.__isListening,
-        listeningCount = this.__listeningCount;
-
-    if (listeningCount[topLevelType] > 0) {
-        listeningCount[topLevelType] -= 1;
-
-        if (listeningCount[topLevelType] === 0) {
-            isListening[topLevelType] = false;
-            listening[topLevelType]();
-            delete listening[topLevelType];
-        }
     }
 };
 

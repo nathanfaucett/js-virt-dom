@@ -11,7 +11,9 @@ function applyProperties(node, id, props, previous) {
     var propKey, propValue;
 
     for (propKey in props) {
-        if (!isFunction((propValue = props[propKey]))) {
+        propValue = props[propKey];
+
+        if (propKey !== "dangerouslySetInnerHTML" || !isFunction(propValue)) {
             if (propValue == null && previous != null) {
                 removeProperty(node, id, previous, propKey);
             } else if (isObject(propValue)) {

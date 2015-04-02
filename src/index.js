@@ -39,7 +39,7 @@ render.unmount = function(containerDOMNode) {
         root = rootsById[id];
 
     if (root !== undefined) {
-        root.render(undefined, id);
+        root.unmount();
         delete rootsById[id];
     }
 };
@@ -47,3 +47,5 @@ render.unmount = function(containerDOMNode) {
 render.findDOMNode = function(component) {
     return (component && component.__node) ? getNodeById(component.__node.id) : null;
 };
+
+render.CSSTransitionGroup = require("./transitions/css_transition_group");

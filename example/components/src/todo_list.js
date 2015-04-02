@@ -1,4 +1,5 @@
 var virt = require("virt"),
+    virtDOM = require("../../../src/index"),
     map = require("map"),
     dispatcher = require("./dispatcher"),
     TodoStore = require("./todo_store"),
@@ -47,7 +48,6 @@ TodoListPrototype.__onChange = function() {
 
 TodoListPrototype.componentDidMount = function() {
     TodoStore.addChangeListener(this.onChange);
-    this.onChange();
 };
 
 TodoListPrototype.componentWillUnmount = function() {
@@ -58,8 +58,9 @@ TodoListPrototype.render = function() {
     var _this = this;
 
     return (
-        virt.createView("div", {
-                className: "todo-list"
+        virt.createView(virtDOM.CSSTransitionGroup, {
+                className: "todo-list",
+                tagName: "ul"
             },
             map(this.state.list, function(item) {
                 return virt.createView(TodoItem, {

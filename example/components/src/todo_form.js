@@ -51,12 +51,17 @@ TodoFormPrototype.__onSubmit = function(e) {
             actionType: TodoStore.consts.TODO_CREATE,
             text: value
         });
+
         DOMNode.value = "";
+
+        this.setState({
+            name: ""
+        });
     }
 };
 
 TodoFormPrototype.__onInput = function() {
-    var DOMNode = virtDOM.findDOMNode(this.refs.name).value,
+    var DOMNode = virtDOM.findDOMNode(this.refs.name),
         value = DOMNode.value;
 
     this.setState({
