@@ -36,6 +36,7 @@
     "environment": "git://github.com/nathanfaucett/environment",
     "escape_text_content": "git://github.com/nathanfaucett/escape_text_content",
     "event_listener": "git://github.com/nathanfaucett/event_listener",
+    "extend": "git://github.com/nathanfaucett/extend",
     "for_each": "git://github.com/nathanfaucett/for_each",
     "get_prototype_of": "git://github.com/nathanfaucett/get_prototype_of",
     "has": "git://github.com/nathanfaucett/has",
@@ -50,6 +51,7 @@
     "is_string": "git://github.com/nathanfaucett/is_string",
     "key_mirror": "git://github.com/nathanfaucett/key_mirror",
     "map": "git://github.com/nathanfaucett/map",
+    "messenger_worker_adaptor": "git://github.com/nathanfaucett/messenger_worker",
     "supports": "git://github.com/nathanfaucett/supports",
     "virt": "git://github.com/nathanfaucett/virt"
   }

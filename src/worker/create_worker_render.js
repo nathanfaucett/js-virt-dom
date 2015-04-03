@@ -1,4 +1,4 @@
-var Messenger = require("messenger"),
+var MessengerWorker = require("messenger_worker"),
     has = require("has"),
     isNode = require("is_node"),
     isFunction = require("is_function"),
@@ -24,7 +24,7 @@ function createWorkerRender(url, containerDOMNode) {
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new Messenger(new Messenger.AdaptorWebWorker(url));
+        messenger = new MessengerWorker(url);
 
     messenger.on("handle_transaction", function(transaction, callback) {
 
@@ -36,6 +36,9 @@ function createWorkerRender(url, containerDOMNode) {
     });
 
     eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
+
+        nativeEvent.preventDefault();
+
         messenger.emit("handle_event_dispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
@@ -44,6 +47,8 @@ function createWorkerRender(url, containerDOMNode) {
             targetId: targetId
         });
     };
+
+    return messenger;
 }
 
 function nativeEventToJSON(nativeEvent) {

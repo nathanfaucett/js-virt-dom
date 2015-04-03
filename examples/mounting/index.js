@@ -2787,7 +2787,7 @@ virtDOM.findDOMNode = function(component) {
 virtDOM.CSSTransitionGroup = require(114);
 
 virtDOM.createWorkerRender = require(124);
-virtDOM.renderWorker = require(127);
+virtDOM.renderWorker = require(126);
 
 
 },
@@ -3478,13 +3478,15 @@ var environment = exports,
     userAgent = hasWindow ? window.navigator.userAgent : "";
 
 
-environment.browser = !!(
+environment.worker = typeof(importScripts) !== "undefined";
+
+environment.browser = environment.worker || !!(
     hasWindow &&
     typeof(navigator) !== "undefined" &&
     window.document
 );
 
-environment.node = !environment.browser;
+environment.node = !environment.worker && !environment.browser;
 
 environment.mobile = environment.browser && /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
 
@@ -3497,8 +3499,6 @@ environment.window = (
 environment.pixelRatio = environment.window.devicePixelRatio || 1;
 
 environment.document = typeof(document) !== "undefined" ? document : {};
-
-environment.worker = typeof(importScripts) !== "undefined";
 
 
 },
@@ -6327,7 +6327,7 @@ trim.right = function trimRight(str) {
 },
 function(require, exports, module, global) {
 
-var Messenger = require(125),
+var MessengerWorker = require(125),
     has = require(12),
     isNode = require(71),
     isFunction = require(5),
@@ -6353,7 +6353,7 @@ function createWorkerRender(url, containerDOMNode) {
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new Messenger(new Messenger.AdaptorWebWorker(url));
+        messenger = new MessengerWorker(url);
 
     messenger.on("handle_transaction", function(transaction, callback) {
 
@@ -6365,6 +6365,9 @@ function createWorkerRender(url, containerDOMNode) {
     });
 
     eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
+
+        nativeEvent.preventDefault();
+
         messenger.emit("handle_event_dispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
@@ -6373,6 +6376,8 @@ function createWorkerRender(url, containerDOMNode) {
             targetId: targetId
         });
     };
+
+    return messenger;
 }
 
 function nativeEventToJSON(nativeEvent) {
@@ -6398,37 +6403,6 @@ function nativeEventToJSON(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var MessengerPrototype;
-
-
-module.exports = Messenger;
-
-
-Messenger.AdaptorWebWorker = require(126);
-
-
-function Messenger(adaptor) {
-    this.adaptor = adaptor;
-}
-
-MessengerPrototype = Messenger.prototype;
-
-MessengerPrototype.on = function(name, callback) {
-    this.adaptor.on(name, callback);
-};
-
-MessengerPrototype.off = function(name, callback) {
-    this.adaptor.off(name, callback);
-};
-
-MessengerPrototype.emit = function(name, data, callback) {
-    this.adaptor.emit(name, data, callback);
-};
-
-
-},
-function(require, exports, module, global) {
-
 var environment = require(69);
 
 
@@ -6440,10 +6414,10 @@ if (environment.worker) {
 }
 
 
-module.exports = AdaptorWebWorker;
+module.exports = MessengerWorker;
 
 
-function AdaptorWebWorker(url) {
+function MessengerWorker(url) {
     var MESSAGE_ID = 0,
         worker = environment.worker ? globalWorker : new Worker(url),
         listeners = {},
@@ -6457,7 +6431,7 @@ function AdaptorWebWorker(url) {
 
         if (name) {
             if (listeners[name]) {
-                emit(listeners[name], message.data, function(err, data) {
+                emit(listeners[name], message.data, function callback(err, data) {
                     worker.postMessage(JSON.stringify({
                         id: id,
                         data: data
@@ -6533,7 +6507,7 @@ function emit(listeners, data, callback) {
 function(require, exports, module, global) {
 
 var virt = require(1),
-    WorkerAdaptor = require(128);
+    WorkerAdaptor = require(127);
 
 
 var root = null;
@@ -6562,7 +6536,7 @@ render.unmount = function() {
 },
 function(require, exports, module, global) {
 
-var Messenger = require(125),
+var MessengerWorker = require(125),
     traverseAncestors = require(58),
     consts = require(65),
     eventClassMap = require(76);
@@ -6572,7 +6546,7 @@ module.exports = Adaptor;
 
 
 function Adaptor(root) {
-    var messenger = new Messenger(new Messenger.AdaptorWebWorker()),
+    var messenger = new MessengerWorker(),
         eventManager = root.eventManager,
         viewport = {
             currentScrollLeft: 0,
@@ -6586,6 +6560,7 @@ function Adaptor(root) {
         events = eventManager.__events;
 
     this.root = root;
+    this.messenger = messenger;
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 

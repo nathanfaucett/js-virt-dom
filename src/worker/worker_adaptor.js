@@ -1,4 +1,4 @@
-var Messenger = require("messenger"),
+var MessengerWorker = require("messenger_worker"),
     traverseAncestors = require("virt/utils/traverse_ancestors"),
     consts = require("../events/consts"),
     eventClassMap = require("../events/event_class_map");
@@ -8,7 +8,7 @@ module.exports = Adaptor;
 
 
 function Adaptor(root) {
-    var messenger = new Messenger(new Messenger.AdaptorWebWorker()),
+    var messenger = new MessengerWorker(),
         eventManager = root.eventManager,
         viewport = {
             currentScrollLeft: 0,
@@ -22,6 +22,7 @@ function Adaptor(root) {
         events = eventManager.__events;
 
     this.root = root;
+    this.messenger = messenger;
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 

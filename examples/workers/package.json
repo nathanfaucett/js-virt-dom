@@ -2,5 +2,8 @@
   "name": "test",
   "version": "0.0.1",
   "main": "index.js",
-  "author": "Nathan Faucett"
+  "author": "Nathan Faucett",
+  "dependencies": {
+    "request_animation_frame": "git://github.com/nathanfaucett/request_animation_frame"
+  }
 }

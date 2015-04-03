@@ -43,7 +43,7 @@ var environment = require(1),
     eventListener = require(2),
     virt = require(8),
     virtDOM = require(59),
-    App = require(129);
+    App = require(128);
 
 
 eventListener.on(environment.window, "load", function() {
@@ -3338,7 +3338,7 @@ virtDOM.findDOMNode = function(component) {
 virtDOM.CSSTransitionGroup = require(114);
 
 virtDOM.createWorkerRender = require(124);
-virtDOM.renderWorker = require(127);
+virtDOM.renderWorker = require(126);
 
 
 },
@@ -6261,7 +6261,7 @@ trim.right = function trimRight(str) {
 },
 function(require, exports, module, global) {
 
-var Messenger = require(125),
+var MessengerWorker = require(125),
     has = require(18),
     isNode = require(7),
     isFunction = require(5),
@@ -6287,7 +6287,7 @@ function createWorkerRender(url, containerDOMNode) {
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new Messenger(new Messenger.AdaptorWebWorker(url));
+        messenger = new MessengerWorker(url);
 
     messenger.on("handle_transaction", function(transaction, callback) {
 
@@ -6299,6 +6299,9 @@ function createWorkerRender(url, containerDOMNode) {
     });
 
     eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
+
+        nativeEvent.preventDefault();
+
         messenger.emit("handle_event_dispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
@@ -6307,6 +6310,8 @@ function createWorkerRender(url, containerDOMNode) {
             targetId: targetId
         });
     };
+
+    return messenger;
 }
 
 function nativeEventToJSON(nativeEvent) {
@@ -6332,37 +6337,6 @@ function nativeEventToJSON(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var MessengerPrototype;
-
-
-module.exports = Messenger;
-
-
-Messenger.AdaptorWebWorker = require(126);
-
-
-function Messenger(adaptor) {
-    this.adaptor = adaptor;
-}
-
-MessengerPrototype = Messenger.prototype;
-
-MessengerPrototype.on = function(name, callback) {
-    this.adaptor.on(name, callback);
-};
-
-MessengerPrototype.off = function(name, callback) {
-    this.adaptor.off(name, callback);
-};
-
-MessengerPrototype.emit = function(name, data, callback) {
-    this.adaptor.emit(name, data, callback);
-};
-
-
-},
-function(require, exports, module, global) {
-
 var environment = require(1);
 
 
@@ -6374,10 +6348,10 @@ if (environment.worker) {
 }
 
 
-module.exports = AdaptorWebWorker;
+module.exports = MessengerWorker;
 
 
-function AdaptorWebWorker(url) {
+function MessengerWorker(url) {
     var MESSAGE_ID = 0,
         worker = environment.worker ? globalWorker : new Worker(url),
         listeners = {},
@@ -6391,7 +6365,7 @@ function AdaptorWebWorker(url) {
 
         if (name) {
             if (listeners[name]) {
-                emit(listeners[name], message.data, function(err, data) {
+                emit(listeners[name], message.data, function callback(err, data) {
                     worker.postMessage(JSON.stringify({
                         id: id,
                         data: data
@@ -6467,7 +6441,7 @@ function emit(listeners, data, callback) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    WorkerAdaptor = require(128);
+    WorkerAdaptor = require(127);
 
 
 var root = null;
@@ -6496,7 +6470,7 @@ render.unmount = function() {
 },
 function(require, exports, module, global) {
 
-var Messenger = require(125),
+var MessengerWorker = require(125),
     traverseAncestors = require(62),
     consts = require(69),
     eventClassMap = require(76);
@@ -6506,7 +6480,7 @@ module.exports = Adaptor;
 
 
 function Adaptor(root) {
-    var messenger = new Messenger(new Messenger.AdaptorWebWorker()),
+    var messenger = new MessengerWorker(),
         eventManager = root.eventManager,
         viewport = {
             currentScrollLeft: 0,
@@ -6520,6 +6494,7 @@ function Adaptor(root) {
         events = eventManager.__events;
 
     this.root = root;
+    this.messenger = messenger;
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
@@ -6570,9 +6545,9 @@ function Adaptor(root) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(130),
-    TodoList = require(134),
-    TodoForm = require(140);
+    propTypes = require(129),
+    TodoList = require(133),
+    TodoForm = require(139);
 
 
 var AppPrototype;
@@ -6615,12 +6590,12 @@ AppPrototype.render = function() {
 function(require, exports, module, global) {
 
 var isArray = require(12),
-    isRegExp = require(131),
+    isRegExp = require(130),
     isNullOrUndefined = require(11),
-    emptyFunction = require(132),
+    emptyFunction = require(131),
     isFunction = require(5),
     has = require(18),
-    indexOf = require(133);
+    indexOf = require(132);
 
 
 var propTypes = exports,
@@ -6863,9 +6838,9 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(59),
     map = require(19),
-    dispatcher = require(135),
-    TodoStore = require(137),
-    TodoItem = require(139);
+    dispatcher = require(134),
+    TodoStore = require(136),
+    TodoItem = require(138);
 
 
 var TodoListPrototype;
@@ -6946,7 +6921,7 @@ TodoListPrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(136);
+var EventEmitter = require(135);
 
 
 var dispatcher = module.exports = new EventEmitter(-1),
@@ -7310,9 +7285,9 @@ module.exports = EventEmitter;
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(136),
-    values = require(138),
-    dispatcher = require(135);
+var EventEmitter = require(135),
+    values = require(137),
+    dispatcher = require(134);
 
 
 var TodoStore = module.exports = new EventEmitter(-1),
@@ -7438,7 +7413,7 @@ module.exports = values;
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(130);
+    propTypes = require(129);
 
 
 var TodoItemPrototype;
@@ -7489,8 +7464,8 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(59),
     eventListener = require(2),
-    dispatcher = require(135),
-    TodoStore = require(137);
+    dispatcher = require(134),
+    TodoStore = require(136);
 
 
 var TodoFormPrototype;
