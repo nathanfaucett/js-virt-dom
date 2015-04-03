@@ -6529,20 +6529,20 @@ function Adaptor(root) {
             target = childHash[targetId].component,
             event;
 
-        viewport.currentScrollLeft = data.currentScrollLeft,
-            viewport.currentScrollTop = data.currentScrollTop,
+        viewport.currentScrollLeft = data.currentScrollLeft;
+        viewport.currentScrollTop = data.currentScrollTop;
 
-            traverseAncestors(targetId, function(currentTargetId) {
-                if (eventType[currentTargetId]) {
-                    event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
-                    event.target = target;
-                    event.currentTarget = childHash[currentTargetId].component;
-                    eventType[currentTargetId](event);
-                    return event.returnValue;
-                } else {
-                    return true;
-                }
-            });
+        traverseAncestors(targetId, function(currentTargetId) {
+            if (eventType[currentTargetId]) {
+                event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
+                event.target = target;
+                event.currentTarget = childHash[currentTargetId].component;
+                eventType[currentTargetId](event);
+                return event.returnValue;
+            } else {
+                return true;
+            }
+        });
 
         if (event && event.isPersistent !== true) {
             event.destroy();
