@@ -6532,8 +6532,14 @@ function Adaptor(root) {
             nativeEvent = data.nativeEvent,
             targetId = data.targetId,
             eventType = events[topLevelType],
-            target = childHash[targetId].component,
+            target = childHash[targetId],
             event;
+
+        if (target) {
+            target = target.component;
+        } else {
+            target = null;
+        }
 
         viewport.currentScrollLeft = data.currentScrollLeft;
         viewport.currentScrollTop = data.currentScrollTop;
