@@ -6,9 +6,9 @@ var isArray = require("is_array"),
 module.exports = getPath;
 
 
-function getPath(nativeEvent) {
+function getPath(nativeEvent, window) {
     var path = nativeEvent.path,
-        target = getEventTarget(nativeEvent);
+        target = getEventTarget(nativeEvent, window);
 
     if (isArray(path)) {
         return path;

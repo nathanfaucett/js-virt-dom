@@ -6,5 +6,5 @@ var environment = require("environment"),
 
 
 eventListener.on(environment.window, "load", function() {
-    virtDOM(virt.createView(App), document.getElementById("app"));
+    virtDOM.render(virt.createView(App), document.getElementById("app"));
 });

@@ -16,7 +16,7 @@ function getView(nativeEvent, eventHandler) {
     if (nativeEvent.view) {
         return nativeEvent.view;
     } else {
-        target = getEventTarget(nativeEvent);
+        target = getEventTarget(nativeEvent, eventHandler.window);
 
         if (target != null && target.window === target) {
             return target;

@@ -1,7 +1,7 @@
 var environment = require("environment"),
     eventListener = require("event_listener"),
     virt = require("virt"),
-    virtDOMRender = require("../../../src/index");
+    virtDOM = require("../../../src/index");
 
 
 var app;
@@ -48,7 +48,7 @@ function render() {
 
     count += dir;
 
-    virtDOMRender(renderCounter(count), app);
+    virtDOM.render(renderCounter(count), app);
     window.requestAnimationFrame(render, app);
 }
 

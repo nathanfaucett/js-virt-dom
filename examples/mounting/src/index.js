@@ -64,10 +64,10 @@ Bottom.prototype.render = function() {
 };
 
 
-virtDOM(virt.createView(Top, {
+virtDOM.render(virt.createView(Top, {
     text: "test 0"
 }), app);
-virtDOM(virt.createView(Top, {
+virtDOM.render(virt.createView(Top, {
     text: "test 1"
 }), app);
 virtDOM.unmount(app);

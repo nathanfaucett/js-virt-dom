@@ -1,7 +1,8 @@
 var has = require("has"),
     eventListener = require("event_listener"),
     consts = require("./consts"),
-    eventClassMap = require("./event_class_map"),
+    getEventTarget = require("./getters/get_event_target"),
+    getNodeAttributeId = require("../utils/get_node_attribute_id"),
     isEventSupported = require("./is_event_supported");
 
 
@@ -134,5 +135,5 @@ EventHandlerPrototype.trapCapturedEvent = function(topLevelType, type, element) 
 };
 
 EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
-    this.handleDispatch(topLevelType, eventClassMap[topLevelType].getPooled(nativeEvent, this), nativeEvent);
+    this.handleDispatch(topLevelType, nativeEvent, getNodeAttributeId(getEventTarget(nativeEvent, this.window)));
 };

@@ -1,7 +1,9 @@
-var getWindow = require("./utils/get_window"),
+var traverseAncestors = require("virt/utils/traverse_ancestors"),
+    getWindow = require("./utils/get_window"),
+    getNodeById = require("./utils/get_node_by_id"),
     consts = require("./events/consts"),
     EventHandler = require("./events/event_handler"),
-    handleEvent = require("./events/handle_event"),
+    eventClassMap = require("./events/event_class_map"),
     applyEvents = require("./apply_events"),
     applyPatches = require("./apply_patches");
 
@@ -16,6 +18,7 @@ function Adaptor(root, containerDOMNode) {
     var document = containerDOMNode.ownerDocument,
         window = getWindow(document),
         eventManager = root.eventManager,
+        events = eventManager.__events,
         eventHandler = new EventHandler(document, window);
 
     this.root = root;
@@ -28,8 +31,24 @@ function Adaptor(root, containerDOMNode) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    eventHandler.handleDispatch = function(topType, event, nativeEvent) {
-        handleEvent(topType, event, nativeEvent, eventManager.__events);
+    eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
+        var eventType = events[topLevelType],
+            event;
+
+        traverseAncestors(targetId, function(currentTargetId) {
+            if (eventType[currentTargetId]) {
+                event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
+                event.currentTarget = getNodeById(currentTargetId);
+                eventType[currentTargetId](event);
+                return event.returnValue;
+            } else {
+                return true;
+            }
+        });
+
+        if (event && event.isPersistent !== true) {
+            event.destroy();
+        }
     };
 }
 

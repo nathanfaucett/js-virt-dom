@@ -1,4 +1,6 @@
-var DOM_ID_NAME = require("../dom_id_name"),
+var isString = require("is_string"),
+
+    DOM_ID_NAME = require("../dom_id_name"),
     nodeCache = require("./node_cache"),
 
     applyProperties = require("../apply_properties"),
@@ -8,7 +10,6 @@ var DOM_ID_NAME = require("../dom_id_name"),
 
 
 var View = virt.View,
-    isView = View.isView,
     isPrimativeView = View.isPrimativeView;
 
 
@@ -20,7 +21,7 @@ function createDOMElement(view, id, document, recurse) {
 
     if (isPrimativeView(view)) {
         return document.createTextNode(view);
-    } else if (isView(view)) {
+    } else if (isString(view.type)) {
         node = document.createElement(view.type);
 
         applyProperties(node, id, view.props, undefined);

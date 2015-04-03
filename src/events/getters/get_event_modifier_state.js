@@ -1,8 +1,8 @@
 var modifierKeyToProp = {
-    "Alt": "altKey",
-    "Control": "ctrlKey",
-    "Meta": "metaKey",
-    "Shift": "shiftKey"
+    Alt: "altKey",
+    Control: "ctrlKey",
+    Meta: "metaKey",
+    Shift: "shiftKey"
 };
 
 

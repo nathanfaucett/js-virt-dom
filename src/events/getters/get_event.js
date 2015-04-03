@@ -4,10 +4,10 @@ var getEventTarget = require("./get_event_target");
 module.exports = getEvent;
 
 
-function getEvent(obj, nativeEvent) {
+function getEvent(obj, nativeEvent, eventHandler) {
     obj.nativeEvent = nativeEvent;
     obj.type = nativeEvent.type;
-    obj.target = getEventTarget(nativeEvent);
+    obj.target = getEventTarget(nativeEvent, eventHandler.window);
     obj.currentTarget = nativeEvent.currentTarget;
     obj.eventPhase = nativeEvent.eventPhase;
     obj.bubbles = nativeEvent.bubbles;
