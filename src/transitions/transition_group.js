@@ -1,7 +1,6 @@
 var virt = require("virt"),
     extend = require("extend"),
     forEach = require("for_each"),
-    emptyFunction = require("empty_function"),
     createTransitionChild = require("./create_transition_child"),
     getChildMapping = require("./get_child_mapping"),
     mergeChildMappings = require("./merge_child_mappings");
@@ -18,15 +17,12 @@ function TransitionGroup(props, children, context) {
 
     virt.Component.call(this, props, children, context);
 
-    props.tagName = props.tagName || "span";
-    props.childFactory = props.childFactory || emptyFunction.thatReturnsArgument;
-
     this.currentlyTransitioningKeys = {};
     this.keysToEnter = [];
     this.keysToLeave = [];
 
     this.state = {
-        children: getChildMapping(children)
+        children: getChildMapping(this.children)
     };
 
     this.performEnter = function(key) {
@@ -159,9 +155,11 @@ TransitionGroupPrototype.render = function() {
         children = this.state.children,
         key, child;
 
-    for (key in children) {
-        if ((child = children[key])) {
-            childrenToRender[childrenToRender.length] = childFactory(createTransitionChild(child, key, key));
+    if (children) {
+        for (key in children) {
+            if ((child = children[key])) {
+                childrenToRender[childrenToRender.length] = createTransitionChild(childFactory(child), key, key);
+            }
         }
     }
 

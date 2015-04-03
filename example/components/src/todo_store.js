@@ -15,7 +15,12 @@ TodoStore.consts = {
 
 
 var _todoId = 1,
-    _todos = {};
+    _todos = {
+        0: {
+            id: 0,
+            text: "Im a Todo Item"
+        }
+    };
 
 
 function create(text, callback) {

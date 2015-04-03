@@ -48,6 +48,7 @@ TodoListPrototype.__onChange = function() {
 
 TodoListPrototype.componentDidMount = function() {
     TodoStore.addChangeListener(this.onChange);
+    this.__onChange();
 };
 
 TodoListPrototype.componentWillUnmount = function() {
@@ -60,7 +61,10 @@ TodoListPrototype.render = function() {
     return (
         virt.createView(virtDOM.CSSTransitionGroup, {
                 className: "todo-list",
-                tagName: "ul"
+                tagName: "ul",
+                transitionName: "transition",
+                transitionEnter: true,
+                transitionLeave: true
             },
             map(this.state.list, function(item) {
                 return virt.createView(TodoItem, {

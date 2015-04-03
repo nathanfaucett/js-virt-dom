@@ -1,7 +1,7 @@
 var virt = require("virt"),
+    virtDOM = require("../index"),
     forEach = require("for_each"),
     transitionEvents = require("./transition_events"),
-    getNodeById = require("../utils/get_node_by_id"),
     domClass = require("dom_class");
 
 
@@ -51,7 +51,7 @@ CSSTransitionGroupChildPrototype.componentWillLeave = function(done) {
 };
 
 CSSTransitionGroupChildPrototype.transition = function(animationType, callback) {
-    var node = getNodeById(this.id),
+    var node = virtDOM.findDOMNode(this),
         className = this.props.name + "-" + animationType,
         activeClassName = className + "-active";
 
@@ -88,7 +88,7 @@ CSSTransitionGroupChildPrototype.__flushClassNameQueue = function() {
     var node;
 
     if (this.isMounted()) {
-        node = getNodeById(this.id);
+        node = virtDOM.findDOMNode(this);
 
         forEach(this.classNameQueue, function(className) {
             domClass.add(node, className);
