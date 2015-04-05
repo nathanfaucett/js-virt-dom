@@ -43,7 +43,7 @@ var environment = require(1),
     eventListener = require(2),
     virt = require(8),
     virtDOM = require(59),
-    App = require(128);
+    App = require(130);
 
 
 eventListener.on(environment.window, "load", function() {
@@ -815,6 +815,7 @@ var isPrimitive = require(10),
     isArray = require(12),
     isString = require(15),
     isObjectLike = require(14),
+    isNullOrUndefined = require(11),
     isNumber = require(16),
     fastSlice = require(17),
     has = require(18),
@@ -913,20 +914,30 @@ function construct(type, config, children) {
     var props = {},
         key = null,
         ref = null,
-        configKey;
+        propName, defaultProps;
 
     if (config) {
         key = config.key != null ? config.key : null;
         ref = config.ref != null ? config.ref : null;
 
-        for (configKey in config) {
-            if (has(config, configKey)) {
-                if (!(configKey === "key" || configKey === "ref")) {
-                    props[configKey] = config[configKey];
+        for (propName in config) {
+            if (has(config, propName)) {
+                if (!(propName === "key" || propName === "ref")) {
+                    props[propName] = config[propName];
                 }
             }
         }
     }
+
+    if (type && type.defaultProps) {
+        defaultProps = type.defaultProps;
+
+        for (propName in defaultProps) {
+            if (isNullOrUndefined(props[propName])) {
+                props[propName] = defaultProps[propName];
+            }
+        }
+      }
 
     return new View(type, key, ref, props, insureValidChildren(children), owner.current, context.current);
 }
@@ -3315,8 +3326,7 @@ function registerNativeComponent(type, constructor) {
 function(require, exports, module, global) {
 
 var render = require(60),
-    renderString = require(107),
-    getNodeById = require(67);
+    renderString = require(107);
 
 
 var virtDOM = exports;
@@ -3331,14 +3341,12 @@ virtDOM.renderString = function(view, id) {
     return renderString(view, id || ".0");
 };
 
-virtDOM.findDOMNode = function(component) {
-    return (component && component.__node) ? getNodeById(component.__node.id) : null;
-};
+virtDOM.findDOMNode = require(114);
 
-virtDOM.CSSTransitionGroup = require(114);
+virtDOM.CSSTransitionGroup = require(115);
 
-virtDOM.createWorkerRender = require(124);
-virtDOM.renderWorker = require(126);
+virtDOM.createWorkerRender = require(126);
+virtDOM.renderWorker = require(128);
 
 
 },
@@ -5574,10 +5582,33 @@ function getRootNodeInContainer(containerNode) {
 },
 function(require, exports, module, global) {
 
+var isString = require(15),
+    getNodeById = require(67);
+
+
+module.exports = findDOMNode;
+
+
+function findDOMNode(value) {
+    if (isString(value)) {
+        return getNodeById(value);
+    } else if (value && value.__node) {
+        return getNodeById(value.__node.id);
+    } else if (value && value.id) {
+        return getNodeById(value.id);
+    } else {
+        return null;
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
 var virt = require(8),
     extend = require(43),
-    TransitionGroup = require(115),
-    CSSTransitionGroupChild = require(119);
+    TransitionGroup = require(116),
+    CSSTransitionGroupChild = require(121);
 
 
 var CSSTransitionGroupPrototype;
@@ -5599,6 +5630,13 @@ function CSSTransitionGroup(props, children, context) {
 }
 virt.Component.extend(CSSTransitionGroup, "CSSTransitionGroup");
 
+CSSTransitionGroup.defaultProps = {
+    transitionName: "transition",
+    transitionMove: true,
+    transitionEnter: true,
+    transitionLeave: true
+};
+
 CSSTransitionGroupPrototype = CSSTransitionGroup.prototype;
 
 CSSTransitionGroupPrototype.__wrapChild = function(child) {
@@ -5606,6 +5644,7 @@ CSSTransitionGroupPrototype.__wrapChild = function(child) {
 
     return virt.createView(CSSTransitionGroupChild, {
         name: props.transitionName,
+        move: props.transitionMove,
         enter: props.transitionEnter,
         leave: props.transitionLeave
     }, child);
@@ -5620,11 +5659,13 @@ CSSTransitionGroupPrototype.render = function() {
 function(require, exports, module, global) {
 
 var virt = require(8),
+    has = require(18),
     extend = require(43),
     forEach = require(70),
-    createTransitionChild = require(116),
-    getChildMapping = require(117),
-    mergeChildMappings = require(118);
+    createTransitionChild = require(117),
+    getChildMapping = require(118),
+    getMovePositions = require(119),
+    mergeChildMappings = require(120);
 
 
 var TransitionGroupPrototype;
@@ -5639,11 +5680,14 @@ function TransitionGroup(props, children, context) {
     virt.Component.call(this, props, children, context);
 
     this.currentlyTransitioningKeys = {};
+    this.currentKeyPositions = {};
     this.keysToEnter = [];
     this.keysToLeave = [];
+    this.keysToMoveUp = [];
+    this.keysToMoveDown = [];
 
     this.state = {
-        children: getChildMapping(this.children)
+        children: getChildMapping(children)
     };
 
     this.performEnter = function(key) {
@@ -5651,6 +5695,12 @@ function TransitionGroup(props, children, context) {
     };
     this.performLeave = function(key) {
         return _this.__performLeave(key);
+    };
+    this.performMoveUp = function(key) {
+        return _this.__performMoveUp(key);
+    };
+    this.performMoveDown = function(key) {
+        return _this.__performMoveDown(key);
     };
 }
 virt.Component.extend(TransitionGroup, "TransitionGroup");
@@ -5663,7 +5713,11 @@ TransitionGroupPrototype.componentWillReceiveProps = function(nextProps, nextChi
         currentlyTransitioningKeys = this.currentlyTransitioningKeys,
         keysToEnter = this.keysToEnter,
         keysToLeave = this.keysToLeave,
-        key;
+        key, childMappings;
+
+
+    childMappings = mergeChildMappings(prevChildMapping, nextChildMapping);
+    getMovePositions(this.currentKeyPositions, nextChildMapping, this.keysToMoveUp, this.keysToMoveDown);
 
     for (key in nextChildMapping) {
         if (
@@ -5686,19 +5740,27 @@ TransitionGroupPrototype.componentWillReceiveProps = function(nextProps, nextChi
     }
 
     this.setState({
-        children: mergeChildMappings(prevChildMapping, nextChildMapping)
+        children: childMappings
     });
 };
 
 TransitionGroupPrototype.componentDidUpdate = function() {
     var keysToEnter = this.keysToEnter,
-        keysToLeave = this.keysToLeave;
+        keysToLeave = this.keysToLeave,
+        keysToMoveUp = this.keysToMoveUp,
+        keysToMoveDown = this.keysToMoveDown;
 
     this.keysToEnter = [];
     forEach(keysToEnter, this.performEnter);
 
     this.keysToLeave = [];
     forEach(keysToLeave, this.performLeave);
+
+    this.keysToMoveUp = [];
+    forEach(keysToMoveUp, this.performMoveUp);
+
+    this.keysToMoveDown = [];
+    forEach(keysToMoveDown, this.performMoveDown);
 };
 
 TransitionGroupPrototype.__performEnter = function(key) {
@@ -5755,6 +5817,7 @@ TransitionGroupPrototype.__handleLeaveDone = function(key) {
         component.componentDidLeave();
     }
 
+    delete this.currentKeyPositions[key];
     delete this.currentlyTransitioningKeys[key];
     currentChildMapping = getChildMapping(this.children);
 
@@ -5767,6 +5830,52 @@ TransitionGroupPrototype.__handleLeaveDone = function(key) {
         this.setState({
             children: newChildren
         });
+    }
+};
+
+TransitionGroupPrototype.__performMoveUp = function(key) {
+    var _this = this,
+        component = this.refs[key];
+
+    this.currentlyTransitioningKeys[key] = true;
+
+    if (component.componentWillMoveUp) {
+        component.componentWillMoveUp(function() {
+            return _this.__handleMoveDone(key);
+        });
+    } else {
+        this.__handleMoveDone(key);
+    }
+};
+
+TransitionGroupPrototype.__performMoveDown = function(key) {
+    var _this = this,
+        component = this.refs[key];
+
+    this.currentlyTransitioningKeys[key] = true;
+
+    if (component.componentWillMoveDown) {
+        component.componentWillMoveDown(function() {
+            return _this.__handleMoveDone(key);
+        });
+    } else {
+        this.__handleMoveDone(key);
+    }
+};
+
+TransitionGroupPrototype.__handleMoveDone = function(key) {
+    var component = this.refs[key],
+        currentChildMapping;
+
+    if (component.componentDidMove) {
+        component.componentDidMove();
+    }
+
+    delete this.currentlyTransitioningKeys[key];
+    currentChildMapping = getChildMapping(this.children);
+
+    if (!currentChildMapping || !currentChildMapping[key]) {
+        this.__performLeave(key);
     }
 };
 
@@ -5838,6 +5947,37 @@ function(require, exports, module, global) {
 var has = require(18);
 
 
+module.exports = getMovePositions;
+
+
+function getMovePositions(currentKeyPositions, nextChildMapping, keysToMoveUp, keysToMoveDown) {
+    var index = 0,
+        key, prev;
+
+    for (key in nextChildMapping) {
+        if (has(nextChildMapping, key)) {
+            prev = currentKeyPositions[key];
+
+            if (prev != null) {
+                if (prev > index) {
+                    keysToMoveDown[keysToMoveDown.length] = key;
+                } else if (prev < index) {
+                    keysToMoveUp[keysToMoveUp.length] = key;
+                }
+            }
+
+            currentKeyPositions[key] = index++;
+        }
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
+var has = require(18);
+
+
 module.exports = mergeChildMappings;
 
 
@@ -5892,8 +6032,8 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(59),
     forEach = require(70),
-    transitionEvents = require(120),
-    domClass = require(122);
+    transitionEvents = require(122),
+    domClass = require(124);
 
 
 var CSSTransitionGroupChildPrototype,
@@ -5936,6 +6076,22 @@ CSSTransitionGroupChildPrototype.componentWillEnter = function(done) {
 CSSTransitionGroupChildPrototype.componentWillLeave = function(done) {
     if (this.props.leave) {
         this.transition("leave", done);
+    } else {
+        done();
+    }
+};
+
+CSSTransitionGroupChildPrototype.componentWillMoveUp = function(done) {
+    if (this.props.leave) {
+        this.transition("move-up", done);
+    } else {
+        done();
+    }
+};
+
+CSSTransitionGroupChildPrototype.componentWillMoveDown = function(done) {
+    if (this.props.leave) {
+        this.transition("move-down", done);
     } else {
         done();
     }
@@ -5998,7 +6154,7 @@ CSSTransitionGroupChildPrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var supports = require(121);
+var supports = require(123);
 
 
 var transitionEvents = exports,
@@ -6100,7 +6256,7 @@ supports.touch = supports.dom && "ontouchstart" in environment.window;
 },
 function(require, exports, module, global) {
 
-var trim = require(123),
+var trim = require(125),
     isArray = require(12),
     isString = require(15),
     isElement = require(110);
@@ -6261,7 +6417,7 @@ trim.right = function trimRight(str) {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(125),
+var MessengerWorker = require(127),
     has = require(18),
     isNode = require(7),
     isFunction = require(5),
@@ -6299,8 +6455,9 @@ function createWorkerRender(url, containerDOMNode) {
     });
 
     eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
-
-        nativeEvent.preventDefault();
+        if (targetId) {
+            nativeEvent.preventDefault();
+        }
 
         messenger.emit("handle_event_dispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
@@ -6441,7 +6598,7 @@ function emit(listeners, data, callback) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    WorkerAdaptor = require(127);
+    WorkerAdaptor = require(129);
 
 
 var root = null;
@@ -6470,16 +6627,16 @@ render.unmount = function() {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(125),
+var MessengerWorker = require(127),
     traverseAncestors = require(62),
     consts = require(69),
     eventClassMap = require(76);
 
 
-module.exports = Adaptor;
+module.exports = WorkerAdaptor;
 
 
-function Adaptor(root) {
+function WorkerAdaptor(root) {
     var messenger = new MessengerWorker(),
         eventManager = root.eventManager,
         viewport = {
@@ -6545,9 +6702,9 @@ function Adaptor(root) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(129),
-    TodoList = require(133),
-    TodoForm = require(139);
+    propTypes = require(131),
+    TodoList = require(135),
+    TodoForm = require(141);
 
 
 var AppPrototype;
@@ -6590,12 +6747,12 @@ AppPrototype.render = function() {
 function(require, exports, module, global) {
 
 var isArray = require(12),
-    isRegExp = require(130),
+    isRegExp = require(132),
     isNullOrUndefined = require(11),
-    emptyFunction = require(131),
+    emptyFunction = require(133),
     isFunction = require(5),
     has = require(18),
-    indexOf = require(132);
+    indexOf = require(134);
 
 
 var propTypes = exports,
@@ -6838,9 +6995,9 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(59),
     map = require(19),
-    dispatcher = require(134),
-    TodoStore = require(136),
-    TodoItem = require(138);
+    dispatcher = require(136),
+    TodoStore = require(138),
+    TodoItem = require(140);
 
 
 var TodoListPrototype;
@@ -6898,10 +7055,7 @@ TodoListPrototype.render = function() {
     return (
         virt.createView(virtDOM.CSSTransitionGroup, {
                 className: "todo-list",
-                tagName: "ul",
-                transitionName: "transition",
-                transitionEnter: true,
-                transitionLeave: true
+                tagName: "ul"
             },
             map(this.state.list, function(item) {
                 return virt.createView(TodoItem, {
@@ -6921,7 +7075,7 @@ TodoListPrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(135);
+var EventEmitter = require(137);
 
 
 var dispatcher = module.exports = new EventEmitter(-1),
@@ -7285,9 +7439,9 @@ module.exports = EventEmitter;
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(135),
-    values = require(137),
-    dispatcher = require(134);
+var EventEmitter = require(137),
+    values = require(139),
+    dispatcher = require(136);
 
 
 var TodoStore = module.exports = new EventEmitter(-1),
@@ -7413,7 +7567,7 @@ module.exports = values;
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(129);
+    propTypes = require(131);
 
 
 var TodoItemPrototype;
@@ -7464,8 +7618,8 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(59),
     eventListener = require(2),
-    dispatcher = require(134),
-    TodoStore = require(136);
+    dispatcher = require(136),
+    TodoStore = require(138);
 
 
 var TodoFormPrototype;

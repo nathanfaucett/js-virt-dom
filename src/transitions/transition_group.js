@@ -1,8 +1,10 @@
 var virt = require("virt"),
+    has = require("has"),
     extend = require("extend"),
     forEach = require("for_each"),
     createTransitionChild = require("./create_transition_child"),
     getChildMapping = require("./get_child_mapping"),
+    getMovePositions = require("./get_move_positions"),
     mergeChildMappings = require("./merge_child_mappings");
 
 
@@ -18,11 +20,14 @@ function TransitionGroup(props, children, context) {
     virt.Component.call(this, props, children, context);
 
     this.currentlyTransitioningKeys = {};
+    this.currentKeyPositions = {};
     this.keysToEnter = [];
     this.keysToLeave = [];
+    this.keysToMoveUp = [];
+    this.keysToMoveDown = [];
 
     this.state = {
-        children: getChildMapping(this.children)
+        children: getChildMapping(children)
     };
 
     this.performEnter = function(key) {
@@ -30,6 +35,12 @@ function TransitionGroup(props, children, context) {
     };
     this.performLeave = function(key) {
         return _this.__performLeave(key);
+    };
+    this.performMoveUp = function(key) {
+        return _this.__performMoveUp(key);
+    };
+    this.performMoveDown = function(key) {
+        return _this.__performMoveDown(key);
     };
 }
 virt.Component.extend(TransitionGroup, "TransitionGroup");
@@ -42,7 +53,11 @@ TransitionGroupPrototype.componentWillReceiveProps = function(nextProps, nextChi
         currentlyTransitioningKeys = this.currentlyTransitioningKeys,
         keysToEnter = this.keysToEnter,
         keysToLeave = this.keysToLeave,
-        key;
+        key, childMappings;
+
+
+    childMappings = mergeChildMappings(prevChildMapping, nextChildMapping);
+    getMovePositions(this.currentKeyPositions, nextChildMapping, this.keysToMoveUp, this.keysToMoveDown);
 
     for (key in nextChildMapping) {
         if (
@@ -65,19 +80,27 @@ TransitionGroupPrototype.componentWillReceiveProps = function(nextProps, nextChi
     }
 
     this.setState({
-        children: mergeChildMappings(prevChildMapping, nextChildMapping)
+        children: childMappings
     });
 };
 
 TransitionGroupPrototype.componentDidUpdate = function() {
     var keysToEnter = this.keysToEnter,
-        keysToLeave = this.keysToLeave;
+        keysToLeave = this.keysToLeave,
+        keysToMoveUp = this.keysToMoveUp,
+        keysToMoveDown = this.keysToMoveDown;
 
     this.keysToEnter = [];
     forEach(keysToEnter, this.performEnter);
 
     this.keysToLeave = [];
     forEach(keysToLeave, this.performLeave);
+
+    this.keysToMoveUp = [];
+    forEach(keysToMoveUp, this.performMoveUp);
+
+    this.keysToMoveDown = [];
+    forEach(keysToMoveDown, this.performMoveDown);
 };
 
 TransitionGroupPrototype.__performEnter = function(key) {
@@ -134,6 +157,7 @@ TransitionGroupPrototype.__handleLeaveDone = function(key) {
         component.componentDidLeave();
     }
 
+    delete this.currentKeyPositions[key];
     delete this.currentlyTransitioningKeys[key];
     currentChildMapping = getChildMapping(this.children);
 
@@ -146,6 +170,68 @@ TransitionGroupPrototype.__handleLeaveDone = function(key) {
         this.setState({
             children: newChildren
         });
+    }
+};
+
+TransitionGroupPrototype.__performMoveUp = function(key) {
+    var _this = this,
+        component = this.refs[key];
+
+    this.currentlyTransitioningKeys[key] = true;
+
+    if (component.componentWillMoveUp) {
+        component.componentWillMoveUp(function() {
+            return _this.__handleMoveUpDone(key);
+        });
+    } else {
+        this.__handleMoveUpDone(key);
+    }
+};
+
+TransitionGroupPrototype.__performMoveDown = function(key) {
+    var _this = this,
+        component = this.refs[key];
+
+    this.currentlyTransitioningKeys[key] = true;
+
+    if (component.componentWillMoveDown) {
+        component.componentWillMoveDown(function() {
+            return _this.__handleMoveDownDone(key);
+        });
+    } else {
+        this.__handleMoveDownDone(key);
+    }
+};
+
+TransitionGroupPrototype.__handleMoveUpDone = function(key) {
+    var component = this.refs[key],
+        currentChildMapping;
+
+    if (component.componentDidMoveUp) {
+        component.componentDidMoveUp();
+    }
+
+    delete this.currentlyTransitioningKeys[key];
+    currentChildMapping = getChildMapping(this.children);
+
+    if (!currentChildMapping || !currentChildMapping[key]) {
+        this.__performLeave(key);
+    }
+};
+
+TransitionGroupPrototype.__handleMoveDownDone = function(key) {
+    var component = this.refs[key],
+        currentChildMapping;
+
+    if (component.componentDidMoveDown) {
+        component.componentDidMoveDown();
+    }
+
+    delete this.currentlyTransitioningKeys[key];
+    currentChildMapping = getChildMapping(this.children);
+
+    if (!currentChildMapping || !currentChildMapping[key]) {
+        this.__performLeave(key);
     }
 };
 

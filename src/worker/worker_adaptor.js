@@ -4,10 +4,10 @@ var MessengerWorker = require("messenger_worker"),
     eventClassMap = require("../events/event_class_map");
 
 
-module.exports = Adaptor;
+module.exports = WorkerAdaptor;
 
 
-function Adaptor(root) {
+function WorkerAdaptor(root) {
     var messenger = new MessengerWorker(),
         eventManager = root.eventManager,
         viewport = {

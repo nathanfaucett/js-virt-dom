@@ -50,6 +50,22 @@ CSSTransitionGroupChildPrototype.componentWillLeave = function(done) {
     }
 };
 
+CSSTransitionGroupChildPrototype.componentWillMoveUp = function(done) {
+    if (this.props.leave) {
+        this.transition("move-up", done);
+    } else {
+        done();
+    }
+};
+
+CSSTransitionGroupChildPrototype.componentWillMoveDown = function(done) {
+    if (this.props.leave) {
+        this.transition("move-down", done);
+    } else {
+        done();
+    }
+};
+
 CSSTransitionGroupChildPrototype.transition = function(animationType, callback) {
     var node = virtDOM.findDOMNode(this),
         className = this.props.name + "-" + animationType,

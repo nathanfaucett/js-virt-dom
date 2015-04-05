@@ -23,6 +23,13 @@ function CSSTransitionGroup(props, children, context) {
 }
 virt.Component.extend(CSSTransitionGroup, "CSSTransitionGroup");
 
+CSSTransitionGroup.defaultProps = {
+    transitionName: "transition",
+    transitionMove: true,
+    transitionEnter: true,
+    transitionLeave: true
+};
+
 CSSTransitionGroupPrototype = CSSTransitionGroup.prototype;
 
 CSSTransitionGroupPrototype.__wrapChild = function(child) {
@@ -30,6 +37,7 @@ CSSTransitionGroupPrototype.__wrapChild = function(child) {
 
     return virt.createView(CSSTransitionGroupChild, {
         name: props.transitionName,
+        move: props.transitionMove,
         enter: props.transitionEnter,
         leave: props.transitionLeave
     }, child);

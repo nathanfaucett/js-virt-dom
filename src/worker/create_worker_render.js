@@ -36,8 +36,9 @@ function createWorkerRender(url, containerDOMNode) {
     });
 
     eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
-
-        nativeEvent.preventDefault();
+        if (targetId) {
+            nativeEvent.preventDefault();
+        }
 
         messenger.emit("handle_event_dispatch", {
             currentScrollLeft: viewport.currentScrollLeft,

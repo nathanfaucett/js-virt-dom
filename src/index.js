@@ -1,6 +1,5 @@
 var render = require("./render"),
-    renderString = require("./utils/render_string"),
-    getNodeById = require("./utils/get_node_by_id");
+    renderString = require("./utils/render_string");
 
 
 var virtDOM = exports;
@@ -15,11 +14,7 @@ virtDOM.renderString = function(view, id) {
     return renderString(view, id || ".0");
 };
 
-virtDOM.findDOMNode = function(component) {
-    return (component && component.__node) ? getNodeById(component.__node.id) : null;
-};
-
-virtDOM.CSSTransitionGroup = require("./transitions/css_transition_group");
+virtDOM.findDOMNode = require("./utils/find_dom_node");
 
 virtDOM.createWorkerRender = require("./worker/create_worker_render");
 virtDOM.renderWorker = require("./worker/render_worker");
