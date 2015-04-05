@@ -2342,7 +2342,6 @@ NodePrototype.removeNode = function(node) {
     var renderedChildren = this.renderedChildren,
         index;
 
-    this.root.removeNode(node);
     node.parent = null;
 
     index = indexOf(renderedChildren, node);
@@ -3277,6 +3276,7 @@ function diffChild(root, parentNode, previousChild, nextChild, parentId, index, 
                 id = getChildKey(parentId, previousChild, index);
                 node = root.childHash[id];
                 node.unmount(transaction);
+                parentNode.removeNode(node);
             } else if (isPrimativeView(nextChild)) {
                 transaction.replace(parentId, null, index, nextChild);
             } else {
@@ -3288,6 +3288,7 @@ function diffChild(root, parentNode, previousChild, nextChild, parentId, index, 
                         node.update(nextChild, transaction);
                     } else {
                         node.__unmount(transaction);
+                        parentNode.removeNode(node);
 
                         id = getChildKey(parentId, nextChild, index);
                         node = new Node(parentId, id, nextChild);
