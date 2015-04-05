@@ -1,6 +1,5 @@
 var virt = require("virt"),
     virtDOM = require("../../../src/index"),
-    CSSTransitionGroup = require("virt-css_transition_group"),
     map = require("map"),
     dispatcher = require("./dispatcher"),
     TodoStore = require("./todo_store"),
@@ -60,9 +59,8 @@ TodoListPrototype.render = function() {
     var _this = this;
 
     return (
-        virt.createView(CSSTransitionGroup, {
-                className: "todo-list",
-                tagName: "ul"
+        virt.createView("ul", {
+                className: "todo-list"
             },
             map(this.state.list, function(item) {
                 return virt.createView(TodoItem, {

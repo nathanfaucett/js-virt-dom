@@ -43,7 +43,7 @@ var environment = require(1),
     eventListener = require(2),
     virt = require(8),
     virtDOM = require(59),
-    App = require(130);
+    App = require(119);
 
 
 eventListener.on(environment.window, "load", function() {
@@ -54,19 +54,21 @@ eventListener.on(environment.window, "load", function() {
 },
 function(require, exports, module, global) {
 
-var environment = module.exports,
+var environment = exports,
 
     hasWindow = typeof(window) !== "undefined",
     userAgent = hasWindow ? window.navigator.userAgent : "";
 
 
-environment.browser = !!(
+environment.worker = typeof(importScripts) !== "undefined";
+
+environment.browser = environment.worker || !!(
     hasWindow &&
     typeof(navigator) !== "undefined" &&
     window.document
 );
 
-environment.node = !environment.browser;
+environment.node = !environment.worker && !environment.browser;
 
 environment.mobile = environment.browser && /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
 
@@ -79,8 +81,6 @@ environment.window = (
 environment.pixelRatio = environment.window.devicePixelRatio || 1;
 
 environment.document = typeof(document) !== "undefined" ? document : {};
-
-environment.isInWorker = typeof(importScripts) !== "undefined";
 
 
 },
@@ -766,10 +766,13 @@ module.exports = {
 },
 function(require, exports, module, global) {
 
+var isFunction = require(5);
+
+
 var isNode;
 
 
-if (typeof(Node) !== "undefined") {
+if (typeof(Node) !== "undefined" && isFunction(Node)) {
     isNode = function isNode(obj) {
         return obj instanceof Node;
     };
@@ -805,6 +808,8 @@ virt.createView = View.create;
 virt.createFactory = View.createFactory;
 
 virt.registerNativeComponent = require(58);
+virt.context = require(25);
+virt.owner = require(24);
 
 
 },
@@ -937,7 +942,7 @@ function construct(type, config, children) {
                 props[propName] = defaultProps[propName];
             }
         }
-      }
+    }
 
     return new View(type, key, ref, props, insureValidChildren(children), owner.current, context.current);
 }
@@ -3343,10 +3348,8 @@ virtDOM.renderString = function(view, id) {
 
 virtDOM.findDOMNode = require(114);
 
-virtDOM.CSSTransitionGroup = require(115);
-
-virtDOM.createWorkerRender = require(126);
-virtDOM.renderWorker = require(128);
+virtDOM.createWorkerRender = require(115);
+virtDOM.renderWorker = require(117);
 
 
 },
@@ -5605,819 +5608,7 @@ function findDOMNode(value) {
 },
 function(require, exports, module, global) {
 
-var virt = require(8),
-    extend = require(43),
-    TransitionGroup = require(116),
-    CSSTransitionGroupChild = require(121);
-
-
-var CSSTransitionGroupPrototype;
-
-
-module.exports = CSSTransitionGroup;
-
-
-function CSSTransitionGroup(props, children, context) {
-    var _this = this;
-
-    virt.Component.call(this, props, children, context);
-
-    this.childWrap = {
-        childFactory: function(child) {
-            return _this.__wrapChild(child);
-        }
-    };
-}
-virt.Component.extend(CSSTransitionGroup, "CSSTransitionGroup");
-
-CSSTransitionGroup.defaultProps = {
-    transitionName: "transition",
-    transitionMove: true,
-    transitionEnter: true,
-    transitionLeave: true
-};
-
-CSSTransitionGroupPrototype = CSSTransitionGroup.prototype;
-
-CSSTransitionGroupPrototype.__wrapChild = function(child) {
-    var props = this.props;
-
-    return virt.createView(CSSTransitionGroupChild, {
-        name: props.transitionName,
-        move: props.transitionMove,
-        enter: props.transitionEnter,
-        leave: props.transitionLeave
-    }, child);
-};
-
-CSSTransitionGroupPrototype.render = function() {
-    return virt.createView(TransitionGroup, extend({}, this.props, this.childWrap), this.children);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var virt = require(8),
-    has = require(18),
-    extend = require(43),
-    forEach = require(70),
-    createTransitionChild = require(117),
-    getChildMapping = require(118),
-    getMovePositions = require(119),
-    mergeChildMappings = require(120);
-
-
-var TransitionGroupPrototype;
-
-
-module.exports = TransitionGroup;
-
-
-function TransitionGroup(props, children, context) {
-    var _this = this;
-
-    virt.Component.call(this, props, children, context);
-
-    this.currentlyTransitioningKeys = {};
-    this.currentKeyPositions = {};
-    this.keysToEnter = [];
-    this.keysToLeave = [];
-    this.keysToMoveUp = [];
-    this.keysToMoveDown = [];
-
-    this.state = {
-        children: getChildMapping(children)
-    };
-
-    this.performEnter = function(key) {
-        return _this.__performEnter(key);
-    };
-    this.performLeave = function(key) {
-        return _this.__performLeave(key);
-    };
-    this.performMoveUp = function(key) {
-        return _this.__performMoveUp(key);
-    };
-    this.performMoveDown = function(key) {
-        return _this.__performMoveDown(key);
-    };
-}
-virt.Component.extend(TransitionGroup, "TransitionGroup");
-
-TransitionGroupPrototype = TransitionGroup.prototype;
-
-TransitionGroupPrototype.componentWillReceiveProps = function(nextProps, nextChildren) {
-    var nextChildMapping = getChildMapping(nextChildren),
-        prevChildMapping = this.state.children,
-        currentlyTransitioningKeys = this.currentlyTransitioningKeys,
-        keysToEnter = this.keysToEnter,
-        keysToLeave = this.keysToLeave,
-        key, childMappings;
-
-
-    childMappings = mergeChildMappings(prevChildMapping, nextChildMapping);
-    getMovePositions(this.currentKeyPositions, nextChildMapping, this.keysToMoveUp, this.keysToMoveDown);
-
-    for (key in nextChildMapping) {
-        if (
-            nextChildMapping[key] &&
-            !(prevChildMapping && !!prevChildMapping[key]) &&
-            !currentlyTransitioningKeys[key]
-        ) {
-            keysToEnter[keysToEnter.length] = key;
-        }
-    }
-
-    for (key in prevChildMapping) {
-        if (
-            prevChildMapping[key] &&
-            !(nextChildMapping && !!nextChildMapping[key]) &&
-            !currentlyTransitioningKeys[key]
-        ) {
-            keysToLeave[keysToLeave.length] = key;
-        }
-    }
-
-    this.setState({
-        children: childMappings
-    });
-};
-
-TransitionGroupPrototype.componentDidUpdate = function() {
-    var keysToEnter = this.keysToEnter,
-        keysToLeave = this.keysToLeave,
-        keysToMoveUp = this.keysToMoveUp,
-        keysToMoveDown = this.keysToMoveDown;
-
-    this.keysToEnter = [];
-    forEach(keysToEnter, this.performEnter);
-
-    this.keysToLeave = [];
-    forEach(keysToLeave, this.performLeave);
-
-    this.keysToMoveUp = [];
-    forEach(keysToMoveUp, this.performMoveUp);
-
-    this.keysToMoveDown = [];
-    forEach(keysToMoveDown, this.performMoveDown);
-};
-
-TransitionGroupPrototype.__performEnter = function(key) {
-    var _this = this,
-        component = this.refs[key];
-
-    this.currentlyTransitioningKeys[key] = true;
-
-    if (component.componentWillEnter) {
-        component.componentWillEnter(function() {
-            return _this.__handleEnterDone(key);
-        });
-    } else {
-        this.__handleEnterDone(key);
-    }
-};
-
-TransitionGroupPrototype.__handleEnterDone = function(key) {
-    var component = this.refs[key],
-        currentChildMapping;
-
-    if (component.componentDidEnter) {
-        component.componentDidEnter();
-    }
-
-    delete this.currentlyTransitioningKeys[key];
-    currentChildMapping = getChildMapping(this.children);
-
-    if (!currentChildMapping || !currentChildMapping[key]) {
-        this.__performLeave(key);
-    }
-};
-
-TransitionGroupPrototype.__performLeave = function(key) {
-    var _this = this,
-        component = this.refs[key];
-
-    this.currentlyTransitioningKeys[key] = true;
-
-    if (component.componentWillLeave) {
-        component.componentWillLeave(function() {
-            return _this.__handleLeaveDone(key);
-        });
-    } else {
-        this.__handleLeaveDone(key);
-    }
-};
-
-TransitionGroupPrototype.__handleLeaveDone = function(key) {
-    var component = this.refs[key],
-        currentChildMapping, newChildren;
-
-    if (component.componentDidLeave) {
-        component.componentDidLeave();
-    }
-
-    delete this.currentKeyPositions[key];
-    delete this.currentlyTransitioningKeys[key];
-    currentChildMapping = getChildMapping(this.children);
-
-    if (currentChildMapping && currentChildMapping[key]) {
-        this.performEnter(key);
-    } else {
-        newChildren = extend({}, this.state.children);
-        delete newChildren[key];
-
-        this.setState({
-            children: newChildren
-        });
-    }
-};
-
-TransitionGroupPrototype.__performMoveUp = function(key) {
-    var _this = this,
-        component = this.refs[key];
-
-    this.currentlyTransitioningKeys[key] = true;
-
-    if (component.componentWillMoveUp) {
-        component.componentWillMoveUp(function() {
-            return _this.__handleMoveDone(key);
-        });
-    } else {
-        this.__handleMoveDone(key);
-    }
-};
-
-TransitionGroupPrototype.__performMoveDown = function(key) {
-    var _this = this,
-        component = this.refs[key];
-
-    this.currentlyTransitioningKeys[key] = true;
-
-    if (component.componentWillMoveDown) {
-        component.componentWillMoveDown(function() {
-            return _this.__handleMoveDone(key);
-        });
-    } else {
-        this.__handleMoveDone(key);
-    }
-};
-
-TransitionGroupPrototype.__handleMoveDone = function(key) {
-    var component = this.refs[key],
-        currentChildMapping;
-
-    if (component.componentDidMove) {
-        component.componentDidMove();
-    }
-
-    delete this.currentlyTransitioningKeys[key];
-    currentChildMapping = getChildMapping(this.children);
-
-    if (!currentChildMapping || !currentChildMapping[key]) {
-        this.__performLeave(key);
-    }
-};
-
-TransitionGroupPrototype.render = function() {
-    var childrenToRender = [],
-        childFactory = this.props.childFactory,
-        children = this.state.children,
-        key, child;
-
-    if (children) {
-        for (key in children) {
-            if ((child = children[key])) {
-                childrenToRender[childrenToRender.length] = createTransitionChild(childFactory(child), key, key);
-            }
-        }
-    }
-
-    return virt.createView(this.props.tagName, this.props, childrenToRender);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var View = require(9),
-    owner = require(24),
-    context = require(25);
-
-
-module.exports = createTransitionChild;
-
-
-function createTransitionChild(child, key, ref) {
-    return new View(child.type, key, ref, child.props, child.children, owner.current, context.current);
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isPrimativeView = require(9).isPrimativeView;
-
-
-module.exports = getChildMapping;
-
-
-function getChildMapping(children) {
-    var childMapping = null,
-        i = -1,
-        il = children.length - 1,
-        child;
-
-    while (i++ < il) {
-        child = children[i];
-
-        if (!isPrimativeView(child)) {
-            childMapping = childMapping || {};
-            childMapping[child.key] = child;
-        }
-    }
-
-    return childMapping;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var has = require(18);
-
-
-module.exports = getMovePositions;
-
-
-function getMovePositions(currentKeyPositions, nextChildMapping, keysToMoveUp, keysToMoveDown) {
-    var index = 0,
-        key, prev;
-
-    for (key in nextChildMapping) {
-        if (has(nextChildMapping, key)) {
-            prev = currentKeyPositions[key];
-
-            if (prev != null) {
-                if (prev > index) {
-                    keysToMoveDown[keysToMoveDown.length] = key;
-                } else if (prev < index) {
-                    keysToMoveUp[keysToMoveUp.length] = key;
-                }
-            }
-
-            currentKeyPositions[key] = index++;
-        }
-    }
-}
-
-
-},
-function(require, exports, module, global) {
-
-var has = require(18);
-
-
-module.exports = mergeChildMappings;
-
-
-function mergeChildMappings(prev, next) {
-    var nextKeysPending = {},
-        pendingKeys = [],
-        childMapping = {},
-        prevKey, nextKey, i, il, nextKeysPendingValue, pendingNextKey;
-
-    prev = prev || {};
-    next = next || {};
-
-    for (prevKey in prev) {
-        if (has(next, prevKey)) {
-            if (pendingKeys.length) {
-                nextKeysPending[prevKey] = pendingKeys;
-                pendingKeys = [];
-            }
-        } else {
-            pendingKeys.push(prevKey);
-        }
-    }
-
-    for (nextKey in next) {
-        if (has(nextKeysPending, nextKey)) {
-            nextKeysPendingValue = nextKeysPending[nextKey];
-            i = -1;
-            il = nextKeysPendingValue.length - 1;
-
-            while (i++ < il) {
-                pendingNextKey = nextKeysPendingValue[i];
-                childMapping[pendingNextKey] = has(next, pendingNextKey) ? next[pendingNextKey] : prev[pendingNextKey];
-            }
-        }
-        childMapping[nextKey] = has(next, nextKey) ? next[nextKey] : prev[nextKey]; //getValueForKey(nextKey);
-    }
-
-    i = -1;
-    il = pendingKeys.length - 1;
-    while (i++ < il) {
-        nextKey = pendingKeys[i];
-        childMapping[nextKey] = has(next, nextKey) ? next[nextKey] : prev[nextKey];
-    }
-
-    return childMapping;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var virt = require(8),
-    virtDOM = require(59),
-    forEach = require(70),
-    transitionEvents = require(122),
-    domClass = require(124);
-
-
-var CSSTransitionGroupChildPrototype,
-    TICK = 1000 / 60;
-
-
-module.exports = CSSTransitionGroupChild;
-
-
-function CSSTransitionGroupChild(props, children, context) {
-    var _this = this;
-
-    virt.Component.call(this, props, children, context);
-
-    this.timeout = null;
-
-    this.classNameQueue = [];
-    this.flushClassNameQueue = function() {
-        return _this.__flushClassNameQueue();
-    };
-}
-virt.Component.extend(CSSTransitionGroupChild, "CSSTransitionGroupChild");
-
-CSSTransitionGroupChildPrototype = CSSTransitionGroupChild.prototype;
-
-CSSTransitionGroupChildPrototype.componentWillUnmount = function() {
-    if (this.timeout !== null) {
-        clearTimeout(this.timeout);
-    }
-};
-
-CSSTransitionGroupChildPrototype.componentWillEnter = function(done) {
-    if (this.props.enter) {
-        this.transition("enter", done);
-    } else {
-        done();
-    }
-};
-
-CSSTransitionGroupChildPrototype.componentWillLeave = function(done) {
-    if (this.props.leave) {
-        this.transition("leave", done);
-    } else {
-        done();
-    }
-};
-
-CSSTransitionGroupChildPrototype.componentWillMoveUp = function(done) {
-    if (this.props.leave) {
-        this.transition("move-up", done);
-    } else {
-        done();
-    }
-};
-
-CSSTransitionGroupChildPrototype.componentWillMoveDown = function(done) {
-    if (this.props.leave) {
-        this.transition("move-down", done);
-    } else {
-        done();
-    }
-};
-
-CSSTransitionGroupChildPrototype.transition = function(animationType, callback) {
-    var node = virtDOM.findDOMNode(this),
-        className = this.props.name + "-" + animationType,
-        activeClassName = className + "-active";
-
-    function endListener(e) {
-        if (e && e.target === node) {
-            domClass.remove(node, className);
-            domClass.remove(node, activeClassName);
-
-            transitionEvents.removeEndEventListener(node, endListener);
-
-            if (callback) {
-                callback();
-            }
-        }
-    }
-
-    transitionEvents.addEndEventListener(node, endListener);
-    domClass.add(node, className);
-
-    this.queueClass(activeClassName);
-};
-
-CSSTransitionGroupChildPrototype.queueClass = function(className) {
-    var classNameQueue = this.classNameQueue;
-
-    classNameQueue[classNameQueue.length] = className;
-
-    if (this.timeout === null) {
-        this.timeout = setTimeout(this.flushClassNameQueue, TICK);
-    }
-};
-
-CSSTransitionGroupChildPrototype.__flushClassNameQueue = function() {
-    var node;
-
-    if (this.isMounted()) {
-        node = virtDOM.findDOMNode(this);
-
-        forEach(this.classNameQueue, function(className) {
-            domClass.add(node, className);
-        });
-    }
-
-    this.classNameQueue.length = 0;
-    this.timeout = null;
-};
-
-CSSTransitionGroupChildPrototype.render = function() {
-    return this.children[0];
-};
-
-
-},
-function(require, exports, module, global) {
-
-var supports = require(123);
-
-
-var transitionEvents = exports,
-
-    EVENT_NAME_MAP = {
-        transitionend: {
-            "transition": "transitionend",
-            "WebkitTransition": "webkitTransitionEnd",
-            "MozTransition": "mozTransitionEnd",
-            "OTransition": "oTransitionEnd",
-            "msTransition": "MSTransitionEnd"
-        },
-
-        animationend: {
-            "animation": "animationend",
-            "WebkitAnimation": "webkitAnimationEnd",
-            "MozAnimation": "mozAnimationEnd",
-            "OAnimation": "oAnimationEnd",
-            "msAnimation": "MSAnimationEnd"
-        }
-    },
-
-    END_EVENTS = [];
-
-function detectEvents() {
-    var testEl = document.createElement("div"),
-        style = testEl.style,
-        baseEventName, baseEvents, styleName;
-
-    if (!("AnimationEvent" in window)) {
-        delete EVENT_NAME_MAP.animationend.animation;
-    }
-
-    if (!("TransitionEvent" in window)) {
-        delete EVENT_NAME_MAP.transitionend.transition;
-    }
-
-    for (baseEventName in EVENT_NAME_MAP) {
-        baseEvents = EVENT_NAME_MAP[baseEventName];
-        for (styleName in baseEvents) {
-            if (styleName in style) {
-                END_EVENTS[END_EVENTS.length] = baseEvents[styleName];
-                break;
-            }
-        }
-    }
-}
-
-if (supports.dom) {
-    detectEvents();
-}
-
-function addEventListener(node, eventName, eventListener) {
-    node.addEventListener(eventName, eventListener, false);
-}
-
-function removeEventListener(node, eventName, eventListener) {
-    node.removeEventListener(eventName, eventListener, false);
-}
-
-transitionEvents.addEndEventListener = function(node, eventListener) {
-    if (END_EVENTS.length === 0) {
-        window.setTimeout(eventListener, 0);
-    } else {
-        END_EVENTS.forEach(function(endEvent) {
-            addEventListener(node, endEvent, eventListener);
-        });
-    }
-};
-
-transitionEvents.removeEndEventListener = function(node, eventListener) {
-    if (END_EVENTS.length !== 0) {
-        END_EVENTS.forEach(function(endEvent) {
-            removeEventListener(node, endEvent, eventListener);
-        });
-    }
-};
-
-
-},
-function(require, exports, module, global) {
-
-var environment = require(1);
-
-
-var supports = module.exports;
-
-
-supports.dom = !!(typeof(window) !== "undefined" && window.document && window.document.createElement);
-supports.workers = typeof(Worker) !== "undefined";
-
-supports.eventListeners = supports.dom && !!environment.window.addEventListener;
-supports.attachEvents = supports.dom && !!environment.window.attachEvent;
-
-supports.viewport = supports.dom && !!environment.window.screen;
-supports.touch = supports.dom && "ontouchstart" in environment.window;
-
-
-},
-function(require, exports, module, global) {
-
-var trim = require(125),
-    isArray = require(12),
-    isString = require(15),
-    isElement = require(110);
-
-
-var domClass = exports,
-
-    CLASS_REMOVE = /[\t\r\n\f]/g,
-    SPLITER = /[\s, ]+/;
-
-
-domClass.add = function(node, names) {
-    var classNames, i, current, className, finalValue;
-
-    if (isElement(node)) {
-        current = node.className ? (" " + node.className + " ").replace(CLASS_REMOVE, " ") : " ";
-
-        if (current) {
-            classNames = isArray(names) ? names : (isString(names) ? names.split(SPLITER) : []);
-            i = classNames.length;
-
-            while (i--) {
-                className = classNames[i];
-
-                if (current.indexOf(" " + className + " ") === -1) {
-                    current += className + " ";
-                }
-
-                finalValue = trim(current);
-                if (node.className !== finalValue) {
-                    node.className = finalValue;
-                }
-            }
-        }
-    }
-};
-
-domClass.remove = function(node, names) {
-    var classNames, i, current, className, finalValue;
-
-    if (isElement(node)) {
-        current = node.className ? (" " + node.className + " ").replace(CLASS_REMOVE, " ") : " ";
-
-        if (current) {
-            classNames = isArray(names) ? names : (isString(names) ? names.split(SPLITER) : []);
-            i = classNames.length;
-
-            while (i--) {
-                className = classNames[i];
-
-                if (current.indexOf(" " + className + " ") !== -1) {
-                    current = current.replace(" " + className + " ", " ");
-                }
-
-                finalValue = trim(current);
-                if (node.className !== finalValue) {
-                    node.className = finalValue;
-                }
-            }
-        }
-    }
-};
-
-domClass.has = function(node, names) {
-    var classNames, i, current, className;
-
-    if (isElement(node)) {
-        current = node.className ? (" " + node.className + " ").replace(CLASS_REMOVE, " ") : " ";
-
-        if (current) {
-            classNames = isArray(names) ? names : (isString(names) ? names.split(SPLITER) : []);
-            i = classNames.length;
-
-            while (i--) {
-                className = classNames[i];
-
-                if (current.indexOf(" " + className + " ") !== -1) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-};
-
-
-},
-function(require, exports, module, global) {
-
-var isNative = require(21),
-    isString = require(15);
-
-
-var StringPrototype = String.prototype,
-
-    nativeTrim = StringPrototype.trim,
-    nativeTrimLeft = StringPrototype.trimLeft,
-    nativeTrimRight = StringPrototype.trimRight,
-
-    reTrim = /^[\s\xA0]+|[\s\xA0]+$/g,
-    reTrimLeft = /^[\s\xA0]+/g,
-    reTrimRight = /[\s\xA0]+$/g,
-
-    baseTrim, baseTrimLeft, baseTrimRight;
-
-
-module.exports = trim;
-
-
-if (isNative(nativeTrim)) {
-    baseTrim = function baseTrim(str) {
-        return nativeTrim.call(str);
-    };
-} else {
-    baseTrim = function baseTrim(str) {
-        return str.replace(reTrim, "");
-    };
-}
-
-if (isNative(nativeTrimLeft)) {
-    baseTrimLeft = function baseTrimLeft(str) {
-        return nativeTrimLeft.call(str);
-    };
-} else {
-    baseTrimLeft = function baseTrimLeft(str) {
-        return str.replace(reTrimLeft, "");
-    };
-}
-
-if (isNative(nativeTrimRight)) {
-    baseTrimRight = function baseTrimRight(str) {
-        return nativeTrimRight.call(str);
-    };
-} else {
-    baseTrimRight = function baseTrimRight(str) {
-        return str.replace(reTrimRight, "");
-    };
-}
-
-
-function trim(str) {
-    return isString(str) ? baseTrim(str) : str;
-}
-
-trim.left = function trimLeft(str) {
-    return isString(str) ? baseTrimLeft(str) : str;
-};
-
-trim.right = function trimRight(str) {
-    return isString(str) ? baseTrimRight(str) : str;
-};
-
-
-},
-function(require, exports, module, global) {
-
-var MessengerWorker = require(127),
+var MessengerWorker = require(116),
     has = require(18),
     isNode = require(7),
     isFunction = require(5),
@@ -6598,7 +5789,7 @@ function emit(listeners, data, callback) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    WorkerAdaptor = require(129);
+    WorkerAdaptor = require(118);
 
 
 var root = null;
@@ -6627,7 +5818,7 @@ render.unmount = function() {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(127),
+var MessengerWorker = require(116),
     traverseAncestors = require(62),
     consts = require(69),
     eventClassMap = require(76);
@@ -6702,9 +5893,9 @@ function WorkerAdaptor(root) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(131),
-    TodoList = require(135),
-    TodoForm = require(141);
+    propTypes = require(120),
+    TodoList = require(124),
+    TodoForm = require(130);
 
 
 var AppPrototype;
@@ -6747,12 +5938,12 @@ AppPrototype.render = function() {
 function(require, exports, module, global) {
 
 var isArray = require(12),
-    isRegExp = require(132),
+    isRegExp = require(121),
     isNullOrUndefined = require(11),
-    emptyFunction = require(133),
+    emptyFunction = require(122),
     isFunction = require(5),
     has = require(18),
-    indexOf = require(134);
+    indexOf = require(123);
 
 
 var propTypes = exports,
@@ -6995,9 +6186,9 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(59),
     map = require(19),
-    dispatcher = require(136),
-    TodoStore = require(138),
-    TodoItem = require(140);
+    dispatcher = require(125),
+    TodoStore = require(127),
+    TodoItem = require(129);
 
 
 var TodoListPrototype;
@@ -7053,9 +6244,8 @@ TodoListPrototype.render = function() {
     var _this = this;
 
     return (
-        virt.createView(virtDOM.CSSTransitionGroup, {
-                className: "todo-list",
-                tagName: "ul"
+        virt.createView("ul", {
+                className: "todo-list"
             },
             map(this.state.list, function(item) {
                 return virt.createView(TodoItem, {
@@ -7075,7 +6265,7 @@ TodoListPrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(137);
+var EventEmitter = require(126);
 
 
 var dispatcher = module.exports = new EventEmitter(-1),
@@ -7102,7 +6292,6 @@ function(require, exports, module, global) {
 var isFunction = require(5),
     inherits = require(49),
     fastSlice = require(17),
-    defineProperty = require(29),
     keys = require(20);
 
 
@@ -7139,22 +6328,22 @@ EventEmitter.prototype.once = function(name, listener) {
     var _this = this;
 
     function once() {
-        var length = arguments.length;
 
         _this.off(name, once);
 
-        if (length === 0) {
-            return listener();
-        } else if (length === 1) {
-            return listener(arguments[0]);
-        } else if (length === 2) {
-            return listener(arguments[0], arguments[1]);
-        } else if (length === 3) {
-            return listener(arguments[0], arguments[1], arguments[2]);
-        } else if (length === 4) {
-            return listener(arguments[0], arguments[1], arguments[2], arguments[3]);
-        } else {
-            return listener.apply(null, arguments);
+        switch (arguments.length) {
+            case 0:
+                return listener();
+            case 1:
+                return listener(arguments[0]);
+            case 2:
+                return listener(arguments[0], arguments[1]);
+            case 3:
+                return listener(arguments[0], arguments[1], arguments[2]);
+            case 4:
+                return listener(arguments[0], arguments[1], arguments[2], arguments[3]);
+            default:
+                return listener.apply(null, arguments);
         }
     }
 
@@ -7245,7 +6434,7 @@ EventEmitter.prototype.removeAllListeners = function() {
 };
 
 function emit(eventList, args) {
-    var a1, a2, a3, a4,
+    var a1, a2, a3, a4, a5,
         length = eventList.length - 1,
         i = -1,
         event;
@@ -7296,6 +6485,18 @@ function emit(eventList, args) {
                 }
             }
             break;
+        case 5:
+            a1 = args[0];
+            a2 = args[1];
+            a3 = args[2];
+            a4 = args[3];
+            a5 = args[4];
+            while (i++ < length) {
+                if ((event = eventList[i])) {
+                    event(a1, a2, a3, a4, a5);
+                }
+            }
+            break;
         default:
             while (i++ < length) {
                 if ((event = eventList[i])) {
@@ -7322,10 +6523,44 @@ EventEmitter.prototype.emit = function(name) {
     return this.emitArgs(name, fastSlice(arguments, 1));
 };
 
+function createFunctionCaller(args) {
+    switch (args.length) {
+        case 0:
+            return function functionCaller(fn) {
+                return fn();
+            };
+        case 1:
+            return function functionCaller(fn) {
+                return fn(args[0]);
+            };
+        case 2:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1]);
+            };
+        case 3:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2]);
+            };
+        case 4:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2], args[3]);
+            };
+        case 5:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2], args[3], args[4]);
+            };
+        default:
+            return function functionCaller(fn) {
+                return fn.apply(null, args);
+            };
+    }
+}
+
 function emitAsync(eventList, args, callback) {
     var length = eventList.length,
         index = 0,
-        called = false;
+        called = false,
+        functionCaller;
 
     function next(err) {
         if (called !== true) {
@@ -7333,12 +6568,13 @@ function emitAsync(eventList, args, callback) {
                 called = true;
                 callback(err);
             } else {
-                eventList[index++].apply(null, args);
+                functionCaller(eventList[index++]);
             }
         }
     }
 
     args[args.length] = next;
+    functionCaller = createFunctionCaller(args);
     next();
 }
 
@@ -7383,10 +6619,10 @@ EventEmitter.prototype.setMaxListeners = function(value) {
 };
 
 
-defineConstructorProperty(EventEmitter, "defaultMaxListeners", 10);
+inherits.defineProperty(EventEmitter, "defaultMaxListeners", 10);
 
 
-defineConstructorProperty(EventEmitter, "listeners", function(obj, name) {
+inherits.defineProperty(EventEmitter, "listeners", function(obj, name) {
     var eventList;
 
     if (obj == null) {
@@ -7397,7 +6633,7 @@ defineConstructorProperty(EventEmitter, "listeners", function(obj, name) {
     return eventList ? eventList.slice() : [];
 });
 
-defineConstructorProperty(EventEmitter, "listenerCount", function(obj, name) {
+inherits.defineProperty(EventEmitter, "listenerCount", function(obj, name) {
     var eventList;
 
     if (obj == null) {
@@ -7408,7 +6644,7 @@ defineConstructorProperty(EventEmitter, "listenerCount", function(obj, name) {
     return eventList ? eventList.length : 0;
 });
 
-defineConstructorProperty(EventEmitter, "setMaxListeners", function(value) {
+inherits.defineProperty(EventEmitter, "setMaxListeners", function(value) {
     if ((value = +value) !== value) {
         throw new TypeError("EventEmitter.setMaxListeners(value) value must be a number");
     }
@@ -7423,25 +6659,15 @@ EventEmitter.extend = function(child) {
 };
 
 
-function defineConstructorProperty(object, name, value) {
-    defineProperty(object, name, {
-        configurable: true,
-        enumerable: false,
-        writable: true,
-        value: value
-    });
-}
-
-
 module.exports = EventEmitter;
 
 
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(137),
-    values = require(139),
-    dispatcher = require(136);
+var EventEmitter = require(126),
+    values = require(128),
+    dispatcher = require(125);
 
 
 var TodoStore = module.exports = new EventEmitter(-1),
@@ -7567,7 +6793,7 @@ module.exports = values;
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(131);
+    propTypes = require(120);
 
 
 var TodoItemPrototype;
@@ -7618,8 +6844,8 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(59),
     eventListener = require(2),
-    dispatcher = require(136),
-    TodoStore = require(138);
+    dispatcher = require(125),
+    TodoStore = require(127);
 
 
 var TodoFormPrototype;
