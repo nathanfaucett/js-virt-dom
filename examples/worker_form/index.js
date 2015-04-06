@@ -824,10 +824,10 @@ virtDOM.renderString = function(view, id) {
     return renderString(view, id || ".0");
 };
 
-virtDOM.findDOMNode = require(115);
+virtDOM.findDOMNode = require(116);
 
-virtDOM.createWorkerRender = require(116);
-virtDOM.renderWorker = require(118);
+virtDOM.createWorkerRender = require(117);
+virtDOM.renderWorker = require(119);
 
 
 },
@@ -835,8 +835,8 @@ function(require, exports, module, global) {
 
 var virt = require(10),
     Adaptor = require(62),
-    getRootNodeInContainer = require(114),
-    getNodeId = require(112);
+    getRootNodeInContainer = require(115),
+    getNodeId = require(113);
 
 
 var rootsById = {};
@@ -5085,8 +5085,9 @@ function(require, exports, module, global) {
 var consts = require(33),
     createDOMElement = require(106),
     renderString = require(108),
-    addDOMNodes = require(110),
-    removeDOMNodes = require(113),
+    renderChildrenString = require(110),
+    addDOMNodes = require(111),
+    removeDOMNodes = require(114),
     getNodeById = require(68),
     applyProperties = require(107);
 
@@ -5139,7 +5140,7 @@ function remove(parentNode, id, index) {
 }
 
 function mount(parentNode, view, id) {
-    parentNode.innerHTML = renderString(view, id);
+    parentNode.innerHTML = renderString(view, null, id);
     addDOMNodes(parentNode.childNodes);
 }
 
@@ -5147,7 +5148,7 @@ function insert(parentNode, id, index, view, document) {
     var node = createDOMElement(view, id, document, false);
 
     if (view.children) {
-        node.innerHTML = renderString(view.children, id);
+        node.innerHTML = renderChildrenString(view.children, view.props, id);
         addDOMNodes(node.childNodes);
     }
 
@@ -5166,7 +5167,7 @@ function replace(parentNode, id, index, view, document) {
     var node = createDOMElement(view, id, document, false);
 
     if (view.children) {
-        node.innerHTML = renderString(view.children, id);
+        node.innerHTML = renderChildrenString(view.children, view.props, id);
         addDOMNodes(node.childNodes);
     }
 
@@ -5383,11 +5384,10 @@ function applyObject(node, previous, propKey, propValues) {
 function(require, exports, module, global) {
 
 var virt = require(10),
-    getViewKey = require(57),
+    getChildKey = require(56),
 
     escapeTextContent = require(109),
     isFunction = require(5),
-    isArray = require(14),
     map = require(21),
     isString = require(17),
     isObject = require(4),
@@ -5398,7 +5398,6 @@ var virt = require(10),
 
 var View = virt.View,
     isPrimativeView = View.isPrimativeView,
-    emptyProps = {},
 
     closedTags = {
         area: true,
@@ -5420,17 +5419,7 @@ var View = virt.View,
     };
 
 
-module.exports = function(view, id) {
-    var props;
-    if (isArray(view)) {
-        props = view.props;
-        return map(view, function(v, i) {
-            return render(v, props, id + "." + getViewKey(v, i));
-        }).join("");
-    } else {
-        return render(view, emptyProps, id);
-    }
-};
+module.exports = render;
 
 
 function render(view, parentProps, id) {
@@ -5445,7 +5434,7 @@ function render(view, parentProps, id) {
         return (
             closedTags[type] !== true ?
             contentTag(type, map(view.children, function(child, i) {
-                return render(child, props, id + "." + getViewKey(child, i));
+                return render(child, props, getChildKey(id, child, i));
             }).join(""), id, view.props) :
             closedTag(type, id, view.props)
         );
@@ -5453,7 +5442,7 @@ function render(view, parentProps, id) {
 }
 
 function contentMarkup(content, props) {
-    if (props.dangerouslySetInnerHTML !== true) {
+    if (props && props.dangerouslySetInnerHTML !== true) {
         return escapeTextContent(content);
     } else {
         return content;
@@ -5532,8 +5521,27 @@ module.exports = function escapeTextContent(text) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(111),
-    getNodeId = require(112);
+var getChildKey = require(56),
+    map = require(21),
+    renderString = require(108);
+
+
+
+module.exports = renderChildrenString;
+
+
+function renderChildrenString(children, props, id) {
+    return map(children, function(view, index) {
+        return renderString(view, props, getChildKey(id, view, index));
+    });
+}
+
+
+},
+function(require, exports, module, global) {
+
+var isElement = require(112),
+    getNodeId = require(113);
 
 
 module.exports = addDOMNodes;
@@ -5605,7 +5613,7 @@ function getId(node) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(111),
+var isElement = require(112),
     nodeCache = require(69),
     getNodeAttributeId = require(74);
 
@@ -5675,7 +5683,7 @@ function findDOMNode(value) {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(117),
+var MessengerWorker = require(118),
     has = require(20),
     isNode = require(7),
     isFunction = require(5),
@@ -5856,7 +5864,7 @@ function emit(listeners, data, callback) {
 function(require, exports, module, global) {
 
 var virt = require(10),
-    WorkerAdaptor = require(119);
+    WorkerAdaptor = require(120);
 
 
 var ComponentPrototype = virt.Component.prototype,
@@ -5903,7 +5911,7 @@ function offMessage(name, callback) {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(117),
+var MessengerWorker = require(118),
     traverseAncestors = require(63),
     consts = require(70),
     eventClassMap = require(77);

@@ -1,9 +1,8 @@
 var virt = require("virt"),
-    getViewKey = require("virt/utils/get_view_key"),
+    getChildKey = require("virt/utils/get_child_key"),
 
     escapeTextContent = require("escape_text_content"),
     isFunction = require("is_function"),
-    isArray = require("is_array"),
     map = require("map"),
     isString = require("is_string"),
     isObject = require("is_object"),
@@ -14,7 +13,6 @@ var virt = require("virt"),
 
 var View = virt.View,
     isPrimativeView = View.isPrimativeView,
-    emptyProps = {},
 
     closedTags = {
         area: true,
@@ -36,17 +34,7 @@ var View = virt.View,
     };
 
 
-module.exports = function(view, id) {
-    var props;
-    if (isArray(view)) {
-        props = view.props;
-        return map(view, function(v, i) {
-            return render(v, props, id + "." + getViewKey(v, i));
-        }).join("");
-    } else {
-        return render(view, emptyProps, id);
-    }
-};
+module.exports = render;
 
 
 function render(view, parentProps, id) {
@@ -61,7 +49,7 @@ function render(view, parentProps, id) {
         return (
             closedTags[type] !== true ?
             contentTag(type, map(view.children, function(child, i) {
-                return render(child, props, id + "." + getViewKey(child, i));
+                return render(child, props, getChildKey(id, child, i));
             }).join(""), id, view.props) :
             closedTag(type, id, view.props)
         );
@@ -69,7 +57,7 @@ function render(view, parentProps, id) {
 }
 
 function contentMarkup(content, props) {
-    if (props.dangerouslySetInnerHTML !== true) {
+    if (props && props.dangerouslySetInnerHTML !== true) {
         return escapeTextContent(content);
     } else {
         return content;

@@ -1,6 +1,7 @@
 var consts = require("virt/transaction/consts"),
     createDOMElement = require("./utils/create_dom_element"),
     renderString = require("./utils/render_string"),
+    renderChildrenString = require("./utils/render_children_string"),
     addDOMNodes = require("./utils/add_dom_nodes"),
     removeDOMNodes = require("./utils/remove_dom_nodes"),
     getNodeById = require("./utils/get_node_by_id"),
@@ -55,7 +56,7 @@ function remove(parentNode, id, index) {
 }
 
 function mount(parentNode, view, id) {
-    parentNode.innerHTML = renderString(view, id);
+    parentNode.innerHTML = renderString(view, null, id);
     addDOMNodes(parentNode.childNodes);
 }
 
@@ -63,7 +64,7 @@ function insert(parentNode, id, index, view, document) {
     var node = createDOMElement(view, id, document, false);
 
     if (view.children) {
-        node.innerHTML = renderString(view.children, id);
+        node.innerHTML = renderChildrenString(view.children, view.props, id);
         addDOMNodes(node.childNodes);
     }
 
@@ -82,7 +83,7 @@ function replace(parentNode, id, index, view, document) {
     var node = createDOMElement(view, id, document, false);
 
     if (view.children) {
-        node.innerHTML = renderString(view.children, id);
+        node.innerHTML = renderChildrenString(view.children, view.props, id);
         addDOMNodes(node.childNodes);
     }
 
