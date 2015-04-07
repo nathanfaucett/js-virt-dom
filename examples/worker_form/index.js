@@ -822,10 +822,10 @@ virtDOM.renderString = function(view, id) {
     return renderString(view, null, id || ".0");
 };
 
-virtDOM.findDOMNode = require(117);
+virtDOM.findDOMNode = require(118);
 
-virtDOM.createWorkerRender = require(118);
-virtDOM.renderWorker = require(120);
+virtDOM.createWorkerRender = require(119);
+virtDOM.renderWorker = require(121);
 
 
 },
@@ -833,7 +833,7 @@ function(require, exports, module, global) {
 
 var virt = require(10),
     Adaptor = require(62),
-    getRootNodeInContainer = require(116),
+    getRootNodeInContainer = require(117),
     getNodeId = require(114);
 
 
@@ -5200,7 +5200,8 @@ function applyEvents(events, eventHandler) {
 },
 function(require, exports, module, global) {
 
-var applyPatch = require(106);
+var getNodeById = require(69),
+    applyPatch = require(106);
 
 
 module.exports = applyPatches;
@@ -5211,17 +5212,17 @@ function applyPatches(hash, rootDOMNode, document) {
 
     for (id in hash) {
         if (hash[id] !== undefined) {
-            applyPatchIndices(hash[id], id, document, rootDOMNode);
+            applyPatchIndices(getNodeById(id), hash[id], id, document, rootDOMNode);
         }
     }
 }
 
-function applyPatchIndices(patchArray, id, document, rootDOMNode) {
+function applyPatchIndices(DOMNode, patchArray, id, document, rootDOMNode) {
     var i = -1,
         length = patchArray.length - 1;
 
     while (i++ < length) {
-        applyPatch(patchArray[i], id, document, rootDOMNode);
+        applyPatch(patchArray[i], DOMNode, id, document, rootDOMNode);
     }
 }
 
@@ -5234,7 +5235,7 @@ var consts = require(33),
     renderString = require(109),
     renderChildrenString = require(111),
     addDOMNodes = require(112),
-    removeDOMNodes = require(115),
+    removeDOMNode = require(115),
     getNodeById = require(69),
     applyProperties = require(108);
 
@@ -5243,28 +5244,28 @@ var consts = require(33),
 module.exports = applyPatch;
 
 
-function applyPatch(patch, id, document, rootDOMNode) {
+function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
     switch (patch.type) {
         case consts.REMOVE:
-            remove(getNodeById(id), patch.childId, patch.index);
+            remove(DOMNode, patch.childId, patch.index);
             break;
         case consts.MOUNT:
             mount(rootDOMNode, patch.next, id);
             break;
         case consts.INSERT:
-            insert(getNodeById(id), patch.childId, patch.index, patch.next, document);
+            insert(DOMNode, patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
-            text(getNodeById(id), patch.index, patch.next);
+            text(DOMNode, patch.index, patch.next);
             break;
         case consts.REPLACE:
-            replace(getNodeById(id), patch.childId, patch.index, patch.next, document);
+            replace(DOMNode, patch.childId, patch.index, patch.next, document);
             break;
         case consts.ORDER:
-            order(getNodeById(id), patch.order);
+            order(DOMNode, patch.order);
             break;
         case consts.PROPS:
-            applyProperties(getNodeById(id), patch.id, patch.next, patch.previous);
+            applyProperties(DOMNode, patch.id, patch.next, patch.previous);
             break;
     }
 }
@@ -5276,7 +5277,7 @@ function remove(parentNode, id, index) {
         node = parentNode.childNodes[index];
     } else {
         node = getNodeById(id);
-        removeDOMNodes(node.childNodes);
+        removeDOMNode(node);
     }
 
     if (parentNode !== node) {
@@ -5765,7 +5766,27 @@ var isElement = require(113),
     getNodeAttributeId = require(75);
 
 
+module.exports = removeDOMNode;
+
+
+var removeDOMNodes = require(116);
+
+
+function removeDOMNode(node) {
+    if (isElement(node)) {
+        delete nodeCache[getNodeAttributeId(node)];
+        removeDOMNodes(node.childNodes);
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
 module.exports = removeDOMNodes;
+
+
+var removeDOMNode = require(115);
 
 
 function removeDOMNodes(nodes) {
@@ -5774,13 +5795,6 @@ function removeDOMNodes(nodes) {
 
     while (i++ < il) {
         removeDOMNode(nodes[i]);
-    }
-}
-
-function removeDOMNode(node) {
-    if (isElement(node)) {
-        delete nodeCache[getNodeAttributeId(node)];
-        removeDOMNodes(node.childNodes);
     }
 }
 
@@ -5830,7 +5844,7 @@ function findDOMNode(value) {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(119),
+var MessengerWorker = require(120),
     has = require(20),
     isNode = require(7),
     isFunction = require(5),
@@ -6014,7 +6028,7 @@ function emit(listeners, data, callback) {
 function(require, exports, module, global) {
 
 var virt = require(10),
-    WorkerAdaptor = require(121);
+    WorkerAdaptor = require(122);
 
 
 var root = null;
@@ -6043,7 +6057,7 @@ render.unmount = function() {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(119),
+var MessengerWorker = require(120),
     traverseAncestors = require(64),
     consts = require(71),
     eventClassMap = require(78);

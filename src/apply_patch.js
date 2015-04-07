@@ -3,7 +3,7 @@ var consts = require("virt/transaction/consts"),
     renderString = require("./utils/render_string"),
     renderChildrenString = require("./utils/render_children_string"),
     addDOMNodes = require("./utils/add_dom_nodes"),
-    removeDOMNodes = require("./utils/remove_dom_nodes"),
+    removeDOMNode = require("./utils/remove_dom_node"),
     getNodeById = require("./utils/get_node_by_id"),
     applyProperties = require("./apply_properties");
 
@@ -12,28 +12,28 @@ var consts = require("virt/transaction/consts"),
 module.exports = applyPatch;
 
 
-function applyPatch(patch, id, document, rootDOMNode) {
+function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
     switch (patch.type) {
         case consts.REMOVE:
-            remove(getNodeById(id), patch.childId, patch.index);
+            remove(DOMNode, patch.childId, patch.index);
             break;
         case consts.MOUNT:
             mount(rootDOMNode, patch.next, id);
             break;
         case consts.INSERT:
-            insert(getNodeById(id), patch.childId, patch.index, patch.next, document);
+            insert(DOMNode, patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
-            text(getNodeById(id), patch.index, patch.next);
+            text(DOMNode, patch.index, patch.next);
             break;
         case consts.REPLACE:
-            replace(getNodeById(id), patch.childId, patch.index, patch.next, document);
+            replace(DOMNode, patch.childId, patch.index, patch.next, document);
             break;
         case consts.ORDER:
-            order(getNodeById(id), patch.order);
+            order(DOMNode, patch.order);
             break;
         case consts.PROPS:
-            applyProperties(getNodeById(id), patch.id, patch.next, patch.previous);
+            applyProperties(DOMNode, patch.id, patch.next, patch.previous);
             break;
     }
 }
@@ -45,7 +45,7 @@ function remove(parentNode, id, index) {
         node = parentNode.childNodes[index];
     } else {
         node = getNodeById(id);
-        removeDOMNodes(node.childNodes);
+        removeDOMNode(node);
     }
 
     if (parentNode !== node) {

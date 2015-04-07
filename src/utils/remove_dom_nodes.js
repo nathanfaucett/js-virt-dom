@@ -1,9 +1,7 @@
-var isElement = require("is_element"),
-    nodeCache = require("./node_cache"),
-    getNodeAttributeId = require("./get_node_attribute_id");
-
-
 module.exports = removeDOMNodes;
+
+
+var removeDOMNode = require("./remove_dom_node");
 
 
 function removeDOMNodes(nodes) {
@@ -12,12 +10,5 @@ function removeDOMNodes(nodes) {
 
     while (i++ < il) {
         removeDOMNode(nodes[i]);
-    }
-}
-
-function removeDOMNode(node) {
-    if (isElement(node)) {
-        delete nodeCache[getNodeAttributeId(node)];
-        removeDOMNodes(node.childNodes);
     }
 }

@@ -41,7 +41,7 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     virtDOM = require(56),
-    App = require(122);
+    App = require(123);
 
 
 virtDOM.renderWorker(virt.createView(App));
@@ -2787,10 +2787,10 @@ virtDOM.renderString = function(view, id) {
     return renderString(view, null, id || ".0");
 };
 
-virtDOM.findDOMNode = require(117);
+virtDOM.findDOMNode = require(118);
 
-virtDOM.createWorkerRender = require(118);
-virtDOM.renderWorker = require(120);
+virtDOM.createWorkerRender = require(119);
+virtDOM.renderWorker = require(121);
 
 
 },
@@ -2798,7 +2798,7 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     Adaptor = require(58),
-    getRootNodeInContainer = require(116),
+    getRootNodeInContainer = require(117),
     getNodeId = require(114);
 
 
@@ -5181,7 +5181,8 @@ function applyEvents(events, eventHandler) {
 },
 function(require, exports, module, global) {
 
-var applyPatch = require(106);
+var getNodeById = require(65),
+    applyPatch = require(106);
 
 
 module.exports = applyPatches;
@@ -5192,17 +5193,17 @@ function applyPatches(hash, rootDOMNode, document) {
 
     for (id in hash) {
         if (hash[id] !== undefined) {
-            applyPatchIndices(hash[id], id, document, rootDOMNode);
+            applyPatchIndices(getNodeById(id), hash[id], id, document, rootDOMNode);
         }
     }
 }
 
-function applyPatchIndices(patchArray, id, document, rootDOMNode) {
+function applyPatchIndices(DOMNode, patchArray, id, document, rootDOMNode) {
     var i = -1,
         length = patchArray.length - 1;
 
     while (i++ < length) {
-        applyPatch(patchArray[i], id, document, rootDOMNode);
+        applyPatch(patchArray[i], DOMNode, id, document, rootDOMNode);
     }
 }
 
@@ -5215,7 +5216,7 @@ var consts = require(26),
     renderString = require(109),
     renderChildrenString = require(111),
     addDOMNodes = require(112),
-    removeDOMNodes = require(115),
+    removeDOMNode = require(115),
     getNodeById = require(65),
     applyProperties = require(108);
 
@@ -5224,28 +5225,28 @@ var consts = require(26),
 module.exports = applyPatch;
 
 
-function applyPatch(patch, id, document, rootDOMNode) {
+function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
     switch (patch.type) {
         case consts.REMOVE:
-            remove(getNodeById(id), patch.childId, patch.index);
+            remove(DOMNode, patch.childId, patch.index);
             break;
         case consts.MOUNT:
             mount(rootDOMNode, patch.next, id);
             break;
         case consts.INSERT:
-            insert(getNodeById(id), patch.childId, patch.index, patch.next, document);
+            insert(DOMNode, patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
-            text(getNodeById(id), patch.index, patch.next);
+            text(DOMNode, patch.index, patch.next);
             break;
         case consts.REPLACE:
-            replace(getNodeById(id), patch.childId, patch.index, patch.next, document);
+            replace(DOMNode, patch.childId, patch.index, patch.next, document);
             break;
         case consts.ORDER:
-            order(getNodeById(id), patch.order);
+            order(DOMNode, patch.order);
             break;
         case consts.PROPS:
-            applyProperties(getNodeById(id), patch.id, patch.next, patch.previous);
+            applyProperties(DOMNode, patch.id, patch.next, patch.previous);
             break;
     }
 }
@@ -5257,7 +5258,7 @@ function remove(parentNode, id, index) {
         node = parentNode.childNodes[index];
     } else {
         node = getNodeById(id);
-        removeDOMNodes(node.childNodes);
+        removeDOMNode(node);
     }
 
     if (parentNode !== node) {
@@ -5746,7 +5747,27 @@ var isElement = require(113),
     getNodeAttributeId = require(75);
 
 
+module.exports = removeDOMNode;
+
+
+var removeDOMNodes = require(116);
+
+
+function removeDOMNode(node) {
+    if (isElement(node)) {
+        delete nodeCache[getNodeAttributeId(node)];
+        removeDOMNodes(node.childNodes);
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
 module.exports = removeDOMNodes;
+
+
+var removeDOMNode = require(115);
 
 
 function removeDOMNodes(nodes) {
@@ -5755,13 +5776,6 @@ function removeDOMNodes(nodes) {
 
     while (i++ < il) {
         removeDOMNode(nodes[i]);
-    }
-}
-
-function removeDOMNode(node) {
-    if (isElement(node)) {
-        delete nodeCache[getNodeAttributeId(node)];
-        removeDOMNodes(node.childNodes);
     }
 }
 
@@ -5811,7 +5825,7 @@ function findDOMNode(value) {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(119),
+var MessengerWorker = require(120),
     has = require(12),
     isNode = require(73),
     isFunction = require(5),
@@ -5995,7 +6009,7 @@ function emit(listeners, data, callback) {
 function(require, exports, module, global) {
 
 var virt = require(1),
-    WorkerAdaptor = require(121);
+    WorkerAdaptor = require(122);
 
 
 var root = null;
@@ -6024,7 +6038,7 @@ render.unmount = function() {
 },
 function(require, exports, module, global) {
 
-var MessengerWorker = require(119),
+var MessengerWorker = require(120),
     traverseAncestors = require(60),
     consts = require(67),
     eventClassMap = require(78);
@@ -6099,9 +6113,9 @@ function WorkerAdaptor(root) {
 function(require, exports, module, global) {
 
 var virt = require(1),
-    propTypes = require(123),
-    TodoList = require(126),
-    TodoForm = require(132);
+    propTypes = require(124),
+    TodoList = require(127),
+    TodoForm = require(133);
 
 
 var AppPrototype;
@@ -6144,9 +6158,9 @@ AppPrototype.render = function() {
 function(require, exports, module, global) {
 
 var isArray = require(6),
-    isRegExp = require(124),
+    isRegExp = require(125),
     isNullOrUndefined = require(4),
-    emptyFunction = require(125),
+    emptyFunction = require(126),
     isFunction = require(5),
     has = require(12),
     indexOf = require(39);
@@ -6366,9 +6380,9 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     map = require(13),
-    dispatcher = require(127),
-    TodoStore = require(129),
-    TodoItem = require(131);
+    dispatcher = require(128),
+    TodoStore = require(130),
+    TodoItem = require(132);
 
 
 var TodoListPrototype;
@@ -6445,7 +6459,7 @@ TodoListPrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(128);
+var EventEmitter = require(129);
 
 
 var dispatcher = module.exports = new EventEmitter(-1),
@@ -6845,9 +6859,9 @@ module.exports = EventEmitter;
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(128),
-    values = require(130),
-    dispatcher = require(127);
+var EventEmitter = require(129),
+    values = require(131),
+    dispatcher = require(128);
 
 
 var TodoStore = module.exports = new EventEmitter(-1),
@@ -6973,7 +6987,7 @@ module.exports = values;
 function(require, exports, module, global) {
 
 var virt = require(1),
-    propTypes = require(123);
+    propTypes = require(124);
 
 
 var TodoItemPrototype;
@@ -7023,8 +7037,8 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     eventListener = require(70),
-    dispatcher = require(127),
-    TodoStore = require(129);
+    dispatcher = require(128),
+    TodoStore = require(130);
 
 
 var TodoFormPrototype;
