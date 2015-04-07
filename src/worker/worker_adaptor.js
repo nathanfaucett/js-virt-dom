@@ -26,7 +26,7 @@ function WorkerAdaptor(root) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("handle_event_dispatch", function(data, callback) {
+    messenger.on("__WorkerAdaptor:handleEventDispatch__", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -64,6 +64,6 @@ function WorkerAdaptor(root) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("handle_transaction", transaction, callback);
+        messenger.emit("__WorkerAdaptor:handleTransaction__", transaction, callback);
     };
 }

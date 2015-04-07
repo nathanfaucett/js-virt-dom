@@ -50,6 +50,7 @@
     "is_string": "git://github.com/nathanfaucett/is_string",
     "key_mirror": "git://github.com/nathanfaucett/key_mirror",
     "map": "git://github.com/nathanfaucett/map",
+    "messenger": "git://github.com/nathanfaucett/messenger",
     "messenger_worker": "git://github.com/nathanfaucett/messenger_worker",
     "virt": "git://github.com/nathanfaucett/virt"
   }

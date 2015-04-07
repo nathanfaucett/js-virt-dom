@@ -26,7 +26,7 @@ function createWorkerRender(url, containerDOMNode) {
 
         messenger = new MessengerWorker(url);
 
-    messenger.on("handle_transaction", function(transaction, callback) {
+    messenger.on("__WorkerAdaptor:handleTransaction__", function(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -40,7 +40,7 @@ function createWorkerRender(url, containerDOMNode) {
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("handle_event_dispatch", {
+        messenger.emit("__WorkerAdaptor:handleEventDispatch__", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,

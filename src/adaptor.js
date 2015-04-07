@@ -1,4 +1,5 @@
-var traverseAncestors = require("virt/utils/traverse_ancestors"),
+var Messenger = require("messenger"),
+    traverseAncestors = require("virt/utils/traverse_ancestors"),
     getWindow = require("./utils/get_window"),
     getNodeById = require("./utils/get_node_by_id"),
     consts = require("./events/consts"),
@@ -15,11 +16,18 @@ module.exports = Adaptor;
 
 
 function Adaptor(root, containerDOMNode) {
-    var document = containerDOMNode.ownerDocument,
+    var socket = Messenger.createSocket(),
+        messengerClient = new Messenger(socket.client),
+        messengerServer = new Messenger(socket.server),
+
+        document = containerDOMNode.ownerDocument,
         window = getWindow(document),
         eventManager = root.eventManager,
         events = eventManager.events,
         eventHandler = new EventHandler(document, window);
+
+    this.messenger = messengerServer;
+    this.messengerClient = messengerClient;
 
     this.root = root;
     this.containerDOMNode = containerDOMNode;

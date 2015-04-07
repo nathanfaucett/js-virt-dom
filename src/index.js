@@ -5,13 +5,11 @@ var render = require("./render"),
 var virtDOM = exports;
 
 
-module.exports = virtDOM;
-
 virtDOM.render = render;
 virtDOM.unmount = render.unmount;
 
 virtDOM.renderString = function(view, id) {
-    return renderString(view, id || ".0");
+    return renderString(view, null, id || ".0");
 };
 
 virtDOM.findDOMNode = require("./utils/find_dom_node");

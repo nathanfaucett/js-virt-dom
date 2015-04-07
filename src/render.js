@@ -15,7 +15,7 @@ function render(nextView, containerDOMNode) {
         id = getNodeId(rootDOMNode),
         root;
 
-    if (id === null) {
+    if (id === null || rootsById[id] === undefined) {
         root = new virt.Root();
         root.adaptor = new Adaptor(root, containerDOMNode);
         id = root.id;
@@ -25,6 +25,8 @@ function render(nextView, containerDOMNode) {
     }
 
     root.render(nextView, id);
+
+    return root;
 }
 
 render.unmount = function(containerDOMNode) {
