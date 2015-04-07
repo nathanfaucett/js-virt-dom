@@ -15,12 +15,10 @@
     "test": "comn -f examples/test/src/index.js -o examples/test/index.js",
     "replace": "comn -f examples/replace/src/index.js -o examples/replace/index.js",
     "mounting": "comn -f examples/mounting/src/index.js -o examples/mounting/index.js",
-    "react_test": "comn -f examples/react_test/src/index.js -o examples/react_test/index.js",
-    "react_components": "comn -f examples/react_components/src/index.js -o examples/react_components/index.js",
     "components": "comn -f examples/components/src/index.js -o examples/components/index.js",
     "workers": "comn -f examples/workers/src/index.js -o examples/workers/index.js && comn -f examples/workers/src/worker.js -o examples/workers/worker.js",
     "worker_form": "comn -f examples/worker_form/src/index.js -o examples/worker_form/index.js && comn -f examples/worker_form/src/worker.js -o examples/worker_form/worker.js",
-    "examples": "npm run test && npm run replace && npm run mounting && npm run components && npm run workers && npm run worker_form && npm run react_test  && npm run react_components"
+    "examples": "npm run test && npm run replace && npm run mounting && npm run components && npm run workers && npm run worker_form"
   },
   "author": "Nathan Faucett",
   "license": "BSD-2-Clause",
