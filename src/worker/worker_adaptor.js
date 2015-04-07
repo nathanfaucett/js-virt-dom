@@ -19,7 +19,7 @@ function WorkerAdaptor(root) {
             document: global,
             viewport: viewport
         },
-        events = eventManager.__events;
+        events = eventManager.events;
 
     this.root = root;
     this.messenger = messenger;

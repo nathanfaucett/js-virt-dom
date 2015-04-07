@@ -1548,13 +1548,13 @@ module.exports = EventManager;
 
 function EventManager() {
     this.propNameToTopLevel = {};
-    this.__events = {};
+    this.events = {};
 }
 
 EventManagerPrototype = EventManager.prototype;
 
 EventManagerPrototype.on = function(id, topLevelType, listener, transaction) {
-    var events = this.__events,
+    var events = this.events,
         event = events[topLevelType] || (events[topLevelType] = {});
 
     event[id] = listener;
@@ -1562,7 +1562,7 @@ EventManagerPrototype.on = function(id, topLevelType, listener, transaction) {
 };
 
 EventManagerPrototype.off = function(id, topLevelType, transaction) {
-    var events = this.__events,
+    var events = this.events,
         event = events[topLevelType];
 
     if (event[id] !== undefined) {
@@ -1572,7 +1572,7 @@ EventManagerPrototype.off = function(id, topLevelType, transaction) {
 };
 
 EventManagerPrototype.allOff = function(id, transaction) {
-    var events = this.__events,
+    var events = this.events,
         event, topLevelType;
 
     for (topLevelType in events) {
@@ -2848,7 +2848,7 @@ function Adaptor(root, containerDOMNode) {
     var document = containerDOMNode.ownerDocument,
         window = getWindow(document),
         eventManager = root.eventManager,
-        events = eventManager.__events,
+        events = eventManager.events,
         eventHandler = new EventHandler(document, window);
 
     this.root = root;
@@ -5911,7 +5911,7 @@ function WorkerAdaptor(root) {
             document: global,
             viewport: viewport
         },
-        events = eventManager.__events;
+        events = eventManager.events;
 
     this.root = root;
     this.messenger = messenger;

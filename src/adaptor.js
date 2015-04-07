@@ -18,7 +18,7 @@ function Adaptor(root, containerDOMNode) {
     var document = containerDOMNode.ownerDocument,
         window = getWindow(document),
         eventManager = root.eventManager,
-        events = eventManager.__events,
+        events = eventManager.events,
         eventHandler = new EventHandler(document, window);
 
     this.root = root;
