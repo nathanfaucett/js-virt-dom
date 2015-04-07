@@ -5185,8 +5185,7 @@ function applyEvents(events, eventHandler) {
 },
 function(require, exports, module, global) {
 
-var getNodeById = require(69),
-    applyPatch = require(106);
+var applyPatch = require(106);
 
 
 module.exports = applyPatches;
@@ -5197,17 +5196,17 @@ function applyPatches(hash, rootDOMNode, document) {
 
     for (id in hash) {
         if (hash[id] !== undefined) {
-            applyPatchIndices(getNodeById(id) || rootDOMNode, hash[id], id, document);
+            applyPatchIndices(hash[id], id, document, rootDOMNode);
         }
     }
 }
 
-function applyPatchIndices(DOMNode, patchArray, id, document) {
+function applyPatchIndices(patchArray, id, document, rootDOMNode) {
     var i = -1,
         length = patchArray.length - 1;
 
     while (i++ < length) {
-        applyPatch(patchArray[i], DOMNode, id, document);
+        applyPatch(patchArray[i], id, document, rootDOMNode);
     }
 }
 
@@ -5229,28 +5228,28 @@ var consts = require(31),
 module.exports = applyPatch;
 
 
-function applyPatch(patch, node, id, document) {
+function applyPatch(patch, id, document, rootDOMNode) {
     switch (patch.type) {
         case consts.REMOVE:
-            remove(node, patch.childId, patch.index);
+            remove(getNodeById(id), patch.childId, patch.index);
             break;
         case consts.MOUNT:
-            mount(node, patch.next, id);
+            mount(rootDOMNode, patch.next, id);
             break;
         case consts.INSERT:
-            insert(node, patch.childId, patch.index, patch.next, document);
+            insert(getNodeById(id), patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
-            text(node, patch.index, patch.next);
+            text(getNodeById(id), patch.index, patch.next);
             break;
         case consts.REPLACE:
-            replace(node, patch.childId, patch.index, patch.next, document);
+            replace(getNodeById(id), patch.childId, patch.index, patch.next, document);
             break;
         case consts.ORDER:
-            order(node, patch.order);
+            order(getNodeById(id), patch.order);
             break;
         case consts.PROPS:
-            applyProperties(node, patch.id, patch.next, patch.previous);
+            applyProperties(getNodeById(id), patch.id, patch.next, patch.previous);
             break;
     }
 }
@@ -5272,9 +5271,9 @@ function remove(parentNode, id, index) {
     }
 }
 
-function mount(parentNode, view, id) {
-    parentNode.innerHTML = renderString(view, null, id);
-    addDOMNodes(parentNode.childNodes);
+function mount(rootDOMNode, view, id) {
+    rootDOMNode.innerHTML = renderString(view, null, id);
+    addDOMNodes(rootDOMNode.childNodes);
 }
 
 function insert(parentNode, id, index, view, document) {
