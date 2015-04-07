@@ -102,19 +102,21 @@ eventListener.on(environment.window, "load", function() {
 },
 function(require, exports, module, global) {
 
-var environment = module.exports,
+var environment = exports,
 
     hasWindow = typeof(window) !== "undefined",
     userAgent = hasWindow ? window.navigator.userAgent : "";
 
 
-environment.browser = !!(
+environment.worker = typeof(importScripts) !== "undefined";
+
+environment.browser = environment.worker || !!(
     hasWindow &&
     typeof(navigator) !== "undefined" &&
     window.document
 );
 
-environment.node = !environment.browser;
+environment.node = !environment.worker && !environment.browser;
 
 environment.mobile = environment.browser && /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
 
@@ -127,8 +129,6 @@ environment.window = (
 environment.pixelRatio = environment.window.devicePixelRatio || 1;
 
 environment.document = typeof(document) !== "undefined" ? document : {};
-
-environment.isInWorker = typeof(importScripts) !== "undefined";
 
 
 },
@@ -5969,9 +5969,10 @@ function MessengerWorker(url) {
 
         if (name) {
             if (listeners[name]) {
-                emit(listeners[name], message.data, function callback(err, data) {
+                emit(listeners[name], message.data, function callback(error, data) {
                     worker.postMessage(JSON.stringify({
                         id: id,
+                        error: error || undefined,
                         data: data
                     }));
                 });
@@ -5987,7 +5988,9 @@ function MessengerWorker(url) {
     this.emit = function(name, data, callback) {
         var id = MESSAGE_ID++;
 
-        messages[id] = callback;
+        if (callback) {
+            messages[id] = callback;
+        }
 
         worker.postMessage(JSON.stringify({
             id: id,

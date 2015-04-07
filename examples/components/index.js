@@ -5921,9 +5921,10 @@ function MessengerWorker(url) {
 
         if (name) {
             if (listeners[name]) {
-                emit(listeners[name], message.data, function callback(err, data) {
+                emit(listeners[name], message.data, function callback(error, data) {
                     worker.postMessage(JSON.stringify({
                         id: id,
+                        error: error || undefined,
                         data: data
                     }));
                 });
@@ -5939,7 +5940,9 @@ function MessengerWorker(url) {
     this.emit = function(name, data, callback) {
         var id = MESSAGE_ID++;
 
-        messages[id] = callback;
+        if (callback) {
+            messages[id] = callback;
+        }
 
         worker.postMessage(JSON.stringify({
             id: id,
