@@ -38,13 +38,15 @@ List.prototype.onClick = function(id) {
 };
 
 List.prototype.render = function() {
-    var onClick = this.onClick;
+    var _this = this;
 
     return (
         virt.createView("ul", this.state.items.map(function(item) {
             return virt.createView(Item, {
                 key: item.id,
-                onClick: onClick,
+                onClick: function onClick() {
+                    _this.onClick(item.id);
+                },
                 text: item.text
             });
         }));
