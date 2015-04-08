@@ -2072,7 +2072,7 @@ module.exports = UnmountPatch;
 
 
 function UnmountPatch() {
-    this.type = consts.MOUNT;
+    this.type = consts.UNMOUNT;
     this.id = null;
 }
 createPool(UnmountPatch);

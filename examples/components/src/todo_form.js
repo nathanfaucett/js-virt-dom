@@ -32,14 +32,6 @@ virt.Component.extend(TodoForm, "TodoForm");
 
 TodoFormPrototype = TodoForm.prototype;
 
-TodoFormPrototype.componentDidMount = function() {
-
-};
-
-TodoFormPrototype.componentWillUnmount = function() {
-
-};
-
 TodoFormPrototype.__onSubmit = function(e) {
     var DOMNode = virtDOM.findDOMNode(this.refs.name),
         value = DOMNode.value;
