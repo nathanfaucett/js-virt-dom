@@ -4,6 +4,7 @@ var consts = require("virt/transaction/consts"),
     renderChildrenString = require("./utils/render_children_string"),
     addDOMNodes = require("./utils/add_dom_nodes"),
     removeDOMNode = require("./utils/remove_dom_node"),
+    removeDOMNodes = require("./utils/remove_dom_nodes"),
     getNodeById = require("./utils/get_node_by_id"),
     applyProperties = require("./apply_properties");
 
@@ -14,20 +15,23 @@ module.exports = applyPatch;
 
 function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
     switch (patch.type) {
-        case consts.REMOVE:
-            remove(DOMNode, patch.childId, patch.index);
-            break;
         case consts.MOUNT:
             mount(rootDOMNode, patch.next, id);
+            break;
+        case consts.UNMOUNT:
+            unmount(rootDOMNode);
             break;
         case consts.INSERT:
             insert(DOMNode, patch.childId, patch.index, patch.next, document);
             break;
-        case consts.TEXT:
-            text(DOMNode, patch.index, patch.next);
+        case consts.REMOVE:
+            remove(DOMNode, patch.childId, patch.index);
             break;
         case consts.REPLACE:
             replace(DOMNode, patch.childId, patch.index, patch.next, document);
+            break;
+        case consts.TEXT:
+            text(DOMNode, patch.index, patch.next);
             break;
         case consts.ORDER:
             order(DOMNode, patch.order);
@@ -48,16 +52,17 @@ function remove(parentNode, id, index) {
         removeDOMNode(node);
     }
 
-    if (parentNode !== node) {
-        parentNode.removeChild(node);
-    } else {
-        node.parentNode.removeChild(node);
-    }
+    parentNode.removeChild(node);
 }
 
 function mount(rootDOMNode, view, id) {
     rootDOMNode.innerHTML = renderString(view, null, id);
     addDOMNodes(rootDOMNode.childNodes);
+}
+
+function unmount(rootDOMNode) {
+    removeDOMNodes(rootDOMNode.childNodes);
+    rootDOMNode.innerHTML = "";
 }
 
 function insert(parentNode, id, index, view, document) {
