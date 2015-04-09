@@ -2447,12 +2447,12 @@ NodePrototype.mountComponent = function() {
 
     component = new ComponentClass(props, children, context);
 
+    this.component = component;
+
     component.__node = this;
     component.props = props;
     component.children = children;
     component.context = context;
-
-    this.component = component;
 };
 
 NodePrototype.mount = function(transaction) {
@@ -2704,7 +2704,7 @@ NodePrototype.renderView = function() {
 
 NodePrototype.__checkTypes = function(propTypes, props) {
     var localHas = has,
-        displayName = this.component.displayName,
+        displayName = this.__getName(),
         propName, error;
 
     if (propTypes) {
@@ -2722,7 +2722,7 @@ NodePrototype.__checkTypes = function(propTypes, props) {
 NodePrototype.__processProps = function(props) {
     var propTypes;
 
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV !== "production") {
         propTypes = this.currentView.type.propTypes;
 
         if (propTypes) {
@@ -2761,7 +2761,7 @@ NodePrototype.__processContext = function(context) {
     var maskedContext = this.__maskContext(context),
         contextTypes;
 
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV !== "production") {
         contextTypes = this.currentView.type.contextTypes;
 
         if (contextTypes) {
@@ -2780,7 +2780,7 @@ NodePrototype.__processChildContext = function(currentContext) {
     if (childContext) {
         childContextTypes = this.currentView.type.childContextTypes;
 
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV !== "production") {
             if (childContextTypes) {
                 this.__checkTypes(childContextTypes, childContext);
             }
@@ -2788,7 +2788,7 @@ NodePrototype.__processChildContext = function(currentContext) {
 
         if (childContextTypes) {
             localHas = has;
-            displayName = component.displayName;
+            displayName = this.__getName();
 
             for (contextName in childContext) {
                 if (!localHas(childContextTypes, contextName)) {
@@ -2820,6 +2820,18 @@ NodePrototype.__detachRefs = function() {
 
     if (isString(ref)) {
         detachRef(ref, view.__owner);
+    }
+};
+
+NodePrototype.__getName = function() {
+    var type = this.currentView.type,
+        constructor;
+
+    if (isString(type)) {
+        return type;
+    } else {
+        constructor = this.component && this.component.constructor;
+        return type.displayName || (constructor && constructor.displayName) || null;
     }
 };
 
@@ -2964,7 +2976,7 @@ function createNativeComponentForType(type) {
     function NativeComponent(props, children) {
         Component.call(this, props, children);
     }
-    Component.extend(NativeComponent);
+    Component.extend(NativeComponent, type);
 
     NativeComponent.prototype.render = function() {
         return new View(type, null, null, this.props, this.children, null, null);
@@ -3567,7 +3579,7 @@ function Adaptor(root, containerDOMNode) {
         var eventType = events[topLevelType],
             event;
 
-        traverseAncestors(targetId, function(currentTargetId) {
+        traverseAncestors(targetId, function traverseAncestor(currentTargetId) {
             if (eventType[currentTargetId]) {
                 event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
                 event.currentTarget = getNodeById(currentTargetId);
@@ -5342,7 +5354,7 @@ function unmount(rootDOMNode) {
 }
 
 function insert(parentNode, id, index, view, document) {
-    var node = createDOMElement(view, id, document, false);
+    var node = createDOMElement(view, id, document);
 
     if (view.children) {
         node.innerHTML = renderChildrenString(view.children, view.props, id);
@@ -5356,12 +5368,16 @@ function text(parentNode, index, value) {
     var textNode = parentNode.childNodes[index];
 
     if (textNode) {
-        textNode.nodeValue = value;
+        if (textNode.nodeType === 3) {
+            textNode.nodeValue = value;
+        } else {
+            textNode.innerHTML = value;
+        }
     }
 }
 
 function replace(parentNode, id, index, view, document) {
-    var node = createDOMElement(view, id, document, false);
+    var node = createDOMElement(view, id, document);
 
     if (view.children) {
         node.innerHTML = renderChildrenString(view.children, view.props, id);
@@ -5419,15 +5435,13 @@ function order(parentNode, orderIndex) {
 },
 function(require, exports, module, global) {
 
-var isString = require(17),
+var virt = require(10),
+    isString = require(17),
 
     DOM_ID_NAME = require(77),
     nodeCache = require(71),
 
-    applyProperties = require(109),
-
-    virt = require(10),
-    getViewKey = require(58);
+    applyProperties = require(109);
 
 
 var View = virt.View,
@@ -5437,8 +5451,8 @@ var View = virt.View,
 module.exports = createDOMElement;
 
 
-function createDOMElement(view, id, document, recurse) {
-    var node, children, i, length, child;
+function createDOMElement(view, id, document) {
+    var node;
 
     if (isPrimativeView(view)) {
         return document.createTextNode(view);
@@ -5449,17 +5463,6 @@ function createDOMElement(view, id, document, recurse) {
 
         node.setAttribute(DOM_ID_NAME, id);
         nodeCache[id] = node;
-
-        if (recurse !== false) {
-            children = view.children;
-            i = -1;
-            length = children.length - 1;
-
-            while (i++ < length) {
-                child = children[i];
-                node.appendChild(createDOMElement(child, id + "." + getViewKey(child, i), document));
-            }
-        }
 
         return node;
     } else {
@@ -5486,7 +5489,7 @@ function applyProperties(node, id, props, previous) {
     for (propKey in props) {
         propValue = props[propKey];
 
-        if (propKey !== "dangerouslySetInnerHTML" || !isFunction(propValue)) {
+        if (propKey !== "dangerouslySetInnerHTML" && !isFunction(propValue)) {
             if (propValue == null && previous != null) {
                 removeProperty(node, id, previous, propKey);
             } else if (isObject(propValue)) {
@@ -5581,11 +5584,9 @@ function applyObject(node, previous, propKey, propValues) {
 function(require, exports, module, global) {
 
 var virt = require(10),
-    getChildKey = require(57),
 
     escapeTextContent = require(111),
     isFunction = require(5),
-    map = require(21),
     isString = require(17),
     isObject = require(4),
     isNullOrUndefined = require(13),
@@ -5619,6 +5620,9 @@ var View = virt.View,
 module.exports = render;
 
 
+var renderChildrenString = require(112);
+
+
 function render(view, parentProps, id) {
     var type, props;
 
@@ -5630,9 +5634,7 @@ function render(view, parentProps, id) {
 
         return (
             closedTags[type] !== true ?
-            contentTag(type, map(view.children, function(child, i) {
-                return render(child, props, getChildKey(id, child, i));
-            }).join(""), id, view.props) :
+            contentTag(type, renderChildrenString(view.children, props, id), id, props) :
             closedTag(type, id, view.props)
         );
     }
@@ -5718,19 +5720,27 @@ module.exports = function escapeTextContent(text) {
 },
 function(require, exports, module, global) {
 
-var getChildKey = require(57),
-    map = require(21),
-    renderString = require(110);
-
+var getChildKey = require(57);
 
 
 module.exports = renderChildrenString;
 
 
-function renderChildrenString(children, props, id) {
-    return map(children, function(view, index) {
-        return renderString(view, props, getChildKey(id, view, index));
-    });
+var renderString = require(110);
+
+
+function renderChildrenString(children, parentProps, id) {
+    var out = "",
+        i = -1,
+        il = children.length - 1,
+        child;
+
+    while (i++ < il) {
+        child = children[i];
+        out += renderString(child, parentProps, getChildKey(id, child, i));
+    }
+
+    return out;
 }
 
 
@@ -5921,7 +5931,7 @@ function createWorkerRender(url, containerDOMNode) {
 
         messenger = new MessengerWorker(url);
 
-    messenger.on("__WorkerAdaptor:handleTransaction__", function(transaction, callback) {
+    messenger.on("__WorkerAdaptor:handleTransaction__", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);

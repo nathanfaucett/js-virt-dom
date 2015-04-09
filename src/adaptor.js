@@ -43,7 +43,7 @@ function Adaptor(root, containerDOMNode) {
         var eventType = events[topLevelType],
             event;
 
-        traverseAncestors(targetId, function(currentTargetId) {
+        traverseAncestors(targetId, function traverseAncestor(currentTargetId) {
             if (eventType[currentTargetId]) {
                 event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
                 event.currentTarget = getNodeById(currentTargetId);

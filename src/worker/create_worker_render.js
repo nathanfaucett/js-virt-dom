@@ -26,7 +26,7 @@ function createWorkerRender(url, containerDOMNode) {
 
         messenger = new MessengerWorker(url);
 
-    messenger.on("__WorkerAdaptor:handleTransaction__", function(transaction, callback) {
+    messenger.on("__WorkerAdaptor:handleTransaction__", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);

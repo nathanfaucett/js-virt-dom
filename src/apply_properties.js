@@ -13,7 +13,7 @@ function applyProperties(node, id, props, previous) {
     for (propKey in props) {
         propValue = props[propKey];
 
-        if (propKey !== "dangerouslySetInnerHTML" || !isFunction(propValue)) {
+        if (propKey !== "dangerouslySetInnerHTML" && !isFunction(propValue)) {
             if (propValue == null && previous != null) {
                 removeProperty(node, id, previous, propKey);
             } else if (isObject(propValue)) {

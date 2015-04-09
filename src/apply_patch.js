@@ -66,7 +66,7 @@ function unmount(rootDOMNode) {
 }
 
 function insert(parentNode, id, index, view, document) {
-    var node = createDOMElement(view, id, document, false);
+    var node = createDOMElement(view, id, document);
 
     if (view.children) {
         node.innerHTML = renderChildrenString(view.children, view.props, id);
@@ -80,12 +80,16 @@ function text(parentNode, index, value) {
     var textNode = parentNode.childNodes[index];
 
     if (textNode) {
-        textNode.nodeValue = value;
+        if (textNode.nodeType === 3) {
+            textNode.nodeValue = value;
+        } else {
+            textNode.innerHTML = value;
+        }
     }
 }
 
 function replace(parentNode, id, index, view, document) {
-    var node = createDOMElement(view, id, document, false);
+    var node = createDOMElement(view, id, document);
 
     if (view.children) {
         node.innerHTML = renderChildrenString(view.children, view.props, id);

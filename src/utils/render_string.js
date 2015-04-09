@@ -1,9 +1,7 @@
 var virt = require("virt"),
-    getChildKey = require("virt/utils/get_child_key"),
 
     escapeTextContent = require("escape_text_content"),
     isFunction = require("is_function"),
-    map = require("map"),
     isString = require("is_string"),
     isObject = require("is_object"),
     isNullOrUndefined = require("is_null_or_undefined"),
@@ -37,6 +35,9 @@ var View = virt.View,
 module.exports = render;
 
 
+var renderChildrenString = require("./render_children_string");
+
+
 function render(view, parentProps, id) {
     var type, props;
 
@@ -48,9 +49,7 @@ function render(view, parentProps, id) {
 
         return (
             closedTags[type] !== true ?
-            contentTag(type, map(view.children, function(child, i) {
-                return render(child, props, getChildKey(id, child, i));
-            }).join(""), id, view.props) :
+            contentTag(type, renderChildrenString(view.children, props, id), id, props) :
             closedTag(type, id, view.props)
         );
     }

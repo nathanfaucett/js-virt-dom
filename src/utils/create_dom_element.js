@@ -1,12 +1,10 @@
-var isString = require("is_string"),
+var virt = require("virt"),
+    isString = require("is_string"),
 
     DOM_ID_NAME = require("../dom_id_name"),
     nodeCache = require("./node_cache"),
 
-    applyProperties = require("../apply_properties"),
-
-    virt = require("virt"),
-    getViewKey = require("virt/utils/get_view_key");
+    applyProperties = require("../apply_properties");
 
 
 var View = virt.View,
@@ -16,8 +14,8 @@ var View = virt.View,
 module.exports = createDOMElement;
 
 
-function createDOMElement(view, id, document, recurse) {
-    var node, children, i, length, child;
+function createDOMElement(view, id, document) {
+    var node;
 
     if (isPrimativeView(view)) {
         return document.createTextNode(view);
@@ -28,17 +26,6 @@ function createDOMElement(view, id, document, recurse) {
 
         node.setAttribute(DOM_ID_NAME, id);
         nodeCache[id] = node;
-
-        if (recurse !== false) {
-            children = view.children;
-            i = -1;
-            length = children.length - 1;
-
-            while (i++ < length) {
-                child = children[i];
-                node.appendChild(createDOMElement(child, id + "." + getViewKey(child, i), document));
-            }
-        }
 
         return node;
     } else {

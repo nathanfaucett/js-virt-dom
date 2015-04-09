@@ -1,14 +1,22 @@
-var getChildKey = require("virt/utils/get_child_key"),
-    map = require("map"),
-    renderString = require("./render_string");
-
+var getChildKey = require("virt/utils/get_child_key");
 
 
 module.exports = renderChildrenString;
 
 
-function renderChildrenString(children, props, id) {
-    return map(children, function(view, index) {
-        return renderString(view, props, getChildKey(id, view, index));
-    });
+var renderString = require("./render_string");
+
+
+function renderChildrenString(children, parentProps, id) {
+    var out = "",
+        i = -1,
+        il = children.length - 1,
+        child;
+
+    while (i++ < il) {
+        child = children[i];
+        out += renderString(child, parentProps, getChildKey(id, child, i));
+    }
+
+    return out;
 }
