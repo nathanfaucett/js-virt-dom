@@ -1,7 +1,9 @@
-var MessengerWorker = require("messenger_worker"),
+var Messenger = require("messenger"),
+    MessengerWorkerAdaptor = require("messenger_worker_adaptor"),
     has = require("has"),
     isNode = require("is_node"),
     isFunction = require("is_function"),
+    bindNativeComponents = require("../native_components/bind_native_components"),
     getWindow = require("../utils/get_window"),
     EventHandler = require("../events/event_handler"),
     applyEvents = require("../apply_events"),
@@ -24,7 +26,7 @@ function createWorkerRender(url, containerDOMNode) {
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new MessengerWorker(url);
+        messenger = new Messenger(new MessengerWorkerAdaptor(url));
 
     messenger.on("__WorkerAdaptor:handleTransaction__", function handleTransaction(transaction, callback) {
 
@@ -48,6 +50,8 @@ function createWorkerRender(url, containerDOMNode) {
             targetId: targetId
         });
     };
+
+    bindNativeComponents(messenger);
 
     return messenger;
 }

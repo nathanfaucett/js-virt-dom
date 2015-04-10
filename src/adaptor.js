@@ -1,5 +1,6 @@
 var Messenger = require("messenger"),
     traverseAncestors = require("virt/utils/traverse_ancestors"),
+    bindNativeComponents = require("./native_components/bind_native_components"),
     getWindow = require("./utils/get_window"),
     getNodeById = require("./utils/get_node_by_id"),
     consts = require("./events/consts"),
@@ -16,7 +17,7 @@ module.exports = Adaptor;
 
 
 function Adaptor(root, containerDOMNode) {
-    var socket = Messenger.createSocket(),
+    var socket = createTwoWaySocket(),
         messengerClient = new Messenger(socket.client),
         messengerServer = new Messenger(socket.server),
 
@@ -58,6 +59,8 @@ function Adaptor(root, containerDOMNode) {
             event.destroy();
         }
     };
+
+    bindNativeComponents(messengerClient);
 }
 
 AdaptorPrototype = Adaptor.prototype;
@@ -72,4 +75,30 @@ AdaptorPrototype.handle = function(transaction, callback) {
     applyPatches(transaction.removes, containerDOMNode, document);
 
     callback();
+};
+
+function createTwoWaySocket() {
+    var client = new Socket(),
+        server = new Socket();
+
+    client.socket = server;
+    server.socket = client;
+
+    return {
+        client: client,
+        server: server
+    };
+}
+
+function Socket() {
+    this.socket = null;
+    this.onMessage = null;
+}
+
+Socket.prototype.addMessageListener = function(callback) {
+    this.onMessage = callback;
+};
+
+Socket.prototype.postMessage = function(data) {
+    this.socket.onMessage(data);
 };

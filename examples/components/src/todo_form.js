@@ -33,31 +33,36 @@ virt.Component.extend(TodoForm, "TodoForm");
 TodoFormPrototype = TodoForm.prototype;
 
 TodoFormPrototype.__onSubmit = function(e) {
-    var DOMNode = virtDOM.findDOMNode(this.refs.name),
-        value = DOMNode.value;
+    var _this = this,
+        inputName = this.refs.name;
 
     e.preventDefault();
 
-    if (value) {
-        dispatcher.handleViewAction({
-            actionType: TodoStore.consts.TODO_CREATE,
-            text: value
-        });
+    inputName.getValue(function(error, value) {
+        if (!error && value) {
+            dispatcher.handleViewAction({
+                actionType: TodoStore.consts.TODO_CREATE,
+                text: value
+            });
 
-        DOMNode.value = "";
+            inputName.setValue("");
 
-        this.setState({
-            name: ""
-        });
-    }
+            _this.setState({
+                name: ""
+            });
+        }
+    });
 };
 
 TodoFormPrototype.__onInput = function() {
-    var DOMNode = virtDOM.findDOMNode(this.refs.name),
-        value = DOMNode.value;
+    var _this = this;
 
-    this.setState({
-        name: value
+    this.refs.name.getValue(function(error, value) {
+        if (!error && value) {
+            _this.setState({
+                name: value
+            });
+        }
     });
 };
 

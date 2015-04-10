@@ -1,4 +1,5 @@
 var virt = require("virt"),
+    parallel = require("parallel"),
     eventListener = require("event_listener"),
     dispatcher = require("./dispatcher"),
     TodoStore = require("./todo_store");
@@ -31,23 +32,22 @@ virt.Component.extend(TodoForm, "TodoForm");
 
 TodoFormPrototype = TodoForm.prototype;
 
-TodoFormPrototype.componentDidMount = function() {
-
-};
-
-TodoFormPrototype.componentWillUnmount = function() {
-
-};
-
 TodoFormPrototype.__onSubmit = function(e) {
-    var _this = this;
+    var _this = this,
+        nameInput = this.refs.name;
 
-    this.emitMessage("TodoForm:onSubmit", this.refs.name.getId(), function(err, value) {
-        if (!err && value) {
+    parallel([
+        nameInput.getValue
+    ], function(error, values) {
+        var name = values[0];
+
+        if (!error && name) {
             dispatcher.handleViewAction({
                 actionType: TodoStore.consts.TODO_CREATE,
-                text: value
+                text: name
             });
+
+            nameInput.setValue("");
 
             _this.setState({
                 name: ""
@@ -59,7 +59,7 @@ TodoFormPrototype.__onSubmit = function(e) {
 TodoFormPrototype.__onInput = function() {
     var _this = this;
 
-    this.emitMessage("TodoForm:onInput", this.refs.name.getId(), function(err, value) {
+    this.refs.name.getValue(function(err, value) {
         if (!err) {
             _this.setState({
                 name: value
@@ -74,6 +74,7 @@ TodoFormPrototype.render = function() {
                 className: "todo-form"
             },
             virt.createView("form", {
+                    action: "",
                     onSubmit: this.onSubmit
                 },
                 virt.createView("input", {
@@ -83,6 +84,12 @@ TodoFormPrototype.render = function() {
                     placeholder: "Todo",
                     value: this.state.name,
                     onInput: this.onInput
+                }),
+                virt.createView("input", {
+                    type: "submit",
+                    name: "submit",
+                    value: "submit",
+                    onClick: this.onSubmit
                 })
             )
         )

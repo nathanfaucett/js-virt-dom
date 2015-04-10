@@ -2,6 +2,9 @@ var render = require("./render"),
     renderString = require("./utils/render_string");
 
 
+require("./native_components");
+
+
 var virtDOM = exports;
 
 
