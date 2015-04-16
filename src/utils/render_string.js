@@ -1,11 +1,11 @@
 var virt = require("virt"),
 
-    escapeTextContent = require("escape_text_content"),
     isFunction = require("is_function"),
     isString = require("is_string"),
     isObject = require("is_object"),
     isNullOrUndefined = require("is_null_or_undefined"),
 
+    renderMarkup = require("./render_markup"),
     DOM_ID_NAME = require("../dom_id_name");
 
 
@@ -42,7 +42,7 @@ function render(view, parentProps, id) {
     var type, props;
 
     if (isPrimativeView(view)) {
-        return isString(view) ? contentMarkup(view, parentProps) : view + "";
+        return isString(view) ? renderMarkup(view, parentProps) : view + "";
     } else {
         type = view.type;
         props = view.props;
@@ -52,14 +52,6 @@ function render(view, parentProps, id) {
             contentTag(type, renderChildrenString(view.children, props, id), id, props) :
             closedTag(type, id, view.props)
         );
-    }
-}
-
-function contentMarkup(content, props) {
-    if (props && props.dangerouslySetInnerHTML !== true) {
-        return escapeTextContent(content);
-    } else {
-        return content;
     }
 }
 

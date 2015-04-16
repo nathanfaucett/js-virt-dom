@@ -1,5 +1,6 @@
 var consts = require("virt/transaction/consts"),
     createDOMElement = require("./utils/create_dom_element"),
+    renderMarkup = require("./utils/render_markup"),
     renderString = require("./utils/render_string"),
     renderChildrenString = require("./utils/render_children_string"),
     addDOMNodes = require("./utils/add_dom_nodes"),
@@ -31,7 +32,7 @@ function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
             replace(DOMNode, patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
-            text(DOMNode, patch.index, patch.next);
+            text(DOMNode, patch.index, patch.next, patch.props);
             break;
         case consts.ORDER:
             order(DOMNode, patch.order);
@@ -76,14 +77,14 @@ function insert(parentNode, id, index, view, document) {
     parentNode.appendChild(node);
 }
 
-function text(parentNode, index, value) {
+function text(parentNode, index, value, props) {
     var textNode = parentNode.childNodes[index];
 
     if (textNode) {
         if (textNode.nodeType === 3) {
             textNode.nodeValue = value;
         } else {
-            textNode.innerHTML = value;
+            textNode.innerHTML = renderMarkup(value, props);
         }
     }
 }
