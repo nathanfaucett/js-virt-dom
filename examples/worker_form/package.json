@@ -7,6 +7,7 @@
     "environment": "git://github.com/nathanfaucett/environment",
     "event_emitter": "git://github.com/nathanfaucett/event_emitter",
     "event_listener": "git://github.com/nathanfaucett/event_listener",
+    "parallel": "git://github.com/nathanfaucett/parallel",
     "prop_types": "git://github.com/nathanfaucett/prop_types",
     "values": "git://github.com/nathanfaucett/values"
   }
