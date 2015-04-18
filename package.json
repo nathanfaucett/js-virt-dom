@@ -48,6 +48,7 @@
     "key_mirror": "git://github.com/nathanfaucett/key_mirror",
     "map": "git://github.com/nathanfaucett/map",
     "messenger": "git://github.com/nathanfaucett/messenger",
+    "messenger_adaptor": "git://github.com/nathanfaucett/messenger_adaptor",
     "messenger_worker_adaptor": "git://github.com/nathanfaucett/messenger_worker_adaptor",
     "virt": "git://github.com/nathanfaucett/virt"
   }

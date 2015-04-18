@@ -1,4 +1,5 @@
 var Messenger = require("messenger"),
+    createMessengerAdaptor = require("messenger_adaptor"),
     traverseAncestors = require("virt/utils/traverse_ancestors"),
     bindNativeComponents = require("./native_components/bind_native_components"),
     getWindow = require("./utils/get_window"),
@@ -17,7 +18,7 @@ module.exports = Adaptor;
 
 
 function Adaptor(root, containerDOMNode) {
-    var socket = createTwoWaySocket(),
+    var socket = createMessengerAdaptor(),
         messengerClient = new Messenger(socket.client),
         messengerServer = new Messenger(socket.server),
 
@@ -75,30 +76,4 @@ AdaptorPrototype.handle = function(transaction, callback) {
     applyPatches(transaction.removes, containerDOMNode, document);
 
     callback();
-};
-
-function createTwoWaySocket() {
-    var client = new Socket(),
-        server = new Socket();
-
-    client.socket = server;
-    server.socket = client;
-
-    return {
-        client: client,
-        server: server
-    };
-}
-
-function Socket() {
-    this.socket = null;
-    this.onMessage = null;
-}
-
-Socket.prototype.addMessageListener = function(callback) {
-    this.onMessage = callback;
-};
-
-Socket.prototype.postMessage = function(data) {
-    this.socket.onMessage(data);
 };
