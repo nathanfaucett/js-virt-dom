@@ -1,7 +1,7 @@
 virt DOM
 =======
 
-virt DOM for the browser and node.js
+virt adaptor for the DOM
 
 ```javascript
 var virt = require("virt"),
