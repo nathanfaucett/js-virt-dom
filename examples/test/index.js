@@ -6132,7 +6132,7 @@ InputPrototype.__setValue = function(value, callback) {
 };
 
 InputPrototype.render = function() {
-    return new View("Input", null, null, this.props, this.children, null, null);
+    return new View("input", null, null, this.props, this.children, null, null);
 };
 
 
