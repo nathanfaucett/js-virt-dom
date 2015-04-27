@@ -8,7 +8,7 @@ var virt = require("virt"),
 
 
 var View = virt.View,
-    isPrimativeView = View.isPrimativeView;
+    isPrimitiveView = View.isPrimitiveView;
 
 
 module.exports = createDOMElement;
@@ -17,7 +17,7 @@ module.exports = createDOMElement;
 function createDOMElement(view, id, document) {
     var node;
 
-    if (isPrimativeView(view)) {
+    if (isPrimitiveView(view)) {
         return document.createTextNode(view);
     } else if (isString(view.type)) {
         node = document.createElement(view.type);

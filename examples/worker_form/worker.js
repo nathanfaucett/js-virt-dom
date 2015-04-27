@@ -126,7 +126,7 @@ ViewPrototype.toJSON = function() {
 };
 
 View.isView = isView;
-View.isPrimativeView = isPrimativeView;
+View.isPrimitiveView = isPrimitiveView;
 View.isViewComponent = isViewComponent;
 View.isViewJSON = isViewJSON;
 
@@ -243,12 +243,12 @@ function isViewJSON(obj) {
     );
 }
 
-function isPrimativeView(object) {
+function isPrimitiveView(object) {
     return isString(object) || isNumber(object);
 }
 
 function isChild(object) {
-    return isView(object) || isPrimativeView(object);
+    return isView(object) || isPrimitiveView(object);
 }
 
 function extractChildren(args, offset) {
@@ -280,7 +280,7 @@ function insureValidChildren(children) {
 
             if (isView(child)) {
                 continue;
-            } else if (isPrimativeView(child)) {
+            } else if (isPrimitiveView(child)) {
                 children[i] = child;
             } else {
                 throw new TypeError("child of a View must be a String, Number or a View");
@@ -1620,7 +1620,7 @@ var has = require(11),
 
 
 var NodePrototype,
-    isPrimativeView = View.isPrimativeView;
+    isPrimitiveView = View.isPrimitiveView;
 
 
 module.exports = Node;
@@ -1741,7 +1741,7 @@ NodePrototype.__mountChildren = function(renderedView, transaction) {
     renderedView.children = map(renderedView.children, function(child, index) {
         var node, id;
 
-        if (isPrimativeView(child)) {
+        if (isPrimitiveView(child)) {
             return child;
         } else {
             id = getChildKey(parentId, child, index);
@@ -2661,7 +2661,7 @@ var isNullOrUndefined = require(4),
     Node;
 
 
-var isPrimativeView = View.isPrimativeView;
+var isPrimitiveView = View.isPrimitiveView;
 
 
 module.exports = diffChildren;
@@ -2694,7 +2694,7 @@ function diffChild(root, parentNode, previous, next, previousChild, nextChild, p
 
     if (previousChild !== nextChild) {
         if (isNullOrUndefined(previousChild)) {
-            if (isPrimativeView(nextChild)) {
+            if (isPrimitiveView(nextChild)) {
                 transaction.insert(parentId, null, index, nextChild);
             } else {
                 id = getChildKey(parentId, nextChild, index);
@@ -2702,10 +2702,10 @@ function diffChild(root, parentNode, previous, next, previousChild, nextChild, p
                 parentNode.appendNode(node);
                 transaction.insert(parentId, id, index, node.__mount(transaction));
             }
-        } else if (isPrimativeView(previousChild)) {
+        } else if (isPrimitiveView(previousChild)) {
             if (isNullOrUndefined(nextChild)) {
                 transaction.remove(parentId, null, index);
-            } else if (isPrimativeView(nextChild)) {
+            } else if (isPrimitiveView(nextChild)) {
                 transaction.text(parentId, index, nextChild, next.props);
             } else {
                 id = getChildKey(parentId, nextChild, index);
@@ -2719,7 +2719,7 @@ function diffChild(root, parentNode, previous, next, previousChild, nextChild, p
                 node = root.childHash[id];
                 node.unmount(transaction);
                 parentNode.removeNode(node);
-            } else if (isPrimativeView(nextChild)) {
+            } else if (isPrimitiveView(nextChild)) {
                 transaction.replace(parentId, null, index, nextChild);
             } else {
                 id = getChildKey(parentId, previousChild, index);
@@ -5581,7 +5581,7 @@ var virt = require(1),
 
 
 var View = virt.View,
-    isPrimativeView = View.isPrimativeView;
+    isPrimitiveView = View.isPrimitiveView;
 
 
 module.exports = createDOMElement;
@@ -5590,7 +5590,7 @@ module.exports = createDOMElement;
 function createDOMElement(view, id, document) {
     var node;
 
-    if (isPrimativeView(view)) {
+    if (isPrimitiveView(view)) {
         return document.createTextNode(view);
     } else if (isString(view.type)) {
         node = document.createElement(view.type);
@@ -5771,7 +5771,7 @@ var virt = require(1),
 
 
 var View = virt.View,
-    isPrimativeView = View.isPrimativeView,
+    isPrimitiveView = View.isPrimitiveView,
 
     closedTags = {
         area: true,
@@ -5802,7 +5802,7 @@ var renderChildrenString = require(117);
 function render(view, parentProps, id) {
     var type, props;
 
-    if (isPrimativeView(view)) {
+    if (isPrimitiveView(view)) {
         return isString(view) ? renderMarkup(view, parentProps) : view + "";
     } else {
         type = view.type;

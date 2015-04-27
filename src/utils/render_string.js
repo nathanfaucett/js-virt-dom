@@ -10,7 +10,7 @@ var virt = require("virt"),
 
 
 var View = virt.View,
-    isPrimativeView = View.isPrimativeView,
+    isPrimitiveView = View.isPrimitiveView,
 
     closedTags = {
         area: true,
@@ -41,7 +41,7 @@ var renderChildrenString = require("./render_children_string");
 function render(view, parentProps, id) {
     var type, props;
 
-    if (isPrimativeView(view)) {
+    if (isPrimitiveView(view)) {
         return isString(view) ? renderMarkup(view, parentProps) : view + "";
     } else {
         type = view.type;
