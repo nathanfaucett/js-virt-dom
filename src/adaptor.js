@@ -1,6 +1,6 @@
-var Messenger = require("messenger"),
+var virt = require("virt"),
+    Messenger = require("messenger"),
     createMessengerAdaptor = require("messenger_adaptor"),
-    traverseAncestors = require("virt/utils/traverse_ancestors"),
     bindNativeComponents = require("./native_components/bind_native_components"),
     getWindow = require("./utils/get_window"),
     getNodeById = require("./utils/get_node_by_id"),
@@ -11,7 +11,8 @@ var Messenger = require("messenger"),
     applyPatches = require("./apply_patches");
 
 
-var AdaptorPrototype;
+var traverseAncestors = virt.traverseAncestors,
+    AdaptorPrototype;
 
 
 module.exports = Adaptor;

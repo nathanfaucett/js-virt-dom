@@ -1,4 +1,7 @@
-var getChildKey = require("virt/utils/get_child_key");
+var virt = require("virt");
+
+
+var getChildKey = virt.getChildKey;
 
 
 module.exports = renderChildrenString;

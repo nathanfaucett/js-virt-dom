@@ -19,3 +19,6 @@ virtDOM.findDOMNode = require("./utils/find_dom_node");
 
 virtDOM.createWorkerRender = require("./worker/create_worker_render");
 virtDOM.renderWorker = require("./worker/render_worker");
+
+virtDOM.createWebSocketRender = require("./websocket/create_websocket_render");
+virtDOM.renderWebSocket = require("./websocket/render_websocket");

@@ -1,4 +1,4 @@
-var consts = require("virt/transaction/consts"),
+var virt = require("virt"),
     createDOMElement = require("./utils/create_dom_element"),
     renderMarkup = require("./utils/render_markup"),
     renderString = require("./utils/render_string"),
@@ -9,6 +9,8 @@ var consts = require("virt/transaction/consts"),
     getNodeById = require("./utils/get_node_by_id"),
     applyProperties = require("./apply_properties");
 
+
+var consts = virt.consts;
 
 
 module.exports = applyPatch;
