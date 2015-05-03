@@ -43,7 +43,7 @@ var environment = require(1),
     eventListener = require(2),
     virt = require(8),
     virtDOM = require(69),
-    App = require(141);
+    App = require(142);
 
 
 eventListener.on(environment.window, "load", function() {
@@ -3752,10 +3752,10 @@ virtDOM.renderString = function(view, id) {
 virtDOM.findDOMNode = require(76);
 
 virtDOM.createWorkerRender = require(133);
-virtDOM.renderWorker = require(135);
+virtDOM.renderWorker = require(136);
 
-virtDOM.createWebSocketRender = require(137);
-virtDOM.renderWebSocket = require(139);
+virtDOM.createWebSocketRender = require(138);
+virtDOM.renderWebSocket = require(140);
 
 
 },
@@ -6408,20 +6408,12 @@ function(require, exports, module, global) {
 
 var Messenger = require(72),
     MessengerWorkerAdaptor = require(134),
-    has = require(17),
-    isNode = require(7),
-    isFunction = require(5),
     bindNativeComponents = require(74),
     getWindow = require(81),
+    nativeEventToJSON = require(135),
     EventHandler = require(84),
     applyEvents = require(115),
     applyPatches = require(116);
-
-
-var ignoreNativeEventProp = {
-    path: true,
-    view: true
-};
 
 
 module.exports = createWorkerRender;
@@ -6464,25 +6456,6 @@ function createWorkerRender(url, containerDOMNode) {
     return messenger;
 }
 
-function nativeEventToJSON(nativeEvent) {
-    var json = {},
-        localHas = has,
-        key, value;
-
-
-    for (key in nativeEvent) {
-        if (localHas(nativeEvent, key)) {
-            value = nativeEvent[key];
-
-            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
-                json[key] = value;
-            }
-        }
-    }
-
-    return json;
-}
-
 
 },
 function(require, exports, module, global) {
@@ -6521,8 +6494,45 @@ MessengerWorkerAdaptorPrototype.postMessage = function(data) {
 },
 function(require, exports, module, global) {
 
+var has = require(17),
+    isNode = require(7),
+    isFunction = require(5);
+
+
+var ignoreNativeEventProp = {
+    path: true,
+    view: true
+};
+
+
+module.exports = nativeEventToJSON;
+
+
+function nativeEventToJSON(nativeEvent) {
+    var json = {},
+        localHas = has,
+        key, value;
+
+
+    for (key in nativeEvent) {
+        if (localHas(nativeEvent, key)) {
+            value = nativeEvent[key];
+
+            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
+                json[key] = value;
+            }
+        }
+    }
+
+    return json;
+}
+
+
+},
+function(require, exports, module, global) {
+
 var virt = require(8),
-    WorkerAdaptor = require(136);
+    WorkerAdaptor = require(137);
 
 
 var root = null;
@@ -6630,21 +6640,13 @@ function WorkerAdaptor(root) {
 function(require, exports, module, global) {
 
 var Messenger = require(72),
-    MessengerWebSocketAdaptor = require(138),
-    has = require(17),
-    isNode = require(7),
-    isFunction = require(5),
+    MessengerWebSocketAdaptor = require(139),
     bindNativeComponents = require(74),
     getWindow = require(81),
+    nativeEventToJSON = require(135),
     EventHandler = require(84),
     applyEvents = require(115),
     applyPatches = require(116);
-
-
-var ignoreNativeEventProp = {
-    path: true,
-    view: true
-};
 
 
 module.exports = createWebSocketRender;
@@ -6685,25 +6687,6 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
     bindNativeComponents(messenger);
 
     return messenger;
-}
-
-function nativeEventToJSON(nativeEvent) {
-    var json = {},
-        localHas = has,
-        key, value;
-
-
-    for (key in nativeEvent) {
-        if (localHas(nativeEvent, key)) {
-            value = nativeEvent[key];
-
-            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
-                json[key] = value;
-            }
-        }
-    }
-
-    return json;
 }
 
 
@@ -6747,7 +6730,7 @@ function defaultSendMessage(socket, data) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    WebSocketAdaptor = require(140);
+    WebSocketAdaptor = require(141);
 
 
 module.exports = render;
@@ -6766,7 +6749,7 @@ function(require, exports, module, global) {
 
 var virt = require(8),
     Messenger = require(72),
-    MessengerWebSocketAdaptor = require(138),
+    MessengerWebSocketAdaptor = require(139),
     consts = require(82),
     eventClassMap = require(89);
 
@@ -6843,9 +6826,9 @@ function WebSocketAdaptor(root, socket, attachMessage, sendMessage) {
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(142),
-    TodoList = require(145),
-    TodoForm = require(152);
+    propTypes = require(143),
+    TodoList = require(146),
+    TodoForm = require(153);
 
 
 var AppPrototype;
@@ -6888,9 +6871,9 @@ AppPrototype.render = function() {
 function(require, exports, module, global) {
 
 var isArray = require(12),
-    isRegExp = require(143),
+    isRegExp = require(144),
     isNullOrUndefined = require(11),
-    emptyFunction = require(144),
+    emptyFunction = require(145),
     isFunction = require(5),
     has = require(17),
     indexOf = require(46);
@@ -7111,9 +7094,9 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(69),
     map = require(18),
-    dispatcher = require(146),
-    TodoStore = require(149),
-    TodoItem = require(151);
+    dispatcher = require(147),
+    TodoStore = require(150),
+    TodoItem = require(152);
 
 
 var TodoListPrototype;
@@ -7190,7 +7173,7 @@ TodoListPrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(147);
+var EventEmitter = require(148);
 
 
 var dispatcher = module.exports = new EventEmitter(-1),
@@ -7216,7 +7199,7 @@ function(require, exports, module, global) {
 
 var isFunction = require(5),
     inherits = require(53),
-    fastSlice = require(148),
+    fastSlice = require(149),
     keys = require(19);
 
 
@@ -7612,9 +7595,9 @@ module.exports = function fastSlice(array, offset) {
 },
 function(require, exports, module, global) {
 
-var EventEmitter = require(147),
-    values = require(150),
-    dispatcher = require(146);
+var EventEmitter = require(148),
+    values = require(151),
+    dispatcher = require(147);
 
 
 var TodoStore = module.exports = new EventEmitter(-1),
@@ -7740,7 +7723,7 @@ module.exports = values;
 function(require, exports, module, global) {
 
 var virt = require(8),
-    propTypes = require(142);
+    propTypes = require(143);
 
 
 var TodoItemPrototype;
@@ -7791,8 +7774,8 @@ function(require, exports, module, global) {
 var virt = require(8),
     virtDOM = require(69),
     eventListener = require(2),
-    dispatcher = require(146),
-    TodoStore = require(149);
+    dispatcher = require(147),
+    TodoStore = require(150);
 
 
 var TodoFormPrototype;

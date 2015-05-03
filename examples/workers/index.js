@@ -68,10 +68,10 @@ virtDOM.renderString = function(view, id) {
 virtDOM.findDOMNode = require(72);
 
 virtDOM.createWorkerRender = require(133);
-virtDOM.renderWorker = require(135);
+virtDOM.renderWorker = require(136);
 
-virtDOM.createWebSocketRender = require(137);
-virtDOM.renderWebSocket = require(139);
+virtDOM.createWebSocketRender = require(138);
+virtDOM.renderWebSocket = require(140);
 
 
 },
@@ -6404,20 +6404,12 @@ function(require, exports, module, global) {
 
 var Messenger = require(68),
     MessengerWorkerAdaptor = require(134),
-    has = require(13),
-    isNode = require(76),
-    isFunction = require(7),
     bindNativeComponents = require(70),
     getWindow = require(78),
+    nativeEventToJSON = require(135),
     EventHandler = require(81),
     applyEvents = require(115),
     applyPatches = require(116);
-
-
-var ignoreNativeEventProp = {
-    path: true,
-    view: true
-};
 
 
 module.exports = createWorkerRender;
@@ -6460,25 +6452,6 @@ function createWorkerRender(url, containerDOMNode) {
     return messenger;
 }
 
-function nativeEventToJSON(nativeEvent) {
-    var json = {},
-        localHas = has,
-        key, value;
-
-
-    for (key in nativeEvent) {
-        if (localHas(nativeEvent, key)) {
-            value = nativeEvent[key];
-
-            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
-                json[key] = value;
-            }
-        }
-    }
-
-    return json;
-}
-
 
 },
 function(require, exports, module, global) {
@@ -6517,8 +6490,45 @@ MessengerWorkerAdaptorPrototype.postMessage = function(data) {
 },
 function(require, exports, module, global) {
 
+var has = require(13),
+    isNode = require(76),
+    isFunction = require(7);
+
+
+var ignoreNativeEventProp = {
+    path: true,
+    view: true
+};
+
+
+module.exports = nativeEventToJSON;
+
+
+function nativeEventToJSON(nativeEvent) {
+    var json = {},
+        localHas = has,
+        key, value;
+
+
+    for (key in nativeEvent) {
+        if (localHas(nativeEvent, key)) {
+            value = nativeEvent[key];
+
+            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
+                json[key] = value;
+            }
+        }
+    }
+
+    return json;
+}
+
+
+},
+function(require, exports, module, global) {
+
 var virt = require(3),
-    WorkerAdaptor = require(136);
+    WorkerAdaptor = require(137);
 
 
 var root = null;
@@ -6626,21 +6636,13 @@ function WorkerAdaptor(root) {
 function(require, exports, module, global) {
 
 var Messenger = require(68),
-    MessengerWebSocketAdaptor = require(138),
-    has = require(13),
-    isNode = require(76),
-    isFunction = require(7),
+    MessengerWebSocketAdaptor = require(139),
     bindNativeComponents = require(70),
     getWindow = require(78),
+    nativeEventToJSON = require(135),
     EventHandler = require(81),
     applyEvents = require(115),
     applyPatches = require(116);
-
-
-var ignoreNativeEventProp = {
-    path: true,
-    view: true
-};
 
 
 module.exports = createWebSocketRender;
@@ -6681,25 +6683,6 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
     bindNativeComponents(messenger);
 
     return messenger;
-}
-
-function nativeEventToJSON(nativeEvent) {
-    var json = {},
-        localHas = has,
-        key, value;
-
-
-    for (key in nativeEvent) {
-        if (localHas(nativeEvent, key)) {
-            value = nativeEvent[key];
-
-            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
-                json[key] = value;
-            }
-        }
-    }
-
-    return json;
 }
 
 
@@ -6743,7 +6726,7 @@ function defaultSendMessage(socket, data) {
 function(require, exports, module, global) {
 
 var virt = require(3),
-    WebSocketAdaptor = require(140);
+    WebSocketAdaptor = require(141);
 
 
 module.exports = render;
@@ -6762,7 +6745,7 @@ function(require, exports, module, global) {
 
 var virt = require(3),
     Messenger = require(68),
-    MessengerWebSocketAdaptor = require(138),
+    MessengerWebSocketAdaptor = require(139),
     consts = require(79),
     eventClassMap = require(89);
 

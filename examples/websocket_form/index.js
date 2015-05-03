@@ -344,23 +344,25 @@ process.chdir = function (dir) {
 },
 function(require, exports, module, global) {
 
-module.exports = function isObject(obj) {
+module.exports = isObject;
+
+
+function isObject(obj) {
     var type = typeof(obj);
     return type === "function" || (obj && type === "object") || false;
-};
+}
 
 
 },
 function(require, exports, module, global) {
 
-var objectFunction = "[object Function]",
-    toString = Object.prototype.toString,
+var objectToString = Object.prototype.toString,
     isFunction;
 
 
 if (typeof(/./) === "function" || (typeof(Uint8Array) !== "undefined" && typeof(Uint8Array) !== "function")) {
     isFunction = function isFunction(obj) {
-        return toString.call(obj) === objectFunction;
+        return objectToString.call(obj) === "[object Function]";
     };
 } else {
     isFunction = function isFunction(obj) {
@@ -8677,10 +8679,10 @@ virtDOM.renderString = function(view, id) {
 virtDOM.findDOMNode = require(123);
 
 virtDOM.createWorkerRender = require(180);
-virtDOM.renderWorker = require(182);
+virtDOM.renderWorker = require(183);
 
-virtDOM.createWebSocketRender = require(184);
-virtDOM.renderWebSocket = require(186);
+virtDOM.createWebSocketRender = require(185);
+virtDOM.renderWebSocket = require(187);
 
 
 },
@@ -14272,20 +14274,12 @@ function(require, exports, module, global) {
 
 var Messenger = require(119),
     MessengerWorkerAdaptor = require(181),
-    has = require(66),
-    isNode = require(7),
-    isFunction = require(5),
     bindNativeComponents = require(121),
     getWindow = require(128),
+    nativeEventToJSON = require(182),
     EventHandler = require(131),
     applyEvents = require(162),
     applyPatches = require(163);
-
-
-var ignoreNativeEventProp = {
-    path: true,
-    view: true
-};
 
 
 module.exports = createWorkerRender;
@@ -14328,25 +14322,6 @@ function createWorkerRender(url, containerDOMNode) {
     return messenger;
 }
 
-function nativeEventToJSON(nativeEvent) {
-    var json = {},
-        localHas = has,
-        key, value;
-
-
-    for (key in nativeEvent) {
-        if (localHas(nativeEvent, key)) {
-            value = nativeEvent[key];
-
-            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
-                json[key] = value;
-            }
-        }
-    }
-
-    return json;
-}
-
 
 },
 function(require, exports, module, global) {
@@ -14385,8 +14360,45 @@ MessengerWorkerAdaptorPrototype.postMessage = function(data) {
 },
 function(require, exports, module, global) {
 
+var has = require(66),
+    isNode = require(7),
+    isFunction = require(5);
+
+
+var ignoreNativeEventProp = {
+    path: true,
+    view: true
+};
+
+
+module.exports = nativeEventToJSON;
+
+
+function nativeEventToJSON(nativeEvent) {
+    var json = {},
+        localHas = has,
+        key, value;
+
+
+    for (key in nativeEvent) {
+        if (localHas(nativeEvent, key)) {
+            value = nativeEvent[key];
+
+            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
+                json[key] = value;
+            }
+        }
+    }
+
+    return json;
+}
+
+
+},
+function(require, exports, module, global) {
+
 var virt = require(57),
-    WorkerAdaptor = require(183);
+    WorkerAdaptor = require(184);
 
 
 var root = null;
@@ -14494,21 +14506,13 @@ function WorkerAdaptor(root) {
 function(require, exports, module, global) {
 
 var Messenger = require(119),
-    MessengerWebSocketAdaptor = require(185),
-    has = require(66),
-    isNode = require(7),
-    isFunction = require(5),
+    MessengerWebSocketAdaptor = require(186),
     bindNativeComponents = require(121),
     getWindow = require(128),
+    nativeEventToJSON = require(182),
     EventHandler = require(131),
     applyEvents = require(162),
     applyPatches = require(163);
-
-
-var ignoreNativeEventProp = {
-    path: true,
-    view: true
-};
 
 
 module.exports = createWebSocketRender;
@@ -14549,25 +14553,6 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
     bindNativeComponents(messenger);
 
     return messenger;
-}
-
-function nativeEventToJSON(nativeEvent) {
-    var json = {},
-        localHas = has,
-        key, value;
-
-
-    for (key in nativeEvent) {
-        if (localHas(nativeEvent, key)) {
-            value = nativeEvent[key];
-
-            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
-                json[key] = value;
-            }
-        }
-    }
-
-    return json;
 }
 
 
@@ -14611,7 +14596,7 @@ function defaultSendMessage(socket, data) {
 function(require, exports, module, global) {
 
 var virt = require(57),
-    WebSocketAdaptor = require(187);
+    WebSocketAdaptor = require(188);
 
 
 module.exports = render;
@@ -14630,7 +14615,7 @@ function(require, exports, module, global) {
 
 var virt = require(57),
     Messenger = require(119),
-    MessengerWebSocketAdaptor = require(185),
+    MessengerWebSocketAdaptor = require(186),
     consts = require(129),
     eventClassMap = require(136);
 

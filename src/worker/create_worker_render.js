@@ -1,19 +1,11 @@
 var Messenger = require("messenger"),
     MessengerWorkerAdaptor = require("messenger_worker_adaptor"),
-    has = require("has"),
-    isNode = require("is_node"),
-    isFunction = require("is_function"),
     bindNativeComponents = require("../native_components/bind_native_components"),
     getWindow = require("../utils/get_window"),
+    nativeEventToJSON = require("../utils/native_event_to_json"),
     EventHandler = require("../events/event_handler"),
     applyEvents = require("../apply_events"),
     applyPatches = require("../apply_patches");
-
-
-var ignoreNativeEventProp = {
-    path: true,
-    view: true
-};
 
 
 module.exports = createWorkerRender;
@@ -54,23 +46,4 @@ function createWorkerRender(url, containerDOMNode) {
     bindNativeComponents(messenger);
 
     return messenger;
-}
-
-function nativeEventToJSON(nativeEvent) {
-    var json = {},
-        localHas = has,
-        key, value;
-
-
-    for (key in nativeEvent) {
-        if (localHas(nativeEvent, key)) {
-            value = nativeEvent[key];
-
-            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
-                json[key] = value;
-            }
-        }
-    }
-
-    return json;
 }
