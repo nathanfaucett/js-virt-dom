@@ -1522,7 +1522,6 @@ function Root() {
     this.__transactions = [];
     this.__currentTransaction = null;
 }
-
 RootPrototype = Root.prototype;
 
 RootPrototype.appendNode = function(node) {
@@ -1640,6 +1639,7 @@ function(require, exports, module, global) {
 
 var createPool = require(32),
     Queue = require(34),
+    has = require(19),
     consts = require(35),
     InsertPatch = require(37),
     MountPatch = require(38),
@@ -1649,6 +1649,9 @@ var createPool = require(32),
     RemovePatch = require(42),
     ReplacePatch = require(43),
     TextPatch = require(44);
+
+
+var TransactionPrototype;
 
 
 module.exports = Transaction;
@@ -1666,20 +1669,23 @@ function Transaction() {
 }
 createPool(Transaction);
 Transaction.consts = consts;
+TransactionPrototype = Transaction.prototype;
 
 Transaction.create = function() {
     return Transaction.getPooled();
 };
 
-Transaction.prototype.destroy = function() {
+TransactionPrototype.destroy = function() {
     Transaction.release(this);
 };
 
 function clearPatches(hash) {
-    var id, array, j, jl;
+    var localHas = has,
+        id, array, j, jl;
 
     for (id in hash) {
-        if ((array = hash[id]) !== undefined) {
+        if (localHas(hash, id)) {
+            array = hash[id];
             j = -1;
             jl = array.length - 1;
 
@@ -1693,14 +1699,17 @@ function clearPatches(hash) {
 }
 
 function clearHash(hash) {
-    for (var id in hash) {
-        if (hash[id] !== undefined) {
+    var localHas = has,
+        id;
+
+    for (id in hash) {
+        if (localHas(hash, id)) {
             delete hash[id];
         }
     }
 }
 
-Transaction.prototype.destructor = function() {
+TransactionPrototype.destructor = function() {
     clearPatches(this.patches);
     clearPatches(this.removes);
     clearHash(this.events);
@@ -1708,43 +1717,43 @@ Transaction.prototype.destructor = function() {
     return this;
 };
 
-Transaction.prototype.mount = function(id, next) {
+TransactionPrototype.mount = function(id, next) {
     this.append(MountPatch.create(id, next));
 };
 
-Transaction.prototype.unmount = function(id) {
+TransactionPrototype.unmount = function(id) {
     this.append(UnmountPatch.create(id));
 };
 
-Transaction.prototype.insert = function(id, childId, index, next) {
+TransactionPrototype.insert = function(id, childId, index, next) {
     this.append(InsertPatch.create(id, childId, index, next));
 };
 
-Transaction.prototype.order = function(id, order) {
+TransactionPrototype.order = function(id, order) {
     this.append(OrderPatch.create(id, order));
 };
 
-Transaction.prototype.props = function(id, previous, props) {
+TransactionPrototype.props = function(id, previous, props) {
     this.append(PropsPatch.create(id, previous, props));
 };
 
-Transaction.prototype.replace = function(id, childId, index, next) {
+TransactionPrototype.replace = function(id, childId, index, next) {
     this.append(ReplacePatch.create(id, childId, index, next));
 };
 
-Transaction.prototype.text = function(id, index, next, props) {
+TransactionPrototype.text = function(id, index, next, props) {
     this.append(TextPatch.create(id, index, next, props));
 };
 
-Transaction.prototype.remove = function(id, childId, index) {
+TransactionPrototype.remove = function(id, childId, index) {
     this.appendRemove(RemovePatch.create(id, childId, index));
 };
 
-Transaction.prototype.event = function(id, type) {
+TransactionPrototype.event = function(id, type) {
     this.events[id] = type;
 };
 
-Transaction.prototype.removeEvent = function(id, type) {
+TransactionPrototype.removeEvent = function(id, type) {
     this.eventsRemove[id] = type;
 };
 
@@ -1755,15 +1764,15 @@ function append(hash, value) {
     patchArray[patchArray.length] = value;
 }
 
-Transaction.prototype.append = function(value) {
+TransactionPrototype.append = function(value) {
     append(this.patches, value);
 };
 
-Transaction.prototype.appendRemove = function(value) {
+TransactionPrototype.appendRemove = function(value) {
     append(this.removes, value);
 };
 
-Transaction.prototype.toJSON = function() {
+TransactionPrototype.toJSON = function() {
     return {
         removes: this.removes,
         patches: this.patches,
@@ -2097,6 +2106,9 @@ var createPool = require(32),
     consts = require(35);
 
 
+var InsertPatchPrototype;
+
+
 module.exports = InsertPatch;
 
 
@@ -2108,6 +2120,7 @@ function InsertPatch() {
     this.next = null;
 }
 createPool(InsertPatch);
+InsertPatchPrototype = InsertPatch.prototype;
 
 InsertPatch.create = function(id, childId, index, next) {
     var patch = InsertPatch.getPooled();
@@ -2118,7 +2131,7 @@ InsertPatch.create = function(id, childId, index, next) {
     return patch;
 };
 
-InsertPatch.prototype.destructor = function() {
+InsertPatchPrototype.destructor = function() {
     this.id = null;
     this.childId = null;
     this.index = null;
@@ -2126,7 +2139,7 @@ InsertPatch.prototype.destructor = function() {
     return this;
 };
 
-InsertPatch.prototype.destroy = function() {
+InsertPatchPrototype.destroy = function() {
     return InsertPatch.release(this);
 };
 
@@ -2138,6 +2151,9 @@ var createPool = require(32),
     consts = require(35);
 
 
+var MountPatchPrototype;
+
+
 module.exports = MountPatch;
 
 
@@ -2147,6 +2163,7 @@ function MountPatch() {
     this.next = null;
 }
 createPool(MountPatch);
+MountPatchPrototype = MountPatch.prototype;
 
 MountPatch.create = function(id, next) {
     var patch = MountPatch.getPooled();
@@ -2155,13 +2172,13 @@ MountPatch.create = function(id, next) {
     return patch;
 };
 
-MountPatch.prototype.destructor = function() {
+MountPatchPrototype.destructor = function() {
     this.id = null;
     this.next = null;
     return this;
 };
 
-MountPatch.prototype.destroy = function() {
+MountPatchPrototype.destroy = function() {
     return MountPatch.release(this);
 };
 
@@ -2173,6 +2190,9 @@ var createPool = require(32),
     consts = require(35);
 
 
+var UnmountPatchPrototype;
+
+
 module.exports = UnmountPatch;
 
 
@@ -2181,6 +2201,7 @@ function UnmountPatch() {
     this.id = null;
 }
 createPool(UnmountPatch);
+UnmountPatchPrototype = UnmountPatch.prototype;
 
 UnmountPatch.create = function(id) {
     var patch = UnmountPatch.getPooled();
@@ -2188,12 +2209,12 @@ UnmountPatch.create = function(id) {
     return patch;
 };
 
-UnmountPatch.prototype.destructor = function() {
+UnmountPatchPrototype.destructor = function() {
     this.id = null;
     return this;
 };
 
-UnmountPatch.prototype.destroy = function() {
+UnmountPatchPrototype.destroy = function() {
     return UnmountPatch.release(this);
 };
 
@@ -2205,6 +2226,9 @@ var createPool = require(32),
     consts = require(35);
 
 
+var OrderPatchPrototype;
+
+
 module.exports = OrderPatch;
 
 
@@ -2214,6 +2238,7 @@ function OrderPatch() {
     this.order = null;
 }
 createPool(OrderPatch);
+OrderPatchPrototype = OrderPatch.prototype;
 
 OrderPatch.create = function(id, order) {
     var patch = OrderPatch.getPooled();
@@ -2222,13 +2247,13 @@ OrderPatch.create = function(id, order) {
     return patch;
 };
 
-OrderPatch.prototype.destructor = function() {
+OrderPatchPrototype.destructor = function() {
     this.id = null;
     this.order = null;
     return this;
 };
 
-OrderPatch.prototype.destroy = function() {
+OrderPatchPrototype.destroy = function() {
     return OrderPatch.release(this);
 };
 
@@ -2238,6 +2263,9 @@ function(require, exports, module, global) {
 
 var createPool = require(32),
     consts = require(35);
+
+
+var PropsPatchPrototype;
 
 
 module.exports = PropsPatch;
@@ -2250,6 +2278,7 @@ function PropsPatch() {
     this.next = null;
 }
 createPool(PropsPatch);
+PropsPatchPrototype = PropsPatch.prototype;
 
 PropsPatch.create = function(id, previous, next) {
     var patch = PropsPatch.getPooled();
@@ -2259,14 +2288,14 @@ PropsPatch.create = function(id, previous, next) {
     return patch;
 };
 
-PropsPatch.prototype.destructor = function() {
+PropsPatchPrototype.destructor = function() {
     this.id = null;
     this.previous = null;
     this.next = null;
     return this;
 };
 
-PropsPatch.prototype.destroy = function() {
+PropsPatchPrototype.destroy = function() {
     return PropsPatch.release(this);
 };
 
@@ -2276,6 +2305,9 @@ function(require, exports, module, global) {
 
 var createPool = require(32),
     consts = require(35);
+
+
+var RemovePatchPrototype;
 
 
 module.exports = RemovePatch;
@@ -2288,6 +2320,7 @@ function RemovePatch() {
     this.index = null;
 }
 createPool(RemovePatch);
+RemovePatchPrototype = RemovePatch.prototype;
 
 RemovePatch.create = function(id, childId, index) {
     var patch = RemovePatch.getPooled();
@@ -2297,14 +2330,14 @@ RemovePatch.create = function(id, childId, index) {
     return patch;
 };
 
-RemovePatch.prototype.destructor = function() {
+RemovePatchPrototype.destructor = function() {
     this.id = null;
     this.childId = null;
     this.index = null;
     return this;
 };
 
-RemovePatch.prototype.destroy = function() {
+RemovePatchPrototype.destroy = function() {
     return RemovePatch.release(this);
 };
 
@@ -2314,6 +2347,9 @@ function(require, exports, module, global) {
 
 var createPool = require(32),
     consts = require(35);
+
+
+var ReplacePatchPrototype;
 
 
 module.exports = ReplacePatch;
@@ -2327,6 +2363,7 @@ function ReplacePatch() {
     this.next = null;
 }
 createPool(ReplacePatch);
+ReplacePatchPrototype = ReplacePatch.prototype;
 
 ReplacePatch.create = function(id, childId, index, next) {
     var patch = ReplacePatch.getPooled();
@@ -2337,7 +2374,7 @@ ReplacePatch.create = function(id, childId, index, next) {
     return patch;
 };
 
-ReplacePatch.prototype.destructor = function() {
+ReplacePatchPrototype.destructor = function() {
     this.id = null;
     this.childId = null;
     this.index = null;
@@ -2345,7 +2382,7 @@ ReplacePatch.prototype.destructor = function() {
     return this;
 };
 
-ReplacePatch.prototype.destroy = function() {
+ReplacePatchPrototype.destroy = function() {
     return ReplacePatch.release(this);
 };
 
