@@ -1,6 +1,8 @@
 var virt = require("virt"),
-    virtDOM = require("../../../src/index"),
-    requestAnimationFrame = require("request_animation_frame");
+    virtDOM = require("../src/index");
+
+
+var app = document.getElementById("virt-app");
 
 
 function renderSpan(content) {
@@ -24,15 +26,9 @@ function renderCount(count) {
     );
 }
 
-function onClick(e) {
-    e.persist();
-    console.log(e);
-}
-
 function renderCounter(count) {
     return (
         virt.createView("div", {
-            onClick: onClick,
             className: "counter " + count
         }, renderCount(count))
     );
@@ -41,17 +37,18 @@ function renderCounter(count) {
 var dir = 1,
     count = -1;
 
-function render() {
+function getCount() {
     if (dir === 1 && count >= 5) {
         dir = -1;
     } else if (dir === -1 && count <= 0) {
         dir = 1;
     }
-
     count += dir;
-
-    virtDOM.renderWorker(renderCounter(count));
-    requestAnimationFrame(render);
+    return count;
 }
 
-render();
+function run() {
+    virtDOM.render(renderCounter(getCount()), app);
+}
+
+module.exports = run;

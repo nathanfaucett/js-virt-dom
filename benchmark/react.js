@@ -1,10 +1,13 @@
-var virt = require("virt"),
-    virtDOM = require("../../../src/index"),
-    requestAnimationFrame = require("request_animation_frame");
+var React = require("react");
+
+
+var app = document.getElementById("react-app");
 
 
 function renderSpan(content) {
-    return virt.createView("span", content);
+    return React.createElement("span", {
+        key: content
+    }, content);
 }
 
 function renderCount(count) {
@@ -18,21 +21,15 @@ function renderCount(count) {
     list.unshift(renderSpan(count));
 
     return (
-        virt.createView("p", {
+        React.createElement("p", {
             className: "count " + count
         }, list)
     );
 }
 
-function onClick(e) {
-    e.persist();
-    console.log(e);
-}
-
 function renderCounter(count) {
     return (
-        virt.createView("div", {
-            onClick: onClick,
+        React.createElement("div", {
             className: "counter " + count
         }, renderCount(count))
     );
@@ -41,17 +38,18 @@ function renderCounter(count) {
 var dir = 1,
     count = -1;
 
-function render() {
+function getCount() {
     if (dir === 1 && count >= 5) {
         dir = -1;
     } else if (dir === -1 && count <= 0) {
         dir = 1;
     }
-
     count += dir;
-
-    virtDOM.renderWorker(renderCounter(count));
-    requestAnimationFrame(render);
+    return count;
 }
 
-render();
+function run() {
+    React.render(renderCounter(getCount()), app);
+}
+
+module.exports = run;
