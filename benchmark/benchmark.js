@@ -1,22 +1,25 @@
 var Benchmark = require("benchmark"),
-    virtRun = require("./virt"),
-    reactRun = require("./react"),
-    virtualDOMRun = require("./virtual-dom");
+    virt = require("./virt"),
+    react = require("./react"),
+    virtualDOM = require("./virtual-dom");
 
 
 var suite = new Benchmark.Suite(),
     statusDiv = document.getElementById("status");
 
 
-suite.add("React", reactRun);
-suite.add("virt", virtRun);
-suite.add("virtual-dom", virtualDOMRun);
+global.process = process;
+
+
+suite.add("virt", virt);
+suite.add("React", react);
+suite.add("virtual-dom", virtualDOM);
 
 suite.on("complete", function onComplete() {
     var out = "";
 
     this.forEach(function(bench) {
-        out += "<p>" + bench.name +": "+ bench.hz + " ops/sec</p>";
+        out += "<p>" + bench.toString() + "</p>";
     });
 
     out += "<p>Fastest is " + this.filter("fastest").pluck("name") + "</p>";
@@ -25,7 +28,5 @@ suite.on("complete", function onComplete() {
 });
 
 setTimeout(function() {
-    suite.run({
-        async: true
-    });
+    suite.run();
 });

@@ -2,6 +2,8 @@ benchmark
 examples
 node_modules
 npm-debug.log
+Gruntfile.js
+README.md
 .npmignore
 .gitignore
 .envrc

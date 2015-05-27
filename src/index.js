@@ -8,6 +8,8 @@ require("./native_components");
 var virtDOM = exports;
 
 
+virtDOM.virt = require("virt");
+
 virtDOM.render = render;
 virtDOM.unmount = render.unmount;
 

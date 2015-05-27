@@ -3160,6 +3160,8 @@ require(130);
 var virtDOM = exports;
 
 
+virtDOM.virt = require(1);
+
 virtDOM.render = render;
 virtDOM.unmount = render.unmount;
 
@@ -3602,13 +3604,16 @@ function(require, exports, module, global) {
 var isNode = require(76);
 
 
-module.exports = function blurNode(node) {
+module.exports = blurNode;
+
+
+function blurNode(node) {
     if (isNode(node) && node.blur) {
         try {
             node.blur();
         } catch (e) {}
     }
-};
+}
 
 
 },
@@ -3644,13 +3649,16 @@ function(require, exports, module, global) {
 var isNode = require(76);
 
 
-module.exports = function focusNode(node) {
+module.exports = focusNode;
+
+
+function focusNode(node) {
     if (isNode(node) && node.focus) {
         try {
             node.focus();
         } catch (e) {}
     }
-};
+}
 
 
 },
@@ -3773,6 +3781,14 @@ var keys = require(13),
     isArrayLike = require(19);
 
 
+module.exports = forEach;
+
+
+function forEach(object, callback, thisArg) {
+    callback = isNullOrUndefined(thisArg) ? callback : fastBindThis(callback, thisArg, 2);
+    return isArrayLike(object) ? forEachArray(object, callback) : forEachObject(object, callback);
+}
+
 function forEachArray(array, callback) {
     var i = -1,
         il = array.length - 1;
@@ -3802,11 +3818,6 @@ function forEachObject(object, callback) {
 
     return object;
 }
-
-module.exports = function forEach(object, callback, thisArg) {
-    callback = isNullOrUndefined(thisArg) ? callback : fastBindThis(callback, thisArg, 2);
-    return isArrayLike(object) ? forEachArray(object, callback) : forEachObject(object, callback);
-};
 
 
 },
@@ -6003,13 +6014,16 @@ var ESCAPE_REGEX = /[&><"']/g,
     };
 
 
+module.exports = escapeTextContent;
+
+
+function escapeTextContent(text) {
+    return (text + "").replace(ESCAPE_REGEX, escaper);
+}
+
 function escaper(match) {
     return ESCAPE_LOOKUP[match];
 }
-
-module.exports = function escapeTextContent(text) {
-    return (text + "").replace(ESCAPE_REGEX, escaper);
-};
 
 
 },
