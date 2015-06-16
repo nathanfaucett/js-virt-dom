@@ -25,3 +25,13 @@ SyntheticUIEventPrototype.destructor = function() {
     this.view = null;
     this.detail = null;
 };
+
+SyntheticUIEventPrototype.toJSON = function(json) {
+
+    json = SyntheticEventPrototype.toJSON.call(this, json);
+
+    json.view = null;
+    json.detail = this.detail;
+
+    return json;
+};

@@ -27,3 +27,15 @@ SyntheticWheelEventPrototype.destructor = function() {
     this.deltaZ = null;
     this.deltaMode = null;
 };
+
+SyntheticWheelEventPrototype.toJSON = function(json) {
+
+    json = SyntheticMouseEventPrototype.toJSON.call(this, json);
+
+    json.deltaX = this.deltaX;
+    json.deltaY = this.deltaY;
+    json.deltaZ = this.deltaZ;
+    json.deltaMode = this.deltaMode;
+
+    return json;
+};

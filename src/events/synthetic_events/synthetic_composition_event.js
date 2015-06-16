@@ -24,3 +24,12 @@ SyntheticCompositionEventPrototype.destructor = function() {
 
     this.data = null;
 };
+
+SyntheticCompositionEventPrototype.toJSON = function(json) {
+
+    json = SyntheticEventPrototype.toJSON.call(this, json);
+
+    json.data = this.data;
+
+    return json;
+};

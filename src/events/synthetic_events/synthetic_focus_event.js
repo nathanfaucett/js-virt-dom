@@ -24,3 +24,12 @@ SyntheticFocusEventPrototype.destructor = function() {
 
     this.relatedTarget = null;
 };
+
+SyntheticFocusEventPrototype.toJSON = function(json) {
+
+    json = SyntheticUIEventPrototype.toJSON.call(this, json);
+
+    json.relatedTarget = this.relatedTarget;
+
+    return json;
+};

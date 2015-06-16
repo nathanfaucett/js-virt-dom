@@ -1,4 +1,5 @@
 var getTouch = require("../getters/get_touch"),
+    nativeEventToJSON = require("../../utils/native_event_to_json"),
     createPool = require("create_pool");
 
 
@@ -36,4 +37,24 @@ SyntheticTouchPrototype.destructor = function() {
     this.rotationAngle = null;
     this.force = null;
     this.target = null;
+};
+
+SyntheticTouchPrototype.toJSON = function(json) {
+    json = json || {};
+
+    json.nativeTouch = nativeEventToJSON(this.nativeTouch);
+    json.identifier = this.identifier;
+    json.screenX = this.screenX;
+    json.screenY = this.screenY;
+    json.clientX = this.clientX;
+    json.clientY = this.clientY;
+    json.pageX = this.pageX;
+    json.pageY = this.pageY;
+    json.radiusX = this.radiusX;
+    json.radiusY = this.radiusY;
+    json.rotationAngle = this.rotationAngle;
+    json.force = this.force;
+    json.target = null;
+
+    return json;
 };

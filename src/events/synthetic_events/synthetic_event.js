@@ -1,5 +1,6 @@
 var inherits = require("inherits"),
     createPool = require("create_pool"),
+    nativeEventToJSON = require("../../utils/native_event_to_json"),
     getEvent = require("../getters/get_event");
 
 
@@ -72,3 +73,21 @@ SyntheticEventPrototype.persist = function() {
 };
 
 SyntheticEventPrototype.stopImmediatePropagation = SyntheticEventPrototype.stopPropagation;
+
+SyntheticEventPrototype.toJSON = function(json) {
+    json = json || {};
+
+    json.nativeEvent = nativeEventToJSON(this.nativeEvent);
+    json.type = this.type;
+    json.target = null;
+    json.currentTarget = this.currentTarget;
+    json.eventPhase = this.eventPhase;
+    json.bubbles = this.bubbles;
+    json.cancelable = this.cancelable;
+    json.timeStamp = this.timeStamp;
+    json.defaultPrevented = this.defaultPrevented;
+    json.propagationStopped = this.propagationStopped;
+    json.isTrusted = this.isTrusted;
+
+    return json;
+};

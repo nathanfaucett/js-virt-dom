@@ -36,3 +36,22 @@ SynthetiKeyboardEventPrototype.destructor = function() {
     this.keyCode = null;
     this.which = null;
 };
+
+SynthetiKeyboardEventPrototype.toJSON = function(json) {
+
+    json = SyntheticUIEventPrototype.toJSON.call(this, json);
+
+    json.key = this.key;
+    json.location = this.location;
+    json.ctrlKey = this.ctrlKey;
+    json.shiftKey = this.shiftKey;
+    json.altKey = this.altKey;
+    json.metaKey = this.metaKey;
+    json.repeat = this.repeat;
+    json.locale = this.locale;
+    json.charCode = this.charCode;
+    json.keyCode = this.keyCode;
+    json.which = this.which;
+
+    return json;
+};

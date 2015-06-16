@@ -38,3 +38,24 @@ SyntheticMouseEventPrototype.destructor = function() {
     this.pageX = null;
     this.pageY = null;
 };
+
+SyntheticMouseEventPrototype.toJSON = function(json) {
+
+    json = SyntheticUIEventPrototype.toJSON.call(this, json);
+
+    json.screenX = this.screenX;
+    json.screenY = this.screenY;
+    json.clientX = this.clientX;
+    json.clientY = this.clientY;
+    json.ctrlKey = this.ctrlKey;
+    json.shiftKey = this.shiftKey;
+    json.altKey = this.altKey;
+    json.metaKey = this.metaKey;
+    json.button = this.button;
+    json.buttons = this.buttons;
+    json.relatedTarget = this.relatedTarget;
+    json.pageX = this.pageX;
+    json.pageY = this.pageY;
+
+    return json;
+};

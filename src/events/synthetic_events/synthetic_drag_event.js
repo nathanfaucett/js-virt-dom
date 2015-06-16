@@ -24,3 +24,12 @@ SyntheticDragEventPrototype.destructor = function() {
 
     this.dataTransfer = null;
 };
+
+SyntheticDragEventPrototype.toJSON = function(json) {
+
+    json = SyntheticMouseEventPrototype.toJSON.call(this, json);
+
+    json.dataTransfer = this.dataTransfer;
+
+    return json;
+};

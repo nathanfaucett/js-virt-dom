@@ -12,7 +12,6 @@
     "virt-dom.js"
   ],
   "scripts": {
-    "benchmark": "comn -f benchmark/benchmark.js -o benchmark/index.js",
     "test": "comn -f examples/test/src/index.js -o examples/test/index.js",
     "replace": "comn -f examples/replace/src/index.js -o examples/replace/index.js",
     "components": "comn -f examples/components/src/index.js -o examples/components/index.js",
@@ -25,15 +24,11 @@
   "license": "BSD-2-Clause",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "benchmark": "^1.0.0",
     "comn": "git://github.com/nathanfaucett/comn",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-jsbeautifier": "^0.2.7",
-    "mocha": "^2.1.0",
-    "react": "^0.13.3",
-    "virtual-dom": "^2.0.1",
-    "zombie": "^2.5.1"
+    "mocha": "^2.1.0"
   },
   "dependencies": {
     "blur_node": "git://github.com/nathanfaucett/blur_node",

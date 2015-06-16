@@ -24,3 +24,12 @@ SyntheticClipboardEventPrototype.destructor = function() {
 
     this.clipboardData = null;
 };
+
+SyntheticClipboardEventPrototype.toJSON = function(json) {
+
+    json = SyntheticEventPrototype.toJSON.call(this, json);
+
+    json.clipboardData = this.clipboardData;
+
+    return json;
+};

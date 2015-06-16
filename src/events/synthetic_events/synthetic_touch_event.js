@@ -39,6 +39,21 @@ SyntheticTouchEventPrototype.destructor = function() {
     this.shiftKey = null;
 };
 
+SyntheticTouchEventPrototype.toJSON = function(json) {
+
+    json = SyntheticUIEventPrototype.toJSON.call(this, json);
+
+    json.touches = this.touches || [];
+    json.targetTouches = this.targetTouches || [];
+    json.changedTouches = this.changedTouches || [];
+    json.ctrlKey = this.ctrlKey;
+    json.shiftKey = this.shiftKey;
+    json.altKey = this.altKey;
+    json.metaKey = this.metaKey;
+
+    return json;
+};
+
 function createTouches(touches, nativeTouches, eventHandler) {
     var i = -1,
         il = nativeTouches.length - 1;
