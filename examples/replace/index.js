@@ -1677,11 +1677,17 @@ TransactionPrototype.remove = function(id, childId, index) {
 };
 
 TransactionPrototype.event = function(id, type) {
-    this.events[id] = type;
+    var events = this.events,
+        eventArray = events[id] || (events[id] = []);
+
+    eventArray[eventArray.length] = type;
 };
 
 TransactionPrototype.removeEvent = function(id, type) {
-    this.eventsRemove[id] = type;
+    var eventsRemove = this.eventsRemove,
+        eventArray = eventsRemove[id] || (eventsRemove[id] = []);
+
+    eventArray[eventArray.length] = type;
 };
 
 function append(hash, value) {
@@ -4329,6 +4335,7 @@ var consts = exports,
         "topMouseMove",
         "topMouseOut",
         "topMouseOver",
+        "topMouseEnter",
         "topMouseUp",
         "topPaste",
         "topReset",
@@ -5840,11 +5847,17 @@ module.exports = applyEvents;
 
 function applyEvents(events, eventHandler) {
     var localHas = has,
-        id;
+        id, eventArray, i, il;
 
     for (id in events) {
         if (localHas(events, id)) {
-            eventHandler.listenTo(id, events[id]);
+            eventArray = events[id];
+            i = -1;
+            il = eventArray.length - 1;
+
+            while (i++ < il) {
+                eventHandler.listenTo(id, eventArray[i]);
+            }
         }
     }
 }
@@ -6308,7 +6321,7 @@ function baseTagOptions(props) {
                 }
 
                 if (key === "style") {
-                    attributes += 'style="' +  styleTag(value) + '"';
+                    attributes += 'style="' + styleTag(value) + '"';
                 } else {
                     if (isObject(value)) {
                         attributes += baseTagOptions(value);
