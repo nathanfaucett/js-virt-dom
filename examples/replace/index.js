@@ -2810,10 +2810,15 @@ NodePrototype.__checkTypes = function(propTypes, props) {
 };
 
 NodePrototype.__processProps = function(props) {
-    var propTypes;
+    var type = this.currentView.type,
+        propTypes;
+
+    if (type.getDefaultProps) {
+        props = extend(type.getDefaultProps(), props);
+    }
 
     if (process.env.NODE_ENV !== "production") {
-        propTypes = this.currentView.type.propTypes;
+        propTypes = type.propTypes;
 
         if (propTypes) {
             this.__checkTypes(propTypes, props);
@@ -6278,7 +6283,18 @@ function render(view, parentProps, id) {
     }
 }
 
-function baseTagOptions(id, props) {
+function styleTag(props) {
+    var attributes = "",
+        key;
+
+    for (key in props) {
+        attributes += key + ':' + props[key] + ';';
+    }
+
+    return attributes;
+}
+
+function baseTagOptions(props) {
     var attributes = "",
         key, value;
 
@@ -6291,10 +6307,14 @@ function baseTagOptions(id, props) {
                     key = "class";
                 }
 
-                if (isObject(value)) {
-                    attributes += baseTagOptions(value);
+                if (key === "style") {
+                    attributes += 'style="' +  styleTag(value) + '"';
                 } else {
-                    attributes += key + '="' + value + '" ';
+                    if (isObject(value)) {
+                        attributes += baseTagOptions(value);
+                    } else {
+                        attributes += key + '="' + value + '" ';
+                    }
                 }
             }
         }
@@ -6304,7 +6324,7 @@ function baseTagOptions(id, props) {
 }
 
 function tagOptions(id, props) {
-    var attributes = baseTagOptions(id, props);
+    var attributes = baseTagOptions(props);
     return attributes !== "" ? " " + attributes : attributes;
 }
 
