@@ -135,10 +135,10 @@ function(require, exports, module, global) {
 var isPrimitive = require(3),
     isFunction = require(5),
     isArray = require(6),
-    isString = require(9),
-    isObjectLike = require(8),
+    isString = require(10),
+    isObjectLike = require(9),
     isNullOrUndefined = require(4),
-    isNumber = require(10),
+    isNumber = require(8),
     has = require(11),
     map = require(12),
     propsToJSON = require(20),
@@ -374,26 +374,47 @@ function(require, exports, module, global) {
 
 module.exports = isNullOrUndefined;
 
+/**
+  isNullOrUndefined accepts any value and returns true
+  if the value is null or undefined. For all other values
+  false is returned.
+  
+  @param {Any}        any value to test
+  @returns {Boolean}  the boolean result of testing value
 
+  @example
+    isNullOrUndefined(null);   // returns true
+    isNullOrUndefined(undefined);   // returns true
+    isNullOrUndefined("string");    // returns false
+**/
 function isNullOrUndefined(obj) {
-    return obj === null || obj === void 0;
+
+    return (obj === null || obj === void 0);
+
 }
 
 
 },
 function(require, exports, module, global) {
 
-var objectToString = Object.prototype.toString,
+var isNullOrUndefined = require(4);
+
+
+var Object_toString = Object.prototype.toString,
     isFunction;
 
 
-if (typeof(/./) === "function" || (typeof(Uint8Array) !== "undefined" && typeof(Uint8Array) !== "function")) {
-    isFunction = function isFunction(obj) {
-        return objectToString.call(obj) === "[object Function]";
+if (Object_toString.call(function() {}) === "[object Object]") {
+    isFunction = function isFunction(value) {
+        return !isNullOrUndefined(value) && value.constructor === Function;
+    };
+} else if (typeof(/./) === "function" || (typeof(Uint8Array) !== "undefined" && typeof(Uint8Array) !== "function")) {
+    isFunction = function isFunction(value) {
+        return Object_toString.call(value) === "[object Function]";
     };
 } else {
-    isFunction = function isFunction(obj) {
-        return typeof(obj) === "function" || false;
+    isFunction = function isFunction(value) {
+        return typeof(value) === "function" || false;
     };
 }
 
@@ -405,7 +426,7 @@ module.exports = isFunction;
 function(require, exports, module, global) {
 
 var isLength = require(7),
-    isObjectLike = require(8);
+    isObjectLike = require(9);
 
 
 var objectToString = Object.prototype.toString;
@@ -423,14 +444,28 @@ module.exports = Array.isArray || function isArray(obj) {
 },
 function(require, exports, module, global) {
 
+var isNumber = require(8);
+
+
 var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
 
 
 module.exports = isLength;
 
 
-function isLength(obj) {
-    return typeof(obj) === "number" && obj > -1 && obj % 1 === 0 && obj <= MAX_SAFE_INTEGER;
+function isLength(value) {
+    return isNumber(value) && value > -1 && value % 1 === 0 && value <= MAX_SAFE_INTEGER;
+}
+
+
+},
+function(require, exports, module, global) {
+
+module.exports = isNumber;
+
+
+function isNumber(obj) {
+    return typeof(obj) === "number" || false;
 }
 
 
@@ -459,17 +494,6 @@ function isString(obj) {
 },
 function(require, exports, module, global) {
 
-module.exports = isNumber;
-
-
-function isNumber(obj) {
-    return typeof(obj) === "number" || false;
-}
-
-
-},
-function(require, exports, module, global) {
-
 var hasOwnProp = Object.prototype.hasOwnProperty;
 
 
@@ -489,6 +513,14 @@ var keys = require(13),
     fastBindThis = require(18),
     isArrayLike = require(19);
 
+
+module.exports = map;
+
+
+function map(object, callback, thisArg) {
+    callback = isNullOrUndefined(thisArg) ? callback : fastBindThis(callback, thisArg, 2);
+    return isArrayLike(object) ? mapArray(object, callback) : mapObject(object, callback);
+}
 
 function mapArray(array, callback) {
     var length = array.length,
@@ -517,11 +549,6 @@ function mapObject(object, callback) {
 
     return result;
 }
-
-module.exports = function map(object, callback, thisArg) {
-    callback = isNullOrUndefined(thisArg) ? callback : fastBindThis(callback, thisArg, 2);
-    return isArrayLike(object) ? mapArray(object, callback) : mapObject(object, callback);
-};
 
 
 },
@@ -635,7 +662,7 @@ function escapeRegExp(string) {
 },
 function(require, exports, module, global) {
 
-var isString = require(9),
+var isString = require(10),
     isNullOrUndefined = require(4);
 
 
@@ -668,10 +695,13 @@ function isObject(obj) {
 },
 function(require, exports, module, global) {
 
-var isNumber = require(10);
+var isNumber = require(8);
 
 
-module.exports = function fastBindThis(callback, thisArg, length) {
+module.exports = fastBindThis;
+
+
+function fastBindThis(callback, thisArg, length) {
     switch ((isNumber(length) ? length : callback.length) || 0) {
         case 0:
             return function bound() {
@@ -698,21 +728,22 @@ module.exports = function fastBindThis(callback, thisArg, length) {
                 return callback.apply(thisArg, arguments);
             };
     }
-};
+}
 
 
 },
 function(require, exports, module, global) {
 
 var isLength = require(7),
-    isObjectLike = require(8);
+    isFunction = require(5),
+    isObjectLike = require(9);
 
 
 module.exports = isArrayLike;
 
 
-function isArrayLike(obj) {
-    return isObjectLike(obj) && isLength(obj.length);
+function isArrayLike(value) {
+    return isObjectLike(value) && isLength(value.length) && !isFunction(value);
 }
 
 
@@ -785,7 +816,7 @@ function Root() {
 
     this.eventManager = new EventManager();
 
-    this.adaptor = null;
+    this.adapter = null;
 
     this.__transactions = [];
     this.__currentTransaction = null;
@@ -824,7 +855,7 @@ RootPrototype.__processTransaction = function() {
     if (this.__currentTransaction === null && transactions.length !== 0) {
         this.__currentTransaction = transaction = transactions[0];
 
-        this.adaptor.handle(transaction, function onHandle() {
+        this.adapter.handle(transaction, function onHandle() {
             transactions.splice(0, 1);
 
             transaction.queue.notifyAll();
@@ -1061,7 +1092,7 @@ TransactionPrototype.toJSON = function() {
 function(require, exports, module, global) {
 
 var isFunction = require(5),
-    isNumber = require(10),
+    isNumber = require(8),
     defineProperty = require(26);
 
 
@@ -1248,7 +1279,7 @@ function createReleaser(Constructor) {
 function(require, exports, module, global) {
 
 var isFunction = require(5),
-    isObjectLike = require(8),
+    isObjectLike = require(9),
     isNative = require(14);
 
 
@@ -1720,8 +1751,8 @@ TextPatchPrototype.toJSON = function() {
 },
 function(require, exports, module, global) {
 
-var isString = require(9),
-    isNumber = require(10),
+var isString = require(10),
+    isNumber = require(8),
     isNullOrUndefined = require(4);
 
 
@@ -1798,7 +1829,7 @@ var process = require(41);
 var has = require(11),
     map = require(12),
     indexOf = require(42),
-    isString = require(9),
+    isString = require(10),
     isFunction = require(5),
     extend = require(43),
     owner = require(21),
@@ -2399,7 +2430,7 @@ process.chdir = function (dir) {
 function(require, exports, module, global) {
 
 var isLength = require(7),
-    isObjectLike = require(8);
+    isObjectLike = require(9);
 
 
 module.exports = indexOf;
@@ -2592,15 +2623,15 @@ ComponentPrototype.getId = function() {
 };
 
 ComponentPrototype.emitMessage = function(name, data, callback) {
-    this.__node.root.adaptor.messenger.emit(name, data, callback);
+    this.__node.root.adapter.messenger.emit(name, data, callback);
 };
 
 ComponentPrototype.onMessage = function(name, callback) {
-    this.__node.root.adaptor.messenger.on(name, callback);
+    this.__node.root.adapter.messenger.on(name, callback);
 };
 
 ComponentPrototype.offMessage = function(name, callback) {
-    this.__node.root.adaptor.messenger.off(name, callback);
+    this.__node.root.adapter.messenger.off(name, callback);
 };
 
 ComponentPrototype.getChildContext = function() {};
@@ -3244,7 +3275,7 @@ virtDOM.renderWebSocket = require(140);
 function(require, exports, module, global) {
 
 var virt = require(1),
-    Adaptor = require(67),
+    Adapter = require(67),
     getRootNodeInContainer = require(130),
     getNodeId = require(127);
 
@@ -3262,7 +3293,7 @@ function render(nextView, containerDOMNode) {
 
     if (id === null || rootsById[id] === undefined) {
         root = new virt.Root();
-        root.adaptor = new Adaptor(root, containerDOMNode);
+        root.adapter = new Adapter(root, containerDOMNode);
         id = root.id;
         rootsById[id] = root;
     } else {
@@ -3291,7 +3322,7 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     Messenger = require(68),
-    createMessengerAdaptor = require(69),
+    createMessengerAdapter = require(69),
     bindNativeComponents = require(70),
     getWindow = require(78),
     getNodeById = require(73),
@@ -3303,14 +3334,14 @@ var virt = require(1),
 
 
 var traverseAncestors = virt.traverseAncestors,
-    AdaptorPrototype;
+    AdapterPrototype;
 
 
-module.exports = Adaptor;
+module.exports = Adapter;
 
 
-function Adaptor(root, containerDOMNode) {
-    var socket = createMessengerAdaptor(),
+function Adapter(root, containerDOMNode) {
+    var socket = createMessengerAdapter(),
         messengerClient = new Messenger(socket.client),
         messengerServer = new Messenger(socket.server),
 
@@ -3356,9 +3387,9 @@ function Adaptor(root, containerDOMNode) {
     bindNativeComponents(messengerClient);
 }
 
-AdaptorPrototype = Adaptor.prototype;
+AdapterPrototype = Adapter.prototype;
 
-AdaptorPrototype.handle = function(transaction, callback) {
+AdapterPrototype.handle = function(transaction, callback) {
     var containerDOMNode = this.containerDOMNode,
         eventHandler = this.eventHandler,
         document = this.document;
@@ -3381,7 +3412,7 @@ var MESSENGER_ID = 0,
 module.exports = Messenger;
 
 
-function Messenger(adaptor) {
+function Messenger(adapter) {
     var _this = this;
 
     this.__id = (MESSENGER_ID++).toString(36);
@@ -3389,9 +3420,9 @@ function Messenger(adaptor) {
     this.__callbacks = {};
     this.__listeners = {};
 
-    this.__adaptor = adaptor;
+    this.__adapter = adapter;
 
-    adaptor.addMessageListener(function onMessage(data) {
+    adapter.addMessageListener(function onMessage(data) {
         _this.onMessage(data);
     });
 }
@@ -3402,15 +3433,15 @@ MessengerPrototype.onMessage = function(message) {
         name = message.name,
         callbacks = this.__callbacks,
         callback = callbacks[id],
-        listeners, adaptor;
+        listeners, adapter;
 
     if (name) {
         listeners = this.__listeners;
-        adaptor = this.__adaptor;
+        adapter = this.__adapter;
 
         if (listeners[name]) {
             emit(listeners[name], message.data, function callback(error, data) {
-                adaptor.postMessage({
+                adapter.postMessage({
                     id: id,
                     error: error || undefined,
                     data: data
@@ -3432,7 +3463,7 @@ MessengerPrototype.emit = function(name, data, callback) {
         this.__callbacks[id] = callback;
     }
 
-    this.__adaptor.postMessage({
+    this.__adapter.postMessage({
         id: id,
         name: name,
         data: data
@@ -3493,15 +3524,15 @@ function isMatch(messageId, id) {
 },
 function(require, exports, module, global) {
 
-var MessengerAdaptorPrototype;
+var MessengerAdapterPrototype;
 
 
-module.exports = createMessengerAdaptor;
+module.exports = createMessengerAdapter;
 
 
-function createMessengerAdaptor() {
-    var client = new MessengerAdaptor(),
-        server = new MessengerAdaptor();
+function createMessengerAdapter() {
+    var client = new MessengerAdapter(),
+        server = new MessengerAdapter();
 
     client.socket = server;
     server.socket = client;
@@ -3512,18 +3543,18 @@ function createMessengerAdaptor() {
     };
 }
 
-function MessengerAdaptor() {
+function MessengerAdapter() {
     this.socket = null;
     this.__messages = [];
 }
-MessengerAdaptorPrototype = MessengerAdaptor.prototype;
+MessengerAdapterPrototype = MessengerAdapter.prototype;
 
-MessengerAdaptorPrototype.addMessageListener = function(callback) {
+MessengerAdapterPrototype.addMessageListener = function(callback) {
     var messages = this.__messages;
     messages[messages.length] = callback;
 };
 
-MessengerAdaptorPrototype.onMessage = function(data) {
+MessengerAdapterPrototype.onMessage = function(data) {
     var messages = this.__messages,
         i = -1,
         il = messages.length - 1;
@@ -3533,7 +3564,7 @@ MessengerAdaptorPrototype.onMessage = function(data) {
     }
 };
 
-MessengerAdaptorPrototype.postMessage = function(data) {
+MessengerAdapterPrototype.postMessage = function(data) {
     this.socket.onMessage(data);
 };
 
@@ -3620,7 +3651,7 @@ inputHandlers.unfocus = function(data, next) {
 },
 function(require, exports, module, global) {
 
-var isString = require(9),
+var isString = require(10),
     getNodeById = require(73);
 
 
@@ -6098,7 +6129,7 @@ function order(parentNode, orderIndex) {
 function(require, exports, module, global) {
 
 var virt = require(1),
-    isString = require(9),
+    isString = require(10),
 
     DOM_ID_NAME = require(87),
     nodeCache = require(74),
@@ -6136,7 +6167,7 @@ function createDOMElement(view, id, document) {
 },
 function(require, exports, module, global) {
 
-var isString = require(9),
+var isString = require(10),
     isObject = require(17),
     isFunction = require(5),
     getPrototypeOf = require(56);
@@ -6291,7 +6322,7 @@ function(require, exports, module, global) {
 var virt = require(1),
 
     isFunction = require(5),
-    isString = require(9),
+    isString = require(10),
     isObject = require(17),
     isNullOrUndefined = require(4),
 
@@ -6730,7 +6761,7 @@ TextAreaPrototype.render = function() {
 function(require, exports, module, global) {
 
 var Messenger = require(68),
-    MessengerWorkerAdaptor = require(135),
+    MessengerWorkerAdapter = require(135),
     bindNativeComponents = require(70),
     getWindow = require(78),
     nativeEventToJSON = require(93),
@@ -6749,9 +6780,9 @@ function createWorkerRender(url, containerDOMNode) {
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new Messenger(new MessengerWorkerAdaptor(url));
+        messenger = new Messenger(new MessengerWorkerAdapter(url));
 
-    messenger.on("__WorkerAdaptor:handleTransaction__", function handleTransaction(transaction, callback) {
+    messenger.on("__WorkerAdapter:handleTransaction__", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -6765,7 +6796,7 @@ function createWorkerRender(url, containerDOMNode) {
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("__WorkerAdaptor:handleEventDispatch__", {
+        messenger.emit("__WorkerAdapter:handleEventDispatch__", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,
@@ -6786,7 +6817,7 @@ function(require, exports, module, global) {
 var environment = require(83);
 
 
-var MessengerWorkerAdaptorPrototype,
+var MessengerWorkerAdapterPrototype,
     globalWorker;
 
 
@@ -6795,21 +6826,21 @@ if (environment.worker) {
 }
 
 
-module.exports = MessengerWorkerAdaptor;
+module.exports = MessengerWorkerAdapter;
 
 
-function MessengerWorkerAdaptor(url) {
+function MessengerWorkerAdapter(url) {
     this.__worker = environment.worker ? globalWorker : new Worker(url);
 }
-MessengerWorkerAdaptorPrototype = MessengerWorkerAdaptor.prototype;
+MessengerWorkerAdapterPrototype = MessengerWorkerAdapter.prototype;
 
-MessengerWorkerAdaptorPrototype.addMessageListener = function(callback) {
+MessengerWorkerAdapterPrototype.addMessageListener = function(callback) {
     this.__worker.addEventListener("message", function onMessage(e) {
         callback(JSON.parse(e.data));
     });
 };
 
-MessengerWorkerAdaptorPrototype.postMessage = function(data) {
+MessengerWorkerAdapterPrototype.postMessage = function(data) {
     this.__worker.postMessage(JSON.stringify(data));
 };
 
@@ -6818,7 +6849,7 @@ MessengerWorkerAdaptorPrototype.postMessage = function(data) {
 function(require, exports, module, global) {
 
 var virt = require(1),
-    WorkerAdaptor = require(137);
+    WorkerAdapter = require(137);
 
 
 var root = null;
@@ -6830,7 +6861,7 @@ module.exports = render;
 function render(nextView) {
     if (root === null) {
         root = new virt.Root();
-        root.adaptor = new WorkerAdaptor(root);
+        root.adapter = new WorkerAdapter(root);
     }
 
     root.render(nextView);
@@ -6849,7 +6880,7 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     Messenger = require(68),
-    MessengerWorkerAdaptor = require(135),
+    MessengerWorkerAdapter = require(135),
     consts = require(79),
     eventClassMap = require(89);
 
@@ -6857,11 +6888,11 @@ var virt = require(1),
 var traverseAncestors = virt.traverseAncestors;
 
 
-module.exports = WorkerAdaptor;
+module.exports = WorkerAdapter;
 
 
-function WorkerAdaptor(root) {
-    var messenger = new Messenger(new MessengerWorkerAdaptor()),
+function WorkerAdapter(root) {
+    var messenger = new Messenger(new MessengerWorkerAdapter()),
         eventManager = root.eventManager,
         viewport = {
             currentScrollLeft: 0,
@@ -6879,7 +6910,7 @@ function WorkerAdaptor(root) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("__WorkerAdaptor:handleEventDispatch__", function(data, callback) {
+    messenger.on("__WorkerAdapter:handleEventDispatch__", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -6917,7 +6948,7 @@ function WorkerAdaptor(root) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("__WorkerAdaptor:handleTransaction__", transaction, callback);
+        messenger.emit("__WorkerAdapter:handleTransaction__", transaction, callback);
     };
 }
 
@@ -6926,7 +6957,7 @@ function WorkerAdaptor(root) {
 function(require, exports, module, global) {
 
 var Messenger = require(68),
-    MessengerWebSocketAdaptor = require(139),
+    MessengerWebSocketAdapter = require(139),
     bindNativeComponents = require(70),
     getWindow = require(78),
     nativeEventToJSON = require(93),
@@ -6945,9 +6976,9 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new Messenger(new MessengerWebSocketAdaptor(socket, attachMessage, sendMessage));
+        messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage));
 
-    messenger.on("__WebSocketAdaptor:handleTransaction__", function handleTransaction(transaction, callback) {
+    messenger.on("__WebSocketAdapter:handleTransaction__", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -6961,7 +6992,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("__WebSocketAdaptor:handleEventDispatch__", {
+        messenger.emit("__WebSocketAdapter:handleEventDispatch__", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,
@@ -6979,25 +7010,25 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
 },
 function(require, exports, module, global) {
 
-var MessengerWebSocketAdaptorPrototype;
+var MessengerWebSocketAdapterPrototype;
 
 
-module.exports = MessengerWebSocketAdaptor;
+module.exports = MessengerWebSocketAdapter;
 
 
-function MessengerWebSocketAdaptor(socket, attachMessage, sendMessage) {
+function MessengerWebSocketAdapter(socket, attachMessage, sendMessage) {
     this.__socket = socket;
 
     this.__attachMessage = attachMessage || defaultAttachMessage;
     this.__sendMessage = sendMessage || defaultSendMessage;
 }
-MessengerWebSocketAdaptorPrototype = MessengerWebSocketAdaptor.prototype;
+MessengerWebSocketAdapterPrototype = MessengerWebSocketAdapter.prototype;
 
-MessengerWebSocketAdaptorPrototype.addMessageListener = function(callback) {
+MessengerWebSocketAdapterPrototype.addMessageListener = function(callback) {
     this.__attachMessage(this.__socket, callback);
 };
 
-MessengerWebSocketAdaptorPrototype.postMessage = function(data) {
+MessengerWebSocketAdapterPrototype.postMessage = function(data) {
     this.__sendMessage(this.__socket, data);
 };
 
@@ -7016,7 +7047,7 @@ function defaultSendMessage(socket, data) {
 function(require, exports, module, global) {
 
 var virt = require(1),
-    WebSocketAdaptor = require(141);
+    WebSocketAdapter = require(141);
 
 
 module.exports = render;
@@ -7024,7 +7055,7 @@ module.exports = render;
 
 function render(nextView, socket, attachMessage, sendMessage) {
     var root = new virt.Root();
-    root.adaptor = new WebSocketAdaptor(root, socket, attachMessage, sendMessage);
+    root.adapter = new WebSocketAdapter(root, socket, attachMessage, sendMessage);
     root.render(nextView);
     return root;
 }
@@ -7035,7 +7066,7 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     Messenger = require(68),
-    MessengerWebSocketAdaptor = require(139),
+    MessengerWebSocketAdapter = require(139),
     consts = require(79),
     eventClassMap = require(89);
 
@@ -7043,11 +7074,11 @@ var virt = require(1),
 var traverseAncestors = virt.traverseAncestors;
 
 
-module.exports = WebSocketAdaptor;
+module.exports = WebSocketAdapter;
 
 
-function WebSocketAdaptor(root, socket, attachMessage, sendMessage) {
-    var messenger = new Messenger(new MessengerWebSocketAdaptor(socket, attachMessage, sendMessage)),
+function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
+    var messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage)),
         eventManager = root.eventManager,
         viewport = {
             currentScrollLeft: 0,
@@ -7065,7 +7096,7 @@ function WebSocketAdaptor(root, socket, attachMessage, sendMessage) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("__WebSocketAdaptor:handleEventDispatch__", function(data, callback) {
+    messenger.on("__WebSocketAdapter:handleEventDispatch__", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -7103,7 +7134,7 @@ function WebSocketAdaptor(root, socket, attachMessage, sendMessage) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("__WebSocketAdaptor:handleTransaction__", transaction, callback);
+        messenger.emit("__WebSocketAdapter:handleTransaction__", transaction, callback);
     };
 }
 

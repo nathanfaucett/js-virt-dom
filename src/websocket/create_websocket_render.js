@@ -1,5 +1,5 @@
 var Messenger = require("messenger"),
-    MessengerWebSocketAdaptor = require("messenger_websocket_adaptor"),
+    MessengerWebSocketAdapter = require("messenger_websocket_adapter"),
     bindNativeComponents = require("../native_components/bind_native_components"),
     getWindow = require("../utils/get_window"),
     nativeEventToJSON = require("../utils/native_event_to_json"),
@@ -18,9 +18,9 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new Messenger(new MessengerWebSocketAdaptor(socket, attachMessage, sendMessage));
+        messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage));
 
-    messenger.on("__WebSocketAdaptor:handleTransaction__", function handleTransaction(transaction, callback) {
+    messenger.on("__WebSocketAdapter:handleTransaction__", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -34,7 +34,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("__WebSocketAdaptor:handleEventDispatch__", {
+        messenger.emit("__WebSocketAdapter:handleEventDispatch__", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,

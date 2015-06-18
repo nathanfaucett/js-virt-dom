@@ -1,6 +1,6 @@
 var virt = require("virt"),
     Messenger = require("messenger"),
-    MessengerWebSocketAdaptor = require("messenger_websocket_adaptor"),
+    MessengerWorkerAdapter = require("messenger_worker_adapter"),
     consts = require("../events/consts"),
     eventClassMap = require("../events/event_class_map");
 
@@ -8,11 +8,11 @@ var virt = require("virt"),
 var traverseAncestors = virt.traverseAncestors;
 
 
-module.exports = WebSocketAdaptor;
+module.exports = WorkerAdapter;
 
 
-function WebSocketAdaptor(root, socket, attachMessage, sendMessage) {
-    var messenger = new Messenger(new MessengerWebSocketAdaptor(socket, attachMessage, sendMessage)),
+function WorkerAdapter(root) {
+    var messenger = new Messenger(new MessengerWorkerAdapter()),
         eventManager = root.eventManager,
         viewport = {
             currentScrollLeft: 0,
@@ -30,7 +30,7 @@ function WebSocketAdaptor(root, socket, attachMessage, sendMessage) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("__WebSocketAdaptor:handleEventDispatch__", function(data, callback) {
+    messenger.on("__WorkerAdapter:handleEventDispatch__", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -68,6 +68,6 @@ function WebSocketAdaptor(root, socket, attachMessage, sendMessage) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("__WebSocketAdaptor:handleTransaction__", transaction, callback);
+        messenger.emit("__WorkerAdapter:handleTransaction__", transaction, callback);
     };
 }

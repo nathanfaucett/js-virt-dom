@@ -52,9 +52,9 @@
     "key_mirror": "git://github.com/nathanfaucett/key_mirror",
     "map": "git://github.com/nathanfaucett/map",
     "messenger": "git://github.com/nathanfaucett/messenger",
-    "messenger_adaptor": "git://github.com/nathanfaucett/messenger_adaptor",
-    "messenger_websocket_adaptor": "git://github.com/nathanfaucett/messenger_websocket_adaptor",
-    "messenger_worker_adaptor": "git://github.com/nathanfaucett/messenger_worker_adaptor",
+    "messenger_adapter": "git://github.com/nathanfaucett/messenger_adapter",
+    "messenger_websocket_adapter": "git://github.com/nathanfaucett/messenger_websocket_adapter",
+    "messenger_worker_adapter": "git://github.com/nathanfaucett/messenger_worker_adapter",
     "virt": "git://github.com/nathanfaucett/virt"
   }
 }

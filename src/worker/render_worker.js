@@ -1,5 +1,5 @@
 var virt = require("virt"),
-    WorkerAdaptor = require("./worker_adaptor");
+    WorkerAdapter = require("./worker_adapter");
 
 
 var root = null;
@@ -11,7 +11,7 @@ module.exports = render;
 function render(nextView) {
     if (root === null) {
         root = new virt.Root();
-        root.adaptor = new WorkerAdaptor(root);
+        root.adapter = new WorkerAdapter(root);
     }
 
     root.render(nextView);

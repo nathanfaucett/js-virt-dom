@@ -1,6 +1,6 @@
 var virt = require("virt"),
     Messenger = require("messenger"),
-    createMessengerAdaptor = require("messenger_adaptor"),
+    createMessengerAdapter = require("messenger_adapter"),
     bindNativeComponents = require("./native_components/bind_native_components"),
     getWindow = require("./utils/get_window"),
     getNodeById = require("./utils/get_node_by_id"),
@@ -12,14 +12,14 @@ var virt = require("virt"),
 
 
 var traverseAncestors = virt.traverseAncestors,
-    AdaptorPrototype;
+    AdapterPrototype;
 
 
-module.exports = Adaptor;
+module.exports = Adapter;
 
 
-function Adaptor(root, containerDOMNode) {
-    var socket = createMessengerAdaptor(),
+function Adapter(root, containerDOMNode) {
+    var socket = createMessengerAdapter(),
         messengerClient = new Messenger(socket.client),
         messengerServer = new Messenger(socket.server),
 
@@ -65,9 +65,9 @@ function Adaptor(root, containerDOMNode) {
     bindNativeComponents(messengerClient);
 }
 
-AdaptorPrototype = Adaptor.prototype;
+AdapterPrototype = Adapter.prototype;
 
-AdaptorPrototype.handle = function(transaction, callback) {
+AdapterPrototype.handle = function(transaction, callback) {
     var containerDOMNode = this.containerDOMNode,
         eventHandler = this.eventHandler,
         document = this.document;

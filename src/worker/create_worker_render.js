@@ -1,5 +1,5 @@
 var Messenger = require("messenger"),
-    MessengerWorkerAdaptor = require("messenger_worker_adaptor"),
+    MessengerWorkerAdapter = require("messenger_worker_adapter"),
     bindNativeComponents = require("../native_components/bind_native_components"),
     getWindow = require("../utils/get_window"),
     nativeEventToJSON = require("../utils/native_event_to_json"),
@@ -18,9 +18,9 @@ function createWorkerRender(url, containerDOMNode) {
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new Messenger(new MessengerWorkerAdaptor(url));
+        messenger = new Messenger(new MessengerWorkerAdapter(url));
 
-    messenger.on("__WorkerAdaptor:handleTransaction__", function handleTransaction(transaction, callback) {
+    messenger.on("__WorkerAdapter:handleTransaction__", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -34,7 +34,7 @@ function createWorkerRender(url, containerDOMNode) {
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("__WorkerAdaptor:handleEventDispatch__", {
+        messenger.emit("__WorkerAdapter:handleEventDispatch__", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,
