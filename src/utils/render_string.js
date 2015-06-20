@@ -5,6 +5,7 @@ var virt = require("virt"),
     isObject = require("is_object"),
     isNullOrUndefined = require("is_null_or_undefined"),
 
+    hyphenateStyleName = require("./hyphenateStyleName"),
     renderMarkup = require("./render_markup"),
     DOM_ID_NAME = require("../dom_id_name");
 
@@ -60,7 +61,7 @@ function styleTag(props) {
         key;
 
     for (key in props) {
-        attributes += key + ':' + props[key] + ';';
+        attributes += hyphenateStyleName(key) + ': ' + props[key] + ';';
     }
 
     return attributes;

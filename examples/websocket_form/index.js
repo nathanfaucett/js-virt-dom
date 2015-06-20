@@ -8663,7 +8663,7 @@ var render = require(56),
     renderString = require(170);
 
 
-require(178);
+require(179);
 
 
 var virtDOM = exports;
@@ -8680,11 +8680,11 @@ virtDOM.renderString = function(view, id) {
 
 virtDOM.findDOMNode = require(123);
 
-virtDOM.createWorkerRender = require(181);
-virtDOM.renderWorker = require(183);
+virtDOM.createWorkerRender = require(182);
+virtDOM.renderWorker = require(184);
 
-virtDOM.createWebSocketRender = require(185);
-virtDOM.renderWebSocket = require(187);
+virtDOM.createWebSocketRender = require(186);
+virtDOM.renderWebSocket = require(188);
 
 
 },
@@ -8692,8 +8692,8 @@ function(require, exports, module, global) {
 
 var virt = require(57),
     Adapter = require(118),
-    getRootNodeInContainer = require(177),
-    getNodeId = require(174);
+    getRootNodeInContainer = require(178),
+    getNodeId = require(175);
 
 
 var rootsById = {};
@@ -8867,8 +8867,6 @@ View.createFactory = function(type) {
             }
         }
 
-        console.log(type, config, children);
-
         return construct(type, config, children);
     };
 };
@@ -8904,7 +8902,7 @@ function construct(type, config, children) {
         }
     }
 
-    return new View(type, key, ref, props, insureValidChildren(children), owner.current, context.current);
+    return new View(type, key, ref, props, ensureValidChildren(children), owner.current, context.current);
 }
 
 function toJSON(view) {
@@ -8963,7 +8961,7 @@ function extractChildren(args, offset) {
     return children;
 }
 
-function insureValidChildren(children) {
+function ensureValidChildren(children) {
     var i, il, child;
 
     if (isArray(children)) {
@@ -12571,6 +12569,7 @@ module.exports = {
     // Mouse Events
     topClick: SyntheticMouseEvent,
     topDoubleClick: SyntheticMouseEvent,
+    topMouseUp: SyntheticMouseEvent,
     topMouseDown: SyntheticMouseEvent,
     topMouseEnter: SyntheticMouseEvent,
     topMouseLeave: SyntheticMouseEvent,
@@ -13790,10 +13789,10 @@ var virt = require(57),
     createDOMElement = require(166),
     renderMarkup = require(168),
     renderString = require(170),
-    renderChildrenString = require(171),
-    addDOMNodes = require(172),
-    removeDOMNode = require(175),
-    removeDOMNodes = require(176),
+    renderChildrenString = require(172),
+    addDOMNodes = require(173),
+    removeDOMNode = require(176),
+    removeDOMNodes = require(177),
     getNodeById = require(124),
     applyProperties = require(167);
 
@@ -14136,6 +14135,7 @@ var virt = require(57),
     isObject = require(4),
     isNullOrUndefined = require(60),
 
+    hyphenateStyleName = require(171),
     renderMarkup = require(168),
     DOM_ID_NAME = require(134);
 
@@ -14166,7 +14166,7 @@ var View = virt.View,
 module.exports = render;
 
 
-var renderChildrenString = require(171);
+var renderChildrenString = require(172);
 
 
 function render(view, parentProps, id) {
@@ -14191,7 +14191,7 @@ function styleTag(props) {
         key;
 
     for (key in props) {
-        attributes += key + ':' + props[key] + ';';
+        attributes += hyphenateStyleName(key) + ': ' + props[key] + ';';
     }
 
     return attributes;
@@ -14251,6 +14251,25 @@ function contentTag(type, content, id, props) {
 },
 function(require, exports, module, global) {
 
+var reUppercasePattern = /([A-Z])/g,
+    reMS = /^ms-/;
+
+
+module.exports = hyphenateStyleName;
+
+
+function hyphenateStyleName(str) {
+    return hyphenate(str).replace(reMS, "-ms-");
+}
+
+function hyphenate(str) {
+    return str.replace(reUppercasePattern, "-$1").toLowerCase();
+}
+
+
+},
+function(require, exports, module, global) {
+
 var virt = require(57);
 
 
@@ -14281,8 +14300,8 @@ function renderChildrenString(children, parentProps, id) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(173),
-    getNodeId = require(174);
+var isElement = require(174),
+    getNodeId = require(175);
 
 
 module.exports = addDOMNodes;
@@ -14357,7 +14376,7 @@ function getId(node) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(173),
+var isElement = require(174),
     nodeCache = require(125),
     getNodeAttributeId = require(133);
 
@@ -14365,7 +14384,7 @@ var isElement = require(173),
 module.exports = removeDOMNode;
 
 
-var removeDOMNodes = require(176);
+var removeDOMNodes = require(177);
 
 
 function removeDOMNode(node) {
@@ -14382,7 +14401,7 @@ function(require, exports, module, global) {
 module.exports = removeDOMNodes;
 
 
-var removeDOMNode = require(175);
+var removeDOMNode = require(176);
 
 
 function removeDOMNodes(nodes) {
@@ -14417,8 +14436,8 @@ function getRootNodeInContainer(containerNode) {
 },
 function(require, exports, module, global) {
 
-require(179);
 require(180);
+require(181);
 
 
 },
@@ -14571,7 +14590,7 @@ TextAreaPrototype.render = function() {
 function(require, exports, module, global) {
 
 var Messenger = require(119),
-    MessengerWorkerAdapter = require(182),
+    MessengerWorkerAdapter = require(183),
     bindNativeComponents = require(121),
     getWindow = require(128),
     nativeEventToJSON = require(140),
@@ -14659,7 +14678,7 @@ MessengerWorkerAdapterPrototype.postMessage = function(data) {
 function(require, exports, module, global) {
 
 var virt = require(57),
-    WorkerAdapter = require(184);
+    WorkerAdapter = require(185);
 
 
 var root = null;
@@ -14690,7 +14709,7 @@ function(require, exports, module, global) {
 
 var virt = require(57),
     Messenger = require(119),
-    MessengerWorkerAdapter = require(182),
+    MessengerWorkerAdapter = require(183),
     consts = require(129),
     eventClassMap = require(136);
 
@@ -14767,7 +14786,7 @@ function WorkerAdapter(root) {
 function(require, exports, module, global) {
 
 var Messenger = require(119),
-    MessengerWebSocketAdapter = require(186),
+    MessengerWebSocketAdapter = require(187),
     bindNativeComponents = require(121),
     getWindow = require(128),
     nativeEventToJSON = require(140),
@@ -14857,7 +14876,7 @@ function defaultSendMessage(socket, data) {
 function(require, exports, module, global) {
 
 var virt = require(57),
-    WebSocketAdapter = require(188);
+    WebSocketAdapter = require(189);
 
 
 module.exports = render;
@@ -14876,7 +14895,7 @@ function(require, exports, module, global) {
 
 var virt = require(57),
     Messenger = require(119),
-    MessengerWebSocketAdapter = require(186),
+    MessengerWebSocketAdapter = require(187),
     consts = require(129),
     eventClassMap = require(136);
 

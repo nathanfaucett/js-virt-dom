@@ -41,7 +41,7 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     virtDOM = require(65),
-    requestAnimationFrame = require(142);
+    requestAnimationFrame = require(143);
 
 
 function renderSpan(content) {
@@ -232,8 +232,6 @@ View.createFactory = function(type) {
             }
         }
 
-        console.log(type, config, children);
-
         return construct(type, config, children);
     };
 };
@@ -269,7 +267,7 @@ function construct(type, config, children) {
         }
     }
 
-    return new View(type, key, ref, props, insureValidChildren(children), owner.current, context.current);
+    return new View(type, key, ref, props, ensureValidChildren(children), owner.current, context.current);
 }
 
 function toJSON(view) {
@@ -328,7 +326,7 @@ function extractChildren(args, offset) {
     return children;
 }
 
-function insureValidChildren(children) {
+function ensureValidChildren(children) {
     var i, il, child;
 
     if (isArray(children)) {
@@ -3247,7 +3245,7 @@ var render = require(66),
     renderString = require(123);
 
 
-require(131);
+require(132);
 
 
 var virtDOM = exports;
@@ -3264,11 +3262,11 @@ virtDOM.renderString = function(view, id) {
 
 virtDOM.findDOMNode = require(72);
 
-virtDOM.createWorkerRender = require(134);
-virtDOM.renderWorker = require(136);
+virtDOM.createWorkerRender = require(135);
+virtDOM.renderWorker = require(137);
 
-virtDOM.createWebSocketRender = require(138);
-virtDOM.renderWebSocket = require(140);
+virtDOM.createWebSocketRender = require(139);
+virtDOM.renderWebSocket = require(141);
 
 
 },
@@ -3276,8 +3274,8 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     Adapter = require(67),
-    getRootNodeInContainer = require(130),
-    getNodeId = require(127);
+    getRootNodeInContainer = require(131),
+    getNodeId = require(128);
 
 
 var rootsById = {};
@@ -4761,6 +4759,7 @@ module.exports = {
     // Mouse Events
     topClick: SyntheticMouseEvent,
     topDoubleClick: SyntheticMouseEvent,
+    topMouseUp: SyntheticMouseEvent,
     topMouseDown: SyntheticMouseEvent,
     topMouseEnter: SyntheticMouseEvent,
     topMouseLeave: SyntheticMouseEvent,
@@ -5980,10 +5979,10 @@ var virt = require(1),
     createDOMElement = require(119),
     renderMarkup = require(121),
     renderString = require(123),
-    renderChildrenString = require(124),
-    addDOMNodes = require(125),
-    removeDOMNode = require(128),
-    removeDOMNodes = require(129),
+    renderChildrenString = require(125),
+    addDOMNodes = require(126),
+    removeDOMNode = require(129),
+    removeDOMNodes = require(130),
     getNodeById = require(73),
     applyProperties = require(120);
 
@@ -6326,6 +6325,7 @@ var virt = require(1),
     isObject = require(17),
     isNullOrUndefined = require(4),
 
+    hyphenateStyleName = require(124),
     renderMarkup = require(121),
     DOM_ID_NAME = require(87);
 
@@ -6356,7 +6356,7 @@ var View = virt.View,
 module.exports = render;
 
 
-var renderChildrenString = require(124);
+var renderChildrenString = require(125);
 
 
 function render(view, parentProps, id) {
@@ -6381,7 +6381,7 @@ function styleTag(props) {
         key;
 
     for (key in props) {
-        attributes += key + ':' + props[key] + ';';
+        attributes += hyphenateStyleName(key) + ': ' + props[key] + ';';
     }
 
     return attributes;
@@ -6441,6 +6441,25 @@ function contentTag(type, content, id, props) {
 },
 function(require, exports, module, global) {
 
+var reUppercasePattern = /([A-Z])/g,
+    reMS = /^ms-/;
+
+
+module.exports = hyphenateStyleName;
+
+
+function hyphenateStyleName(str) {
+    return hyphenate(str).replace(reMS, "-ms-");
+}
+
+function hyphenate(str) {
+    return str.replace(reUppercasePattern, "-$1").toLowerCase();
+}
+
+
+},
+function(require, exports, module, global) {
+
 var virt = require(1);
 
 
@@ -6471,8 +6490,8 @@ function renderChildrenString(children, parentProps, id) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(126),
-    getNodeId = require(127);
+var isElement = require(127),
+    getNodeId = require(128);
 
 
 module.exports = addDOMNodes;
@@ -6547,7 +6566,7 @@ function getId(node) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(126),
+var isElement = require(127),
     nodeCache = require(74),
     getNodeAttributeId = require(86);
 
@@ -6555,7 +6574,7 @@ var isElement = require(126),
 module.exports = removeDOMNode;
 
 
-var removeDOMNodes = require(129);
+var removeDOMNodes = require(130);
 
 
 function removeDOMNode(node) {
@@ -6572,7 +6591,7 @@ function(require, exports, module, global) {
 module.exports = removeDOMNodes;
 
 
-var removeDOMNode = require(128);
+var removeDOMNode = require(129);
 
 
 function removeDOMNodes(nodes) {
@@ -6607,8 +6626,8 @@ function getRootNodeInContainer(containerNode) {
 },
 function(require, exports, module, global) {
 
-require(132);
 require(133);
+require(134);
 
 
 },
@@ -6761,7 +6780,7 @@ TextAreaPrototype.render = function() {
 function(require, exports, module, global) {
 
 var Messenger = require(68),
-    MessengerWorkerAdapter = require(135),
+    MessengerWorkerAdapter = require(136),
     bindNativeComponents = require(70),
     getWindow = require(78),
     nativeEventToJSON = require(93),
@@ -6849,7 +6868,7 @@ MessengerWorkerAdapterPrototype.postMessage = function(data) {
 function(require, exports, module, global) {
 
 var virt = require(1),
-    WorkerAdapter = require(137);
+    WorkerAdapter = require(138);
 
 
 var root = null;
@@ -6880,7 +6899,7 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     Messenger = require(68),
-    MessengerWorkerAdapter = require(135),
+    MessengerWorkerAdapter = require(136),
     consts = require(79),
     eventClassMap = require(89);
 
@@ -6957,7 +6976,7 @@ function WorkerAdapter(root) {
 function(require, exports, module, global) {
 
 var Messenger = require(68),
-    MessengerWebSocketAdapter = require(139),
+    MessengerWebSocketAdapter = require(140),
     bindNativeComponents = require(70),
     getWindow = require(78),
     nativeEventToJSON = require(93),
@@ -7047,7 +7066,7 @@ function defaultSendMessage(socket, data) {
 function(require, exports, module, global) {
 
 var virt = require(1),
-    WebSocketAdapter = require(141);
+    WebSocketAdapter = require(142);
 
 
 module.exports = render;
@@ -7066,7 +7085,7 @@ function(require, exports, module, global) {
 
 var virt = require(1),
     Messenger = require(68),
-    MessengerWebSocketAdapter = require(139),
+    MessengerWebSocketAdapter = require(140),
     consts = require(79),
     eventClassMap = require(89);
 
@@ -7143,8 +7162,8 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 function(require, exports, module, global) {
 
 var environment = require(83),
-    emptyFunction = require(143),
-    time = require(144);
+    emptyFunction = require(144),
+    time = require(145);
 
 
 var window = environment.window,

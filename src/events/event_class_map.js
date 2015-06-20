@@ -32,6 +32,7 @@ module.exports = {
     // Mouse Events
     topClick: SyntheticMouseEvent,
     topDoubleClick: SyntheticMouseEvent,
+    topMouseUp: SyntheticMouseEvent,
     topMouseDown: SyntheticMouseEvent,
     topMouseEnter: SyntheticMouseEvent,
     topMouseLeave: SyntheticMouseEvent,
