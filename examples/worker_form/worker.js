@@ -1895,7 +1895,9 @@ NodePrototype.__mount = function(transaction) {
 
     transaction.queue.enqueue(function onMount() {
         component.__mountState = componentState.MOUNTED;
-        component.componentDidMount();
+        if (component.componentDidMount) {
+            component.componentDidMount();
+        }
     });
 
     this.__attachRefs();
@@ -1942,7 +1944,10 @@ NodePrototype.__unmount = function(transaction) {
     }
 
     component.__mountState = componentState.UNMOUNTING;
-    component.componentWillUnmount();
+
+    if (component.componentWillUnmount) {
+        component.componentWillUnmount();
+    }
 
     if (this.isBottomLevel !== false) {
         this.root.removeNode(this);
@@ -2004,12 +2009,14 @@ NodePrototype.updateComponent = function(
         nextChildren = nextParentView.children;
         nextContext = this.__processContext(nextParentView.__context);
 
-        component.componentWillReceiveProps(nextProps, nextChildren, nextContext);
+        if (component.componentWillReceiveProps) {
+            component.componentWillReceiveProps(nextProps, nextChildren, nextContext);
+        }
     }
 
     nextState = component.__nextState || component.state;
 
-    if (component.shouldComponentUpdate(nextProps, nextChildren, nextState, nextContext)) {
+    if (component.shouldComponentUpdate && component.shouldComponentUpdate(nextProps, nextChildren, nextState, nextContext)) {
         this.__updateComponent(
             nextParentView, nextProps, nextChildren, nextState, nextContext, nextUnmaskedContext, transaction
         );
@@ -2038,7 +2045,9 @@ NodePrototype.__updateComponent = function(
 
         prevParentView;
 
-    component.componentWillUpdate(nextProps, nextChildren, nextState, nextContext);
+    if (component.componentWillUpdate) {
+        component.componentWillUpdate(nextProps, nextChildren, nextState, nextContext);
+    }
 
     component.props = nextProps;
     component.children = nextChildren;
@@ -2058,7 +2067,9 @@ NodePrototype.__updateComponent = function(
 
     transaction.queue.enqueue(function onUpdate() {
         component.__mountState = componentState.UPDATED;
-        component.componentDidUpdate(prevProps, prevChildren, prevState, prevContext);
+        if (component.componentDidUpdate) {
+            component.componentDidUpdate(prevProps, prevChildren, prevState, prevContext);
+        }
         component.__mountState = componentState.MOUNTED;
     });
 };
@@ -2194,7 +2205,7 @@ NodePrototype.__processContext = function(context) {
 
 NodePrototype.__processChildContext = function(currentContext) {
     var component = this.component,
-        childContext = component.getChildContext(),
+        childContext = isFunction(component.getChildContext) ? component.getChildContext() : null,
         childContextTypes, localHas, contextName, displayName;
 
     if (childContext) {
