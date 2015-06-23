@@ -61,7 +61,7 @@ function styleTag(props) {
         key;
 
     for (key in props) {
-        attributes += hyphenateStyleName(key) + ': ' + props[key] + ';';
+        attributes += hyphenateStyleName(key) + ':' + props[key] + ';';
     }
 
     return attributes;
