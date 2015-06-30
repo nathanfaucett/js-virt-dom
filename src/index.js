@@ -1,8 +1,8 @@
 var render = require("./render"),
-    renderString = require("./utils/render_string");
+    renderString = require("./utils/renderString");
 
 
-require("./native_components");
+require("./nativeComponents");
 
 
 var virtDOM = exports;
@@ -17,10 +17,10 @@ virtDOM.renderString = function(view, id) {
     return renderString(view, null, id || ".0");
 };
 
-virtDOM.findDOMNode = require("./utils/find_dom_node");
+virtDOM.findDOMNode = require("./utils/findDOMNode");
 
-virtDOM.createWorkerRender = require("./worker/create_worker_render");
-virtDOM.renderWorker = require("./worker/render_worker");
+virtDOM.createWorkerRender = require("./worker/createWorkerRender");
+virtDOM.renderWorker = require("./worker/renderWorker");
 
-virtDOM.createWebSocketRender = require("./websocket/create_websocket_render");
-virtDOM.renderWebSocket = require("./websocket/render_websocket");
+virtDOM.createWebSocketRender = require("./websocket/createWebSocketRender");
+virtDOM.renderWebSocket = require("./websocket/renderWebSocket");

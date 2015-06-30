@@ -1,2 +1,0 @@
-require("./input");
-require("./textarea");
