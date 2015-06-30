@@ -8,5 +8,10 @@ module.exports = {
         type: "textarea",
         constructor: require("./TextArea"),
         handlers: require("./textareaHandlers")
+    },
+    button: {
+        type: "button",
+        constructor: require("./Button"),
+        handlers: require("./buttonHandlers")
     }
 };

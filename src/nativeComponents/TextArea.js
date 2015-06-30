@@ -9,22 +9,25 @@ var View = virt.View,
 virt.registerNativeComponent("textarea", TextArea);
 
 
+module.exports = TextArea;
+
+
 function TextArea(props, children, context) {
     var _this = this;
 
-    Component.call(this, props, children, context);
-
     if (process.env.NODE_ENV !== "production") {
         if (children.length > 0) {
-            throw new Error("TextArea: textarea can't have children");
+            throw new Error("TextArea: textarea can't have children, set prop.value instead");
         }
     }
+
+    Component.call(this, props, children, context);
 
     this.getValue = function(callback) {
         return _this.__getValue(callback);
     };
-    this.setValue = function(callback) {
-        return _this.__setValue(callback);
+    this.setValue = function(value, callback) {
+        return _this.__setValue(value, callback);
     };
     this.focus = function(callback) {
         return _this.__focus(callback);
@@ -34,8 +37,13 @@ function TextArea(props, children, context) {
     };
 }
 Component.extend(TextArea, "textarea");
-
 TextAreaPrototype = TextArea.prototype;
+
+TextAreaPrototype.componentDidMount = function() {
+    if (this.props.autoFocus) {
+        this.focus();
+    }
+};
 
 TextAreaPrototype.__getValue = function(callback) {
     this.emitMessage("__TextArea:getValue__", {
@@ -56,7 +64,7 @@ TextAreaPrototype.__focus = function(callback) {
     }, callback);
 };
 
-TextAreaPrototype.__blur = function(value, callback) {
+TextAreaPrototype.__blur = function(callback) {
     this.emitMessage("__TextArea:blur__", {
         id: this.getInternalId()
     }, callback);

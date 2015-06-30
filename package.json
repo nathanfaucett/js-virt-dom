@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "test-browser-local": "zuul --local 8080 --ui tape -- ./test",
+    "input_events": "comn -f examples/input_events/src/index.js -o examples/input_events/index.js",
     "simple": "comn -f examples/simple/src/index.js -o examples/simple/index.js",
     "replace": "comn -f examples/replace/src/index.js -o examples/replace/index.js",
     "components": "comn -f examples/components/src/index.js -o examples/components/index.js",
@@ -42,6 +43,7 @@
     "for_each": "git://github.com/nathanfaucett/for_each.git",
     "get_prototype_of": "git://github.com/nathanfaucett/get_prototype_of",
     "has": "git://github.com/nathanfaucett/has",
+    "index_of": "git://github.com/nathanfaucett/index_of.git",
     "inherits": "git://github.com/nathanfaucett/inherits",
     "is_array": "git://github.com/nathanfaucett/is_array",
     "is_document": "git://github.com/nathanfaucett/is_document",
