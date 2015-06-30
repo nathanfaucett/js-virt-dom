@@ -2,13 +2,11 @@ var render = require("./render"),
     renderString = require("./utils/renderString");
 
 
-require("./nativeComponents");
-
-
 var virtDOM = exports;
 
 
 virtDOM.virt = require("virt");
+virtDOM.nativeComponents = require("./nativeComponents");
 
 virtDOM.render = render;
 virtDOM.unmount = render.unmount;

@@ -1,9 +1,12 @@
-var nativeComponent = exports;
-
-
-nativeComponent.handlers = {};
-
-nativeComponent.components = {
-    input: require("./input"),
-    textarea: require("./textarea")
+module.exports = {
+    input: {
+        type: "input",
+        constructor: require("./Input"),
+        handlers: require("./inputHandlers")
+    },
+    textarea: {
+        type: "textarea",
+        constructor: require("./TextArea"),
+        handlers: require("./textareaHandlers")
+    }
 };

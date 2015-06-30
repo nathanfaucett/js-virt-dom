@@ -1,6 +1,7 @@
 var Messenger = require("messenger"),
     MessengerWebSocketAdapter = require("messenger_websocket_adapter"),
-    bindNativeComponents = require("../nativeComponents/bindNativeComponents"),
+    nativeComponents = require("../nativeComponents"),
+    registerNativeComponentHandlers = require("../utils/registerNativeComponentHandlers"),
     getWindow = require("../utils/getWindow"),
     nativeEventToJSON = require("../utils/nativeEventToJSON"),
     EventHandler = require("../events/EventHandler"),
@@ -43,7 +44,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         });
     };
 
-    bindNativeComponents(messenger);
+    registerNativeComponentHandlers(messenger, nativeComponents);
 
     return messenger;
 }
