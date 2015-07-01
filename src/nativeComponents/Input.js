@@ -121,20 +121,32 @@ InputPrototype.__blur = function(callback) {
 
 InputPrototype.__getRenderProps = function() {
     var props = this.props,
+
+        value = props.value,
+        checked = props.checked,
+
+        defaultValue = props.defaultValue,
+
+        initialValue = defaultValue != null ? defaultValue : null,
+        initialChecked = props.defaultChecked || false,
+
         renderProps = {},
-        key, value;
+
+        key;
 
     for (key in props) {
-        if (has(props, key)) {
-            value = props[key];
-
-            if (key === "checked" && !value) {
-                continue;
-            }
-
+        if (has(props, key) && key !== "checked") {
             renderProps[key] = props[key];
         }
     }
+
+    if (checked != null ? checked : initialChecked) {
+        renderProps.checked = true;
+    }
+
+    renderProps.defaultChecked = undefined;
+    renderProps.defaultValue = undefined;
+    renderProps.value = value != null ? value : initialValue;
 
     renderProps.onChange = this.onChange;
     renderProps.onInput = this.onInput;
