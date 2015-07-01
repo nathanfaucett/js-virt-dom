@@ -1,5 +1,6 @@
 var isFunction = require("is_function"),
     has = require("has"),
+    supports = require("supports"),
     environment = require("environment");
 
 
@@ -18,7 +19,7 @@ module.exports = isEventSupported;
 function isEventSupported(eventNameSuffix, capture) {
     var isSupported, eventName, element;
 
-    if (!environment.canUseDOM || capture && document.addEventListener == null) {
+    if (!supports.dom || capture && document.addEventListener == null) {
         return false;
     } else {
         eventName = "on" + eventNameSuffix;

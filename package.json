@@ -12,6 +12,7 @@
     "virt-dom.js"
   ],
   "scripts": {
+    "test": "",
     "test-browser-local": "zuul --local 8080 --ui tape -- ./test",
     "input_events": "comn -f examples/input_events/src/index.js -o examples/input_events/index.js",
     "simple": "comn -f examples/simple/src/index.js -o examples/simple/index.js",
@@ -59,6 +60,7 @@
     "messenger_adapter": "git://github.com/nathanfaucett/messenger_adapter",
     "messenger_websocket_adapter": "git://github.com/nathanfaucett/messenger_websocket_adapter",
     "messenger_worker_adapter": "git://github.com/nathanfaucett/messenger_worker_adapter",
+    "supports": "git://github.com/nathanfaucett/supports.git",
     "virt": "git://github.com/nathanfaucett/virt"
   }
 }
