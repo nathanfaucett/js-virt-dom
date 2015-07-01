@@ -81,8 +81,8 @@ EventHandlerPrototype.listenTo = function(id, topLevelType) {
             topLevelType === topLevelTypes.topBlur
         ) {
             if (isEventSupported("focus", true)) {
-                this.trapBubbledEvent(topLevelTypes.topFocus, "focus", document);
-                this.trapBubbledEvent(topLevelTypes.topBlur, "blur", document);
+                this.trapCapturedEvent(topLevelTypes.topFocus, "focus", document);
+                this.trapCapturedEvent(topLevelTypes.topBlur, "blur", document);
             } else if (isEventSupported("focusin")) {
                 this.trapBubbledEvent(topLevelTypes.topFocus, "focusin", document);
                 this.trapBubbledEvent(topLevelTypes.topBlur, "focusout", document);
