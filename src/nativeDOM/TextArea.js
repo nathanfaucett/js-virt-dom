@@ -7,9 +7,6 @@ var View = virt.View,
     TextAreaPrototype;
 
 
-virt.registerNativeComponent("textarea", TextArea);
-
-
 module.exports = TextArea;
 
 
@@ -52,26 +49,30 @@ TextAreaPrototype.componentDidMount = function() {
     }
 };
 
-TextAreaPrototype.__update = function() {
-    var props = this.props;
+TextAreaPrototype.componentDidUpdate = function(previousProps) {
+    var value = this.props.value,
+        previousValue = previousProps.value;
 
-    if (props.value != null) {
-        this.__setValue(props.value = props.value);
+    if (value != null && value === previousValue) {
+        this.__setValue(value);
     }
 };
 
 TextAreaPrototype.__onInput = function(e) {
-    if (this.props.onInput) {
-        this.props.onInput(e);
-    }
-    this.__onChange(e);
+    this.__onChange(e, true);
 };
 
-TextAreaPrototype.__onChange = function(e) {
-    if (this.props.onChange) {
-        this.props.onChange(e);
+TextAreaPrototype.__onChange = function(e, fromInput) {
+    var props = this.props;
+
+    if (fromInput && props.onInput) {
+        props.onInput(e);
     }
-    this.__update();
+    if (props.onChange) {
+        props.onChange(e);
+    }
+
+    this.forceUpdate();
 };
 
 TextAreaPrototype.__getValue = function(callback) {

@@ -7,7 +7,8 @@ var nativeDOM = exports;
 nativeDOM.components = {
     input: require("./Input"),
     textarea: require("./TextArea"),
-    button: require("./Button")
+    button: require("./Button"),
+    img: require("./Image")
 };
 
 nativeDOM.handlers = extend({},

@@ -1,10 +1,11 @@
 var virt = require("virt"),
     Adapter = require("./Adapter"),
+    rootsById = require("./rootsById"),
     getRootNodeInContainer = require("./utils/getRootNodeInContainer"),
     getNodeId = require("./utils/getNodeId");
 
 
-var rootsById = {};
+var Root = virt.Root;
 
 
 module.exports = render;
@@ -16,7 +17,7 @@ function render(nextView, containerDOMNode, callback) {
         root;
 
     if (id === null || rootsById[id] === undefined) {
-        root = new virt.Root();
+        root = new Root();
         root.adapter = new Adapter(root, containerDOMNode);
         id = root.id;
         rootsById[id] = root;
@@ -28,14 +29,3 @@ function render(nextView, containerDOMNode, callback) {
 
     return root;
 }
-
-render.unmount = function(containerDOMNode) {
-    var rootDOMNode = getRootNodeInContainer(containerDOMNode),
-        id = getNodeId(rootDOMNode),
-        root = rootsById[id];
-
-    if (root !== undefined) {
-        root.unmount();
-        delete rootsById[id];
-    }
-};

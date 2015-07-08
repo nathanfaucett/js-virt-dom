@@ -1,5 +1,4 @@
-var render = require("./render"),
-    renderString = require("./utils/renderString"),
+var renderString = require("./utils/renderString"),
     nativeDOM = require("./nativeDOM");
 
 
@@ -11,8 +10,8 @@ virtDOM.virt = require("virt");
 virtDOM.nativeComponents = nativeDOM.components;
 virtDOM.nativeHandlers = nativeDOM.handlers;
 
-virtDOM.render = render;
-virtDOM.unmount = render.unmount;
+virtDOM.render = require("./render");
+virtDOM.unmount = require("./unmount");
 
 virtDOM.renderString = function(view, id) {
     return renderString(view, null, id || ".0");

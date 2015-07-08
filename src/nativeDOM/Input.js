@@ -10,9 +10,6 @@ var View = virt.View,
 module.exports = Input;
 
 
-virt.registerNativeComponent("input", Input);
-
-
 function Input(props, children, context) {
     var _this = this;
 
@@ -62,29 +59,30 @@ InputPrototype.componentDidMount = function() {
     }
 };
 
-InputPrototype.__update = function() {
-    var props = this.props;
+InputPrototype.componentDidUpdate = function(previousProps) {
+    var value = this.props.value,
+        previousValue = previousProps.value;
 
-    if (props.type === "checkbox") {
-        this.__setChecked(props.checked = !props.checked);
-    }
-    if (props.value != null) {
-        this.__setValue(props.value = props.value);
+    if (value != null && value === previousValue) {
+        this.__setValue(value);
     }
 };
 
 InputPrototype.__onInput = function(e) {
-    if (this.props.onInput) {
-        this.props.onInput(e);
-    }
-    this.__onChange(e);
+    this.__onChange(e, true);
 };
 
-InputPrototype.__onChange = function(e) {
-    if (this.props.onChange) {
-        this.props.onChange(e);
+InputPrototype.__onChange = function(e, fromInput) {
+    var props = this.props;
+
+    if (fromInput && props.onInput) {
+        props.onInput(e);
     }
-    this.__update();
+    if (props.onChange) {
+        props.onChange(e);
+    }
+
+    this.forceUpdate();
 };
 
 InputPrototype.__setChecked = function(checked, callback) {
@@ -148,8 +146,8 @@ InputPrototype.__getRenderProps = function() {
     renderProps.defaultValue = undefined;
     renderProps.value = value != null ? value : initialValue;
 
-    renderProps.onChange = this.onChange;
     renderProps.onInput = this.onInput;
+    renderProps.onChange = this.onChange;
 
     return renderProps;
 };

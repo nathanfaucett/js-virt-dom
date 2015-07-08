@@ -23,9 +23,6 @@ var View = virt.View,
     ButtonPrototype;
 
 
-virt.registerNativeComponent("button", Button);
-
-
 module.exports = Button;
 
 

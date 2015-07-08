@@ -8691,9 +8691,8 @@ Backoff.prototype.setJitter = function(jitter){
 },
 function(require, exports, module, global) {
 
-var render = require(57),
-    renderString = require(180),
-    nativeDOM = require(123);
+var renderString = require(57),
+    nativeDOM = require(122);
 
 
 var virtDOM = exports;
@@ -8704,8 +8703,8 @@ virtDOM.virt = require(58);
 virtDOM.nativeComponents = nativeDOM.components;
 virtDOM.nativeHandlers = nativeDOM.handlers;
 
-virtDOM.render = render;
-virtDOM.unmount = render.unmount;
+virtDOM.render = require(136);
+virtDOM.unmount = require(189);
 
 virtDOM.renderString = function(view, id) {
     return renderString(view, null, id || ".0");
@@ -8713,57 +8712,134 @@ virtDOM.renderString = function(view, id) {
 
 virtDOM.findDOMNode = require(128);
 
-virtDOM.createWorkerRender = require(189);
-virtDOM.renderWorker = require(191);
+virtDOM.createWorkerRender = require(190);
+virtDOM.renderWorker = require(192);
 
-virtDOM.createWebSocketRender = require(193);
-virtDOM.renderWebSocket = require(195);
+virtDOM.createWebSocketRender = require(194);
+virtDOM.renderWebSocket = require(196);
 
 
 },
 function(require, exports, module, global) {
 
 var virt = require(58),
-    Adapter = require(119),
-    getRootNodeInContainer = require(188),
-    getNodeId = require(185);
+
+    isFunction = require(5),
+    isString = require(65),
+    isObject = require(4),
+    isNullOrUndefined = require(6),
+
+    hyphenateStyleName = require(117),
+    renderMarkup = require(118),
+    DOM_ID_NAME = require(120);
 
 
-var rootsById = {};
+var View = virt.View,
+    isPrimitiveView = View.isPrimitiveView,
+
+    closedTags = {
+        area: true,
+        base: true,
+        br: true,
+        col: true,
+        command: true,
+        embed: true,
+        hr: true,
+        img: true,
+        input: true,
+        keygen: true,
+        link: true,
+        meta: true,
+        param: true,
+        source: true,
+        track: true,
+        wbr: true
+    };
 
 
 module.exports = render;
 
 
-function render(nextView, containerDOMNode, callback) {
-    var rootDOMNode = getRootNodeInContainer(containerDOMNode),
-        id = getNodeId(rootDOMNode),
-        root;
+var renderChildrenString = require(121);
 
-    if (id === null || rootsById[id] === undefined) {
-        root = new virt.Root();
-        root.adapter = new Adapter(root, containerDOMNode);
-        id = root.id;
-        rootsById[id] = root;
+
+function render(view, parentProps, id) {
+    var type, props;
+
+    if (isPrimitiveView(view)) {
+        return isString(view) ? renderMarkup(view, parentProps) : view + "";
     } else {
-        root = rootsById[id];
+        type = view.type;
+        props = view.props;
+
+        return (
+            closedTags[type] !== true ?
+            contentTag(type, renderChildrenString(view.children, props, id), id, props) :
+            closedTag(type, id, view.props)
+        );
     }
-
-    root.render(nextView, id, callback);
-
-    return root;
 }
 
-render.unmount = function(containerDOMNode) {
-    var rootDOMNode = getRootNodeInContainer(containerDOMNode),
-        id = getNodeId(rootDOMNode),
-        root = rootsById[id];
+function styleTag(props) {
+    var attributes = "",
+        key;
 
-    if (root !== undefined) {
-        root.unmount();
-        delete rootsById[id];
+    for (key in props) {
+        attributes += hyphenateStyleName(key) + ':' + props[key] + ';';
     }
-};
+
+    return attributes;
+}
+
+function baseTagOptions(props) {
+    var attributes = "",
+        key, value;
+
+    for (key in props) {
+        if (key !== "dangerouslySetInnerHTML") {
+            value = props[key];
+
+            if (!isNullOrUndefined(value) && !isFunction(value)) {
+                if (key === "className") {
+                    key = "class";
+                }
+
+                if (key === "style") {
+                    attributes += 'style="' + styleTag(value) + '"';
+                } else {
+                    if (isObject(value)) {
+                        attributes += baseTagOptions(value);
+                    } else {
+                        attributes += key + '="' + value + '" ';
+                    }
+                }
+            }
+        }
+    }
+
+    return attributes;
+}
+
+function tagOptions(id, props) {
+    var attributes = baseTagOptions(props);
+    return attributes !== "" ? " " + attributes : attributes;
+}
+
+function dataId(id) {
+    return ' ' + DOM_ID_NAME + '="' + id + '"';
+}
+
+function closedTag(type, id, props) {
+    return "<" + type + (isObject(props) ? tagOptions(id, props) : "") + dataId(id) + "/>";
+}
+
+function contentTag(type, content, id, props) {
+    return (
+        "<" + type + (isObject(props) ? tagOptions(id, props) : "") + dataId(id) + ">" +
+        (isString(content) ? content : "") +
+        "</" + type + ">"
+    );
+}
 
 
 },
@@ -8775,27 +8851,25 @@ var View = require(59);
 var virt = exports;
 
 
-virt.Root = require(79);
+virt.Root = require(78);
 
-virt.Component = require(105);
+virt.Component = require(104);
 
 virt.View = View;
 virt.cloneView = View.clone;
 virt.createView = View.create;
 virt.createFactory = View.createFactory;
 
-virt.consts = require(85);
+virt.consts = require(84);
 
-virt.getChildKey = require(109);
+virt.getChildKey = require(108);
 
-virt.registerNativeComponent = require(112);
+virt.traverseAncestors = require(111);
+virt.traverseDescendants = require(115);
+virt.traverseTwoPhase = require(116);
 
-virt.traverseAncestors = require(113);
-virt.traverseDescendants = require(117);
-virt.traverseTwoPhase = require(118);
-
-virt.context = require(78);
-virt.owner = require(77);
+virt.context = require(77);
+virt.owner = require(76);
 
 
 },
@@ -8805,15 +8879,15 @@ var isPrimitive = require(60),
     isFunction = require(5),
     isArray = require(61),
     isString = require(65),
-    isObjectLike = require(68),
+    isObjectLike = require(64),
     isNullOrUndefined = require(6),
-    isNumber = require(67),
-    has = require(69),
-    map = require(71),
-    extend = require(75),
-    propsToJSON = require(76),
-    owner = require(77),
-    context = require(78);
+    isNumber = require(63),
+    has = require(66),
+    map = require(67),
+    extend = require(74),
+    propsToJSON = require(75),
+    owner = require(76),
+    context = require(77);
 
 
 var ViewPrototype;
@@ -9078,37 +9152,173 @@ function isPrimitive(obj) {
 },
 function(require, exports, module, global) {
 
-var isNative = require(62),
-    isLength = require(66),
-    isObjectLike = require(68);
+var isLength = require(62),
+    isObjectLike = require(64);
 
 
-var objectToString = Object.prototype.toString,
-    nativeIsArray = Array.isArray,
-    isArray;
+var objectToString = Object.prototype.toString;
 
 
-if (isNative(nativeIsArray)) {
-    isArray = nativeIsArray;
-} else {
-    isArray = function isArray(value) {
-        return (
-            isObjectLike(value) &&
-            isLength(value.length) &&
-            objectToString.call(value) === "[object Array]"
-        ) || false;
-    };
+module.exports = Array.isArray || function isArray(obj) {
+    return (
+        isObjectLike(obj) &&
+        isLength(obj.length) &&
+        objectToString.call(obj) === "[object Array]"
+    ) || false;
+};
+
+
+},
+function(require, exports, module, global) {
+
+var isNumber = require(63);
+
+
+var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+
+module.exports = isLength;
+
+
+function isLength(value) {
+    return isNumber(value) && value > -1 && value % 1 === 0 && value <= MAX_SAFE_INTEGER;
 }
 
-module.exports = isArray;
+
+},
+function(require, exports, module, global) {
+
+module.exports = isNumber;
+
+
+function isNumber(obj) {
+    return typeof(obj) === "number" || false;
+}
+
+
+},
+function(require, exports, module, global) {
+
+module.exports = isObjectLike;
+
+
+function isObjectLike(obj) {
+    return (obj && typeof(obj) === "object") || false;
+}
+
+
+},
+function(require, exports, module, global) {
+
+module.exports = isString;
+
+
+function isString(obj) {
+    return typeof(obj) === "string" || false;
+}
+
+
+},
+function(require, exports, module, global) {
+
+var hasOwnProp = Object.prototype.hasOwnProperty;
+
+
+module.exports = has;
+
+
+function has(obj, key) {
+    return hasOwnProp.call(obj, key);
+}
+
+
+},
+function(require, exports, module, global) {
+
+var keys = require(68),
+    isNullOrUndefined = require(6),
+    fastBindThis = require(72),
+    isArrayLike = require(73);
+
+
+module.exports = map;
+
+
+function map(object, callback, thisArg) {
+    callback = isNullOrUndefined(thisArg) ? callback : fastBindThis(callback, thisArg, 2);
+    return isArrayLike(object) ? mapArray(object, callback) : mapObject(object, callback);
+}
+
+function mapArray(array, callback) {
+    var length = array.length,
+        i = -1,
+        il = length - 1,
+        result = new Array(length);
+
+    while (i++ < il) {
+        result[i] = callback(array[i], i);
+    }
+
+    return result;
+}
+
+function mapObject(object, callback) {
+    var objectKeys = keys(object),
+        i = -1,
+        il = objectKeys.length - 1,
+        result = {},
+        key;
+
+    while (i++ < il) {
+        key = objectKeys[i];
+        result[key] = callback(object[key], key);
+    }
+
+    return result;
+}
+
+
+},
+function(require, exports, module, global) {
+
+var has = require(66),
+    isNative = require(69),
+    isObject = require(4);
+
+
+var nativeKeys = Object.keys;
+
+
+module.exports = keys;
+
+
+function keys(obj) {
+    return nativeKeys(isObject(obj) ? obj : Object(obj));
+}
+
+if (!isNative(nativeKeys)) {
+    nativeKeys = function keys(obj) {
+        var localHas = has,
+            out = [],
+            i = 0,
+            key;
+
+        for (key in obj) {
+            if (localHas(obj, key)) {
+                out[i++] = key;
+            }
+        }
+
+        return out;
+    };
+}
 
 
 },
 function(require, exports, module, global) {
 
 var isFunction = require(5),
-    isNullOrUndefined = require(6),
-    escapeRegExp = require(63);
+    escapeRegExp = require(70);
 
 
 var reHostCtor = /^\[object .+?Constructor\]$/,
@@ -9122,20 +9332,6 @@ var reHostCtor = /^\[object .+?Constructor\]$/,
 
     isHostObject;
 
-
-module.exports = isNative;
-
-
-function isNative(value) {
-    return !isNullOrUndefined(value) && (
-        isFunction(value) ?
-        reNative.test(functionToString.call(value)) : (
-            typeof(value) === "object" && (
-                (isHostObject(value) ? reNative : reHostCtor).test(value) || false
-            )
-        )
-    ) || false;
-}
 
 try {
     String({
@@ -9152,10 +9348,25 @@ isHostObject = function isHostObject(value) {
 };
 
 
+module.exports = isNative;
+
+
+function isNative(obj) {
+    return obj && (
+        isFunction(obj) ?
+        reNative.test(functionToString.call(obj)) : (
+            typeof(obj) === "object" && (
+                (isHostObject(obj) ? reNative : reHostCtor).test(obj) || false
+            )
+        )
+    ) || false;
+}
+
+
 },
 function(require, exports, module, global) {
 
-var toString = require(64);
+var toString = require(71);
 
 
 var reRegExpChars = /[.*+?\^${}()|\[\]\/\\]/g,
@@ -9199,211 +9410,7 @@ function toString(value) {
 },
 function(require, exports, module, global) {
 
-module.exports = isString;
-
-
-function isString(obj) {
-    return typeof(obj) === "string" || false;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isNumber = require(67);
-
-
-var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
-
-
-module.exports = isLength;
-
-
-function isLength(value) {
-    return isNumber(value) && value > -1 && value % 1 === 0 && value <= MAX_SAFE_INTEGER;
-}
-
-
-},
-function(require, exports, module, global) {
-
-module.exports = isNumber;
-
-
-function isNumber(obj) {
-    return typeof(obj) === "number" || false;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isNullOrUndefined = require(6);
-
-
-module.exports = isObjectLike;
-
-
-function isObjectLike(value) {
-    return (!isNullOrUndefined(value) && typeof(value) === "object") || false;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isNative = require(62),
-    getPrototypeOf = require(70),
-    isNullOrUndefined = require(6);
-
-
-var nativeHasOwnProp = Object.prototype.hasOwnProperty,
-    baseHas;
-
-
-module.exports = has;
-
-
-function has(object, key) {
-    if (isNullOrUndefined(object)) {
-        return false;
-    } else {
-        return baseHas(object, key);
-    }
-}
-
-if (isNative(nativeHasOwnProp)) {
-    baseHas = function baseHas(object, key) {
-        return nativeHasOwnProp.call(object, key);
-    };
-} else {
-    baseHas = function baseHas(object, key) {
-        var proto = getPrototypeOf(object);
-
-        if (isNullOrUndefined(proto)) {
-            return key in object;
-        } else {
-            return (key in object) && (!(key in proto) || proto[key] !== object[key]);
-        }
-    };
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isObject = require(4),
-    isNative = require(62),
-    isNullOrUndefined = require(6);
-
-
-var nativeGetPrototypeOf = Object.getPrototypeOf;
-
-
-module.exports = getPrototypeOf;
-
-
-function getPrototypeOf(obj) {
-    return isNullOrUndefined(obj) ? null : nativeGetPrototypeOf(
-        (isObject(obj) ? obj : Object(obj))
-    );
-}
-
-if (!isNative(nativeGetPrototypeOf)) {
-    nativeGetPrototypeOf = function getPrototypeOf(obj) {
-        return obj.__proto__ || (
-            obj.constructor ? obj.constructor.prototype : null
-        );
-    };
-}
-
-
-},
-function(require, exports, module, global) {
-
-var keys = require(72),
-    isNullOrUndefined = require(6),
-    fastBindThis = require(73),
-    isArrayLike = require(74);
-
-
-module.exports = map;
-
-
-function map(object, callback, thisArg) {
-    callback = isNullOrUndefined(thisArg) ? callback : fastBindThis(callback, thisArg, 2);
-    return isArrayLike(object) ? mapArray(object, callback) : mapObject(object, callback);
-}
-
-function mapArray(array, callback) {
-    var length = array.length,
-        i = -1,
-        il = length - 1,
-        result = new Array(length);
-
-    while (i++ < il) {
-        result[i] = callback(array[i], i);
-    }
-
-    return result;
-}
-
-function mapObject(object, callback) {
-    var objectKeys = keys(object),
-        i = -1,
-        il = objectKeys.length - 1,
-        result = {},
-        key;
-
-    while (i++ < il) {
-        key = objectKeys[i];
-        result[key] = callback(object[key], key);
-    }
-
-    return result;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var has = require(69),
-    isNative = require(62),
-    isObject = require(4);
-
-
-var nativeKeys = Object.keys;
-
-
-module.exports = keys;
-
-
-function keys(obj) {
-    return nativeKeys(isObject(obj) ? obj : Object(obj));
-}
-
-if (!isNative(nativeKeys)) {
-    nativeKeys = function keys(obj) {
-        var localHas = has,
-            out = [],
-            i = 0,
-            key;
-
-        for (key in obj) {
-            if (localHas(obj, key)) {
-                out[i++] = key;
-            }
-        }
-
-        return out;
-    };
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isNumber = require(67);
+var isNumber = require(63);
 
 
 module.exports = fastBindThis;
@@ -9442,9 +9449,9 @@ function fastBindThis(callback, thisArg, length) {
 },
 function(require, exports, module, global) {
 
-var isLength = require(66),
+var isLength = require(62),
     isFunction = require(5),
-    isObjectLike = require(68);
+    isObjectLike = require(64);
 
 
 module.exports = isArrayLike;
@@ -9458,7 +9465,7 @@ function isArrayLike(value) {
 },
 function(require, exports, module, global) {
 
-var keys = require(72);
+var keys = require(68);
 
 
 module.exports = extend;
@@ -9491,7 +9498,7 @@ function baseExtend(a, b) {
 },
 function(require, exports, module, global) {
 
-var has = require(69),
+var has = require(66),
     isPrimitive = require(60);
 
 
@@ -9547,15 +9554,13 @@ context.current = null;
 },
 function(require, exports, module, global) {
 
-var extend = require(75),
-    isFunction = require(5),
-    emptyFunction = require(80),
-    Transaction = require(81),
-    diffProps = require(95),
+var isFunction = require(5),
+    emptyFunction = require(79),
+    Transaction = require(80),
+    diffProps = require(94),
     shouldUpdate = require(96),
-    nativeComponents = require(97),
-    EventManager = require(98),
-    Node = require(99);
+    EventManager = require(97),
+    Node = require(98);
 
 
 var RootPrototype,
@@ -9572,7 +9577,7 @@ function Root() {
 
     this.eventManager = new EventManager();
 
-    this.nativeComponents = extend({}, nativeComponents);
+    this.nativeComponents = {};
     this.diffProps = diffProps;
     this.adapter = null;
 
@@ -9735,18 +9740,18 @@ emptyFunction.thatReturnsArgument = function(argument) {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    Queue = require(84),
-    has = require(69),
-    consts = require(85),
-    InsertPatch = require(87),
-    MountPatch = require(88),
-    UnmountPatch = require(89),
-    OrderPatch = require(90),
-    PropsPatch = require(91),
-    RemovePatch = require(92),
-    ReplacePatch = require(93),
-    TextPatch = require(94);
+var createPool = require(81),
+    Queue = require(83),
+    has = require(66),
+    consts = require(84),
+    InsertPatch = require(86),
+    MountPatch = require(87),
+    UnmountPatch = require(88),
+    OrderPatch = require(89),
+    PropsPatch = require(90),
+    RemovePatch = require(91),
+    ReplacePatch = require(92),
+    TextPatch = require(93);
 
 
 var TransactionPrototype;
@@ -9891,8 +9896,8 @@ TransactionPrototype.toJSON = function() {
 function(require, exports, module, global) {
 
 var isFunction = require(5),
-    isNumber = require(67),
-    defineProperty = require(83);
+    isNumber = require(63),
+    defineProperty = require(82);
 
 
 var descriptor = {
@@ -10077,37 +10082,30 @@ function createReleaser(Constructor) {
 },
 function(require, exports, module, global) {
 
-var isObjectLike = require(68),
-    isNative = require(62),
-    has = require(69);
+var isFunction = require(5),
+    isObjectLike = require(64),
+    isNative = require(69);
 
 
 var defineProperty;
 
 
-if (isNative(Object.defineProperty) && (function() {
-        var object = {};
+if (!isNative(Object.defineProperty) || (function() {
         try {
-            Object.defineProperty(object, "key", {
-                value: "value"
-            });
-            if (has(object, "key") && object.key === "value") {
-                return true;
-            }
-        } catch (e) {}
+            Object.defineProperty({}, "key", {});
+        } catch (e) {
+            return true;
+        }
         return false;
     }())) {
-    defineProperty = Object.defineProperty;
-} else {
     defineProperty = function defineProperty(object, name, value) {
         if (!isObjectLike(object)) {
-            throw new TypeError("defineProperty(object, name, value) called on non-object");
+            throw new TypeError("defineProperty called on non-object");
         }
-        if (has(value, "get") || has(value, "set")) {
-            throw new TypeError("defineProperty(object, name, value) this environment does not support getters or setters");
-        }
-        object[name] = isObjectLike(value) ? value.value : value;
+        object[name] = isObjectLike(value) ? (isFunction(value.get) ? value.get : value.value) : value;
     };
+} else {
+    defineProperty = Object.defineProperty;
 }
 
 
@@ -10117,7 +10115,7 @@ module.exports = defineProperty;
 },
 function(require, exports, module, global) {
 
-var createPool = require(82);
+var createPool = require(81);
 
 
 module.exports = Queue;
@@ -10159,7 +10157,7 @@ Queue.prototype.reset = Queue.prototype.destructor;
 },
 function(require, exports, module, global) {
 
-var keyMirror = require(86);
+var keyMirror = require(85);
 
 
 module.exports = keyMirror([
@@ -10177,8 +10175,8 @@ module.exports = keyMirror([
 },
 function(require, exports, module, global) {
 
-var keys = require(72),
-    isArrayLike = require(74);
+var keys = require(68),
+    isArrayLike = require(73);
 
 
 module.exports = keyMirror;
@@ -10220,8 +10218,8 @@ function keyMirrorObject(object) {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    consts = require(85);
+var createPool = require(81),
+    consts = require(84);
 
 
 var InsertPatchPrototype;
@@ -10265,8 +10263,8 @@ InsertPatchPrototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    consts = require(85);
+var createPool = require(81),
+    consts = require(84);
 
 
 var MountPatchPrototype;
@@ -10304,8 +10302,8 @@ MountPatchPrototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    consts = require(85);
+var createPool = require(81),
+    consts = require(84);
 
 
 var UnmountPatchPrototype;
@@ -10340,8 +10338,8 @@ UnmountPatchPrototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    consts = require(85);
+var createPool = require(81),
+    consts = require(84);
 
 
 var OrderPatchPrototype;
@@ -10379,8 +10377,8 @@ OrderPatchPrototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    consts = require(85);
+var createPool = require(81),
+    consts = require(84);
 
 
 var PropsPatchPrototype;
@@ -10421,8 +10419,8 @@ PropsPatchPrototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    consts = require(85);
+var createPool = require(81),
+    consts = require(84);
 
 
 var RemovePatchPrototype;
@@ -10463,8 +10461,8 @@ RemovePatchPrototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    consts = require(85);
+var createPool = require(81),
+    consts = require(84);
 
 
 var ReplacePatchPrototype;
@@ -10508,9 +10506,9 @@ ReplacePatchPrototype.destroy = function() {
 },
 function(require, exports, module, global) {
 
-var createPool = require(82),
-    propsToJSON = require(76),
-    consts = require(85);
+var createPool = require(81),
+    propsToJSON = require(75),
+    consts = require(84);
 
 
 var TextPatchPrototype;
@@ -10564,9 +10562,9 @@ TextPatchPrototype.toJSON = function() {
 },
 function(require, exports, module, global) {
 
-var has = require(69),
+var has = require(66),
     isObject = require(4),
-    getPrototypeOf = require(70),
+    getPrototypeOf = require(95),
     isNullOrUndefined = require(6);
 
 
@@ -10632,8 +10630,36 @@ function diffProps(id, eventManager, transaction, previous, next) {
 },
 function(require, exports, module, global) {
 
+var isObject = require(4),
+    isNative = require(69);
+
+
+var nativeGetPrototypeOf = Object.getPrototypeOf;
+
+
+module.exports = getPrototypeOf;
+
+
+function getPrototypeOf(obj) {
+    return obj == null ? null : nativeGetPrototypeOf(
+        (isObject(obj) ? obj : Object(obj))
+    );
+}
+
+if (!isNative(nativeGetPrototypeOf)) {
+    nativeGetPrototypeOf = function getPrototypeOf(obj) {
+        return obj.__proto__ || (
+            obj.constructor ? obj.constructor.prototype : null
+        );
+    };
+}
+
+
+},
+function(require, exports, module, global) {
+
 var isString = require(65),
-    isNumber = require(67),
+    isNumber = require(63),
     isNullOrUndefined = require(6);
 
 
@@ -10654,12 +10680,6 @@ function shouldUpdate(previous, next) {
         }
     }
 }
-
-
-},
-function(require, exports, module, global) {
-
-
 
 
 },
@@ -10713,22 +10733,22 @@ EventManagerPrototype.allOff = function(id, transaction) {
 function(require, exports, module, global) {
 
 var process = require(3);
-var has = require(69),
-    map = require(71),
-    indexOf = require(100),
+var has = require(66),
+    map = require(67),
+    indexOf = require(99),
     isString = require(65),
     isArray = require(61),
     isFunction = require(5),
-    extend = require(75),
-    mixin = require(101),
-    owner = require(77),
-    context = require(78),
+    extend = require(74),
+    mixin = require(100),
+    owner = require(76),
+    context = require(77),
     shouldUpdate = require(96),
-    componentState = require(102),
-    getComponentClassForType = require(103),
+    componentState = require(101),
+    getComponentClassForType = require(102),
     View = require(59),
-    getChildKey = require(109),
-    emptyObject = require(108),
+    getChildKey = require(108),
+    emptyObject = require(107),
     diffChildren;
 
 
@@ -10739,7 +10759,7 @@ var NodePrototype,
 module.exports = Node;
 
 
-diffChildren = require(111);
+diffChildren = require(110);
 
 
 function Node(parentId, id, currentView) {
@@ -10794,7 +10814,7 @@ NodePrototype.mountComponent = function() {
     if (isFunction(currentView.type)) {
         this.ComponentClass = ComponentClass = currentView.type;
     } else {
-        this.ComponentClass = ComponentClass = getComponentClassForType(this.root.nativeComponents, currentView.type);
+        this.ComponentClass = ComponentClass = getComponentClassForType(currentView.type, this.root.nativeComponents);
         this.isTopLevel = true;
     }
 
@@ -11259,8 +11279,8 @@ function mountEvents(id, props, eventManager, transaction) {
 },
 function(require, exports, module, global) {
 
-var isLength = require(66),
-    isObjectLike = require(68);
+var isLength = require(62),
+    isObjectLike = require(64);
 
 
 module.exports = indexOf;
@@ -11287,7 +11307,7 @@ function arrayIndexOf(array, value, fromIndex) {
 },
 function(require, exports, module, global) {
 
-var keys = require(72),
+var keys = require(68),
     isNullOrUndefined = require(6);
 
 
@@ -11324,7 +11344,7 @@ function baseMixin(a, b) {
 },
 function(require, exports, module, global) {
 
-var keyMirror = require(86);
+var keyMirror = require(85);
 
 
 module.exports = keyMirror([
@@ -11340,21 +11360,20 @@ module.exports = keyMirror([
 },
 function(require, exports, module, global) {
 
-var nativeComponents = require(97),
-    createNativeComponentForType = require(104);
+var createNativeComponentForType = require(103);
 
 
 module.exports = getComponentClassForType;
 
 
-function getComponentClassForType(rootNativeComponents, type) {
-    var Class = rootNativeComponents[type] || nativeComponents[type];
+function getComponentClassForType(type, rootNativeComponents) {
+    var Class = rootNativeComponents[type];
 
     if (Class) {
         return Class;
     } else {
         Class = createNativeComponentForType(type);
-        rootNativeComponents[type] = nativeComponents[type] = Class;
+        rootNativeComponents[type] = Class;
         return Class;
     }
 }
@@ -11364,7 +11383,7 @@ function getComponentClassForType(rootNativeComponents, type) {
 function(require, exports, module, global) {
 
 var View = require(59),
-    Component = require(105);
+    Component = require(104);
 
 
 module.exports = createNativeComponentForType;
@@ -11387,10 +11406,10 @@ function createNativeComponentForType(type) {
 },
 function(require, exports, module, global) {
 
-var inherits = require(106),
-    extend = require(75),
-    componentState = require(102),
-    emptyObject = require(108);
+var inherits = require(105),
+    extend = require(74),
+    componentState = require(101),
+    emptyObject = require(107);
 
 
 var ComponentPrototype;
@@ -11484,10 +11503,10 @@ ComponentPrototype.shouldComponentUpdate = function( /* nextProps, nextChildren,
 },
 function(require, exports, module, global) {
 
-var create = require(107),
-    extend = require(75),
-    mixin = require(101),
-    defineProperty = require(83);
+var create = require(106),
+    extend = require(74),
+    mixin = require(100),
+    defineProperty = require(82);
 
 
 var descriptor = {
@@ -11535,13 +11554,10 @@ function defineStatic(name, value) {
 },
 function(require, exports, module, global) {
 
-var isNative = require(62);
-
-
 var create, F;
 
 
-if (isNative(Object.create)) {
+if (Object.create) {
     create = Object.create;
 } else {
     F = function F() {};
@@ -11564,7 +11580,7 @@ function(require, exports, module, global) {
 },
 function(require, exports, module, global) {
 
-var getViewKey = require(110);
+var getViewKey = require(109);
 
 
 module.exports = getChildKey;
@@ -11606,7 +11622,7 @@ function escapeKey(key) {
 function(require, exports, module, global) {
 
 var isNullOrUndefined = require(6),
-    getChildKey = require(109),
+    getChildKey = require(108),
     shouldUpdate = require(96),
     View = require(59),
     Node;
@@ -11618,7 +11634,7 @@ var isPrimitiveView = View.isPrimitiveView;
 module.exports = diffChildren;
 
 
-Node = require(99);
+Node = require(98);
 
 
 function diffChildren(node, previous, next, transaction) {
@@ -11805,22 +11821,7 @@ function keyIndex(children) {
 },
 function(require, exports, module, global) {
 
-var nativeComponents = require(97);
-
-
-module.exports = registerNativeComponent;
-
-
-function registerNativeComponent(type, constructor) {
-    nativeComponents[type] = constructor;
-    return constructor;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var traversePath = require(114);
+var traversePath = require(112);
 
 
 module.exports = traverseAncestors;
@@ -11834,8 +11835,8 @@ function traverseAncestors(id, callback) {
 },
 function(require, exports, module, global) {
 
-var isBoundary = require(115),
-    isAncestorIdOf = require(116);
+var isBoundary = require(113),
+    isAncestorIdOf = require(114);
 
 
 module.exports = traversePath;
@@ -11898,7 +11899,7 @@ function isBoundary(id, index) {
 },
 function(require, exports, module, global) {
 
-var isBoundary = require(115);
+var isBoundary = require(113);
 
 
 module.exports = isAncestorIdOf;
@@ -11915,7 +11916,7 @@ function isAncestorIdOf(ancestorID, descendantID) {
 },
 function(require, exports, module, global) {
 
-var traversePath = require(114);
+var traversePath = require(112);
 
 
 module.exports = traverseDescendant;
@@ -11929,7 +11930,7 @@ function traverseDescendant(id, callback) {
 },
 function(require, exports, module, global) {
 
-var traversePath = require(114);
+var traversePath = require(112);
 
 
 module.exports = traverseTwoPhase;
@@ -11946,19 +11947,817 @@ function traverseTwoPhase(id, callback) {
 },
 function(require, exports, module, global) {
 
+var reUppercasePattern = /([A-Z])/g,
+    reMS = /^ms-/;
+
+
+module.exports = hyphenateStyleName;
+
+
+function hyphenateStyleName(str) {
+    return str.replace(reUppercasePattern, "-$1").toLowerCase().replace(reMS, "-ms-");
+}
+
+
+},
+function(require, exports, module, global) {
+
+var escapeTextContent = require(119);
+
+
+module.exports = renderMarkup;
+
+
+function renderMarkup(markup, props) {
+    if (props && props.dangerouslySetInnerHTML !== true) {
+        return escapeTextContent(markup);
+    } else {
+        return markup;
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
+var ESCAPE_REGEX = /[&><"']/g,
+    ESCAPE_LOOKUP = {
+        "&": "&amp;",
+        ">": "&gt;",
+        "<": "&lt;",
+        "\"": "&quot;",
+        "'": "&#x27;"
+    };
+
+
+module.exports = escapeTextContent;
+
+
+function escapeTextContent(text) {
+    return (text + "").replace(ESCAPE_REGEX, escaper);
+}
+
+function escaper(match) {
+    return ESCAPE_LOOKUP[match];
+}
+
+
+},
+function(require, exports, module, global) {
+
+module.exports = "data-virtid";
+
+
+},
+function(require, exports, module, global) {
+
+var virt = require(58);
+
+
+var getChildKey = virt.getChildKey;
+
+
+module.exports = renderChildrenString;
+
+
+var renderString = require(57);
+
+
+function renderChildrenString(children, parentProps, id) {
+    var out = "",
+        i = -1,
+        il = children.length - 1,
+        child;
+
+    while (i++ < il) {
+        child = children[i];
+        out += renderString(child, parentProps, getChildKey(id, child, i));
+    }
+
+    return out;
+}
+
+
+},
+function(require, exports, module, global) {
+
+var extend = require(74);
+
+
+var nativeDOM = exports;
+
+
+nativeDOM.components = {
+    input: require(123),
+    textarea: require(124),
+    button: require(125),
+    img: require(126)
+};
+
+nativeDOM.handlers = extend({},
+    require(127),
+    require(134),
+    require(135)
+);
+
+
+},
+function(require, exports, module, global) {
+
+var process = require(3);
 var virt = require(58),
-    Messenger = require(120),
-    createMessengerAdapter = require(121),
-    getWindow = require(122),
-    nativeDOM = require(123),
-    registerNativeComponents = require(136),
-    registerNativeComponentHandlers = require(137),
+    has = require(66);
+
+
+var View = virt.View,
+    Component = virt.Component,
+    InputPrototype;
+
+
+module.exports = Input;
+
+
+function Input(props, children, context) {
+    var _this = this;
+
+    if (process.env.NODE_ENV !== "production") {
+        if (children.length > 0) {
+            throw new Error("Input: input can't have children");
+        }
+    }
+
+    Component.call(this, props, children, context);
+
+    this.onInput = function(e) {
+        return _this.__onInput(e);
+    };
+    this.onChange = function(e) {
+        return _this.__onChange(e);
+    };
+    this.setChecked = function(checked, callback) {
+        return _this.__setChecked(checked, callback);
+    };
+    this.getValue = function(callback) {
+        return _this.__getValue(callback);
+    };
+    this.setValue = function(value, callback) {
+        return _this.__setValue(value, callback);
+    };
+    this.focus = function(callback) {
+        return _this.__focus(callback);
+    };
+    this.blur = function(callback) {
+        return _this.__blur(callback);
+    };
+
+}
+Component.extend(Input, "input");
+InputPrototype = Input.prototype;
+
+Input.getDefaultProps = function() {
+    return {
+        type: "text"
+    };
+};
+
+InputPrototype.componentDidMount = function() {
+    if (this.props.autoFocus) {
+        this.focus();
+    }
+};
+
+InputPrototype.componentDidUpdate = function(previousProps) {
+    var value = this.props.value,
+        previousValue = previousProps.value;
+    
+    if (value != null && value === previousValue) {
+        this.__setValue(value);
+    }
+};
+
+InputPrototype.__onInput = function(e) {
+    this.__onChange(e, true);
+};
+
+InputPrototype.__onChange = function(e, fromInput) {
+    var props = this.props;
+    
+    if (fromInput && props.onInput) {
+        props.onInput(e);
+    }
+    if (props.onChange) {
+        props.onChange(e);
+    }
+    
+    this.forceUpdate();
+};
+
+InputPrototype.__setChecked = function(checked, callback) {
+    this.emitMessage("virt.dom.Input.setChecked", {
+        id: this.getInternalId(),
+        checked: !!checked
+    }, callback);
+};
+
+InputPrototype.__getValue = function(callback) {
+    this.emitMessage("virt.dom.Input.getValue", {
+        id: this.getInternalId()
+    }, callback);
+};
+
+InputPrototype.__setValue = function(value, callback) {
+    this.emitMessage("virt.dom.Input.setValue", {
+        id: this.getInternalId(),
+        value: value
+    }, callback);
+};
+
+InputPrototype.__focus = function(callback) {
+    this.emitMessage("virt.dom.Input.focus", {
+        id: this.getInternalId()
+    }, callback);
+};
+
+InputPrototype.__blur = function(callback) {
+    this.emitMessage("virt.dom.Input.blur", {
+        id: this.getInternalId()
+    }, callback);
+};
+
+InputPrototype.__getRenderProps = function() {
+    var props = this.props,
+
+        value = props.value,
+        checked = props.checked,
+
+        defaultValue = props.defaultValue,
+
+        initialValue = defaultValue != null ? defaultValue : null,
+        initialChecked = props.defaultChecked || false,
+
+        renderProps = {},
+
+        key;
+
+    for (key in props) {
+        if (has(props, key) && key !== "checked") {
+            renderProps[key] = props[key];
+        }
+    }
+
+    if (checked != null ? checked : initialChecked) {
+        renderProps.checked = true;
+    }
+
+    renderProps.defaultChecked = undefined;
+    renderProps.defaultValue = undefined;
+    renderProps.value = value != null ? value : initialValue;
+    
+    renderProps.onInput = this.onInput;
+    renderProps.onChange = this.onChange;
+    
+    return renderProps;
+};
+
+InputPrototype.render = function() {
+    return new View("input", null, null, this.__getRenderProps(), this.children, null, null);
+};
+
+
+},
+function(require, exports, module, global) {
+
+var process = require(3);
+var virt = require(58),
+    has = require(66);
+
+
+var View = virt.View,
+    Component = virt.Component,
+    TextAreaPrototype;
+
+
+module.exports = TextArea;
+
+
+function TextArea(props, children, context) {
+    var _this = this;
+
+    if (process.env.NODE_ENV !== "production") {
+        if (children.length > 0) {
+            throw new Error("TextArea: textarea can't have children, set prop.value instead");
+        }
+    }
+
+    Component.call(this, props, children, context);
+
+    this.onInput = function(e) {
+        return _this.__onInput(e);
+    };
+    this.onChange = function(e) {
+        return _this.__onChange(e);
+    };
+    this.getValue = function(callback) {
+        return _this.__getValue(callback);
+    };
+    this.setValue = function(value, callback) {
+        return _this.__setValue(value, callback);
+    };
+    this.focus = function(callback) {
+        return _this.__focus(callback);
+    };
+    this.blur = function(callback) {
+        return _this.__blur(callback);
+    };
+}
+Component.extend(TextArea, "textarea");
+TextAreaPrototype = TextArea.prototype;
+
+TextAreaPrototype.componentDidMount = function() {
+    if (this.props.autoFocus) {
+        this.focus();
+    }
+};
+
+TextAreaPrototype.componentDidUpdate = function(previousProps) {
+    var value = this.props.value,
+        previousValue = previousProps.value;
+    
+    if (value != null && value === previousValue) {
+        this.__setValue(value);
+    }
+};
+
+TextAreaPrototype.__onInput = function(e) {
+    this.__onChange(e, true);
+};
+
+TextAreaPrototype.__onChange = function(e, fromInput) {
+    var props = this.props;
+    
+    if (fromInput && props.onInput) {
+        props.onInput(e);
+    }
+    if (props.onChange) {
+        props.onChange(e);
+    }
+    
+    this.forceUpdate();
+};
+
+TextAreaPrototype.__getValue = function(callback) {
+    this.emitMessage("virt.dom.TextArea.getValue", {
+        id: this.getInternalId()
+    }, callback);
+};
+
+TextAreaPrototype.__setValue = function(value, callback) {
+    this.emitMessage("virt.dom.TextArea.setValue", {
+        id: this.getInternalId(),
+        value: value
+    }, callback);
+};
+
+TextAreaPrototype.__focus = function(callback) {
+    this.emitMessage("virt.dom.TextArea.focus", {
+        id: this.getInternalId()
+    }, callback);
+};
+
+TextAreaPrototype.__blur = function(callback) {
+    this.emitMessage("virt.dom.TextArea.blur", {
+        id: this.getInternalId()
+    }, callback);
+};
+
+TextAreaPrototype.__getRenderProps = function() {
+    var props = this.props,
+
+        value = props.value,
+        defaultValue = props.defaultValue,
+        initialValue = defaultValue != null ? defaultValue : null,
+
+        renderProps = {},
+        key;
+
+    for (key in props) {
+        if (has(props, key)) {
+            renderProps[key] = props[key];
+        }
+    }
+
+    renderProps.defaultValue = undefined;
+    renderProps.value = value != null ? value : initialValue;
+
+    renderProps.onChange = this.onChange;
+    renderProps.onInput = this.onInput;
+
+    return renderProps;
+};
+
+TextAreaPrototype.render = function() {
+    return new View("textarea", null, null, this.__getRenderProps(), this.children, null, null);
+};
+
+
+},
+function(require, exports, module, global) {
+
+var virt = require(58),
+    indexOf = require(99),
+    has = require(66);
+
+
+var View = virt.View,
+    Component = virt.Component,
+
+    mouseListenerNames = [
+        "onClick",
+        "onDoubleClick",
+        "onMouseDown",
+        "onMouseMove",
+        "onMouseUp",
+
+        "onClickCapture",
+        "onDoubleClickCapture",
+        "onMouseDownCapture",
+        "onMouseMoveCapture",
+        "onMouseUpCapture"
+    ],
+
+    ButtonPrototype;
+
+
+module.exports = Button;
+
+
+function Button(props, children, context) {
+    var _this = this,
+        localHas = has,
+        nativeProps = {},
+        key;
+
+    if (props.disabled) {
+        localHas = has;
+        nativeProps = {};
+
+        for (key in props) {
+            if (localHas(props, key) && indexOf(mouseListenerNames, key) === -1) {
+                nativeProps[key] = props[key];
+            }
+        }
+        nativeProps.disabled = true;
+    } else {
+        for (key in props) {
+            if (localHas(props, key) && key !== "disabled") {
+                nativeProps[key] = props[key];
+            }
+        }
+    }
+
+    Component.call(this, props, children, context);
+
+    this.focus = function(e) {
+        return _this.__focus(e);
+    };
+    this.blur = function(e) {
+        return _this.__blur(e);
+    };
+}
+Component.extend(Button, "button");
+ButtonPrototype = Button.prototype;
+
+ButtonPrototype.componentDidMount = function() {
+    if (this.props.autoFocus) {
+        this.focus();
+    }
+};
+
+ButtonPrototype.__focus = function(callback) {
+    this.emitMessage("virt.dom.Button.focus", {
+        id: this.getInternalId()
+    }, callback);
+};
+
+ButtonPrototype.__blur = function(callback) {
+    this.emitMessage("virt.dom.Button.blur", {
+        id: this.getInternalId()
+    }, callback);
+};
+
+ButtonPrototype.__getRenderProps = function() {
+    var props = this.props,
+        localHas = has,
+        renderProps = {},
+        key;
+
+    if (props.disabled) {
+        localHas = has;
+        renderProps = {};
+
+        for (key in props) {
+            if (localHas(props, key) && indexOf(mouseListenerNames, key) === -1) {
+                renderProps[key] = props[key];
+            }
+        }
+
+        renderProps.disabled = true;
+    } else {
+        for (key in props) {
+            if (localHas(props, key) && key !== "disabled") {
+                renderProps[key] = props[key];
+            }
+        }
+    }
+
+    return renderProps;
+};
+
+ButtonPrototype.render = function() {
+    return new View("button", null, null, this.__getRenderProps(), this.children, null, null);
+};
+
+
+},
+function(require, exports, module, global) {
+
+var process = require(3);
+var virt = require(58);
+
+
+var View = virt.View,
+    Component = virt.Component,
+    ImagePrototype;
+
+
+module.exports = Image;
+
+
+function Image(props, children, context) {
+
+    if (process.env.NODE_ENV !== "production") {
+        if (children.length > 0) {
+            throw new Error("Image: img can not have children");
+        }
+    }
+
+    Component.call(this, props, children, context);
+
+}
+Component.extend(Image, "img");
+ImagePrototype = Image.prototype;
+
+ImagePrototype.render = function() {
+    return new View("img", null, null, this.props, this.children, null, null);
+};
+
+
+},
+function(require, exports, module, global) {
+
+var findDOMNode = require(128),
+    sharedHandlers = require(131);
+
+
+var inputHandlers = exports;
+
+
+inputHandlers["virt.dom.Input.getValue"] = sharedHandlers.getValue;
+inputHandlers["virt.dom.Input.setValue"] = sharedHandlers.setValue;
+inputHandlers["virt.dom.Input.focus"] = sharedHandlers.focus;
+inputHandlers["virt.dom.Input.blur"] = sharedHandlers.blur;
+
+
+inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        if (data.checked) {
+            node.setAttribute("checked", true);
+        } else {
+            node.removeAttribute("checked");
+        }
+        callback();
+    } else {
+        callback(new Error("setChecked(value, callback): No DOM node found with id " + data.id));
+    }
+};
+
+
+},
+function(require, exports, module, global) {
+
+var isString = require(65),
+    getNodeById = require(129);
+
+
+module.exports = findDOMNode;
+
+
+function findDOMNode(value) {
+    if (isString(value)) {
+        return getNodeById(value);
+    } else if (value && value.__node) {
+        return getNodeById(value.__node.id);
+    } else if (value && value.id) {
+        return getNodeById(value.id);
+    } else {
+        return null;
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
+var nodeCache = require(130);
+
+
+module.exports = getNodeById;
+
+
+function getNodeById(id) {
+    return nodeCache[id];
+}
+
+
+},
+function(require, exports, module, global) {
+
+
+
+
+},
+function(require, exports, module, global) {
+
+var findDOMNode = require(128),
+    blurNode = require(132),
+    focusNode = require(133);
+
+
+var sharedInputHandlers = exports;
+
+
+sharedInputHandlers.getValue = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, node.value);
+    } else {
+        callback(new Error("getValue(callback): No DOM node found with id " + data.id));
+    }
+};
+
+sharedInputHandlers.setValue = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        node.value = data.value || "";
+        callback();
+    } else {
+        callback(new Error("setValue(value, callback): No DOM node found with id " + data.id));
+    }
+};
+
+sharedInputHandlers.focus = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        focusNode(node);
+        callback();
+    } else {
+        callback(new Error("focus(callback): No DOM node found with id " + data.id));
+    }
+};
+
+sharedInputHandlers.blur = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        blurNode(node);
+        callback();
+    } else {
+        callback(new Error("blur(callback): No DOM node found with id " + data.id));
+    }
+};
+
+
+},
+function(require, exports, module, global) {
+
+var isNode = require(8);
+
+
+module.exports = blurNode;
+
+
+function blurNode(node) {
+    if (isNode(node) && node.blur) {
+        try {
+            node.blur();
+        } catch (e) {}
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
+var isNode = require(8);
+
+
+module.exports = focusNode;
+
+
+function focusNode(node) {
+    if (isNode(node) && node.focus) {
+        try {
+            node.focus();
+        } catch (e) {}
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
+var sharedHandlers = require(131);
+
+
+var textareaHandlers = exports;
+
+
+textareaHandlers["virt.dom.TextArea.getValue"] = sharedHandlers.getValue;
+textareaHandlers["virt.dom.TextArea.setValue"] = sharedHandlers.setValue;
+textareaHandlers["virt.dom.TextArea.focus"] = sharedHandlers.focus;
+textareaHandlers["virt.dom.TextArea.blur"] = sharedHandlers.blur;
+
+
+},
+function(require, exports, module, global) {
+
+var sharedHandlers = require(131);
+
+
+var buttonHandlers = exports;
+
+
+buttonHandlers["virt.dom.Button.focus"] = sharedHandlers.focus;
+buttonHandlers["virt.dom.Button.blur"] = sharedHandlers.blur;
+
+
+},
+function(require, exports, module, global) {
+
+var virt = require(58),
+    Adapter = require(137),
+    rootsById = require(187),
+    getRootNodeInContainer = require(188),
+    getNodeId = require(184);
+
+
+var Root = virt.Root;
+
+
+module.exports = render;
+
+
+function render(nextView, containerDOMNode, callback) {
+    var rootDOMNode = getRootNodeInContainer(containerDOMNode),
+        id = getNodeId(rootDOMNode),
+        root;
+
+    if (id === null || rootsById[id] === undefined) {
+        root = new Root();
+        root.adapter = new Adapter(root, containerDOMNode);
+        id = root.id;
+        rootsById[id] = root;
+    } else {
+        root = rootsById[id];
+    }
+
+    root.render(nextView, id, callback);
+
+    return root;
+}
+
+
+},
+function(require, exports, module, global) {
+
+var virt = require(58),
+    Messenger = require(138),
+    createMessengerAdapter = require(139),
+    getWindow = require(140),
+    nativeDOM = require(122),
+    registerNativeComponents = require(141),
+    registerNativeComponentHandlers = require(142),
     getNodeById = require(129),
-    consts = require(138),
-    EventHandler = require(140),
-    eventClassMap = require(146),
-    applyEvents = require(173),
-    applyPatches = require(174);
+    consts = require(143),
+    EventHandler = require(145),
+    eventClassMap = require(150),
+    applyEvents = require(177),
+    applyPatches = require(178);
 
 
 var traverseAncestors = virt.traverseAncestors,
@@ -12235,644 +13034,7 @@ function getWindow(document) {
 },
 function(require, exports, module, global) {
 
-var extend = require(75);
-
-
-var nativeDOM = exports;
-
-
-nativeDOM.components = {
-    input: require(124),
-    textarea: require(125),
-    button: require(126)
-};
-
-nativeDOM.handlers = extend({},
-    require(127),
-    require(134),
-    require(135)
-);
-
-
-},
-function(require, exports, module, global) {
-
-var process = require(3);
-var virt = require(58),
-    has = require(69);
-
-
-var View = virt.View,
-    Component = virt.Component,
-    InputPrototype;
-
-
-module.exports = Input;
-
-
-virt.registerNativeComponent("input", Input);
-
-
-function Input(props, children, context) {
-    var _this = this;
-
-    if (process.env.NODE_ENV !== "production") {
-        if (children.length > 0) {
-            throw new Error("Input: input can't have children");
-        }
-    }
-
-    Component.call(this, props, children, context);
-
-    this.onInput = function(e) {
-        return _this.__onInput(e);
-    };
-    this.onChange = function(e) {
-        return _this.__onChange(e);
-    };
-    this.setChecked = function(checked, callback) {
-        return _this.__setChecked(checked, callback);
-    };
-    this.getValue = function(callback) {
-        return _this.__getValue(callback);
-    };
-    this.setValue = function(value, callback) {
-        return _this.__setValue(value, callback);
-    };
-    this.focus = function(callback) {
-        return _this.__focus(callback);
-    };
-    this.blur = function(callback) {
-        return _this.__blur(callback);
-    };
-
-}
-Component.extend(Input, "input");
-InputPrototype = Input.prototype;
-
-Input.getDefaultProps = function() {
-    return {
-        type: "text"
-    };
-};
-
-InputPrototype.componentDidMount = function() {
-    if (this.props.autoFocus) {
-        this.focus();
-    }
-};
-
-InputPrototype.__update = function() {
-    var props = this.props;
-
-    if (props.type === "checkbox") {
-        this.__setChecked(props.checked = !props.checked);
-    }
-    if (props.value != null) {
-        this.__setValue(props.value = props.value);
-    }
-};
-
-InputPrototype.__onInput = function(e) {
-    if (this.props.onInput) {
-        this.props.onInput(e);
-    }
-    this.__onChange(e);
-};
-
-InputPrototype.__onChange = function(e) {
-    if (this.props.onChange) {
-        this.props.onChange(e);
-    }
-    this.__update();
-};
-
-InputPrototype.__setChecked = function(checked, callback) {
-    this.emitMessage("virt.dom.Input.setChecked", {
-        id: this.getInternalId(),
-        checked: !!checked
-    }, callback);
-};
-
-InputPrototype.__getValue = function(callback) {
-    this.emitMessage("virt.dom.Input.getValue", {
-        id: this.getInternalId()
-    }, callback);
-};
-
-InputPrototype.__setValue = function(value, callback) {
-    this.emitMessage("virt.dom.Input.setValue", {
-        id: this.getInternalId(),
-        value: value
-    }, callback);
-};
-
-InputPrototype.__focus = function(callback) {
-    this.emitMessage("virt.dom.Input.focus", {
-        id: this.getInternalId()
-    }, callback);
-};
-
-InputPrototype.__blur = function(callback) {
-    this.emitMessage("virt.dom.Input.blur", {
-        id: this.getInternalId()
-    }, callback);
-};
-
-InputPrototype.__getRenderProps = function() {
-    var props = this.props,
-
-        value = props.value,
-        checked = props.checked,
-
-        defaultValue = props.defaultValue,
-
-        initialValue = defaultValue != null ? defaultValue : null,
-        initialChecked = props.defaultChecked || false,
-
-        renderProps = {},
-
-        key;
-
-    for (key in props) {
-        if (has(props, key) && key !== "checked") {
-            renderProps[key] = props[key];
-        }
-    }
-
-    if (checked != null ? checked : initialChecked) {
-        renderProps.checked = true;
-    }
-
-    renderProps.defaultChecked = undefined;
-    renderProps.defaultValue = undefined;
-    renderProps.value = value != null ? value : initialValue;
-
-    renderProps.onChange = this.onChange;
-    renderProps.onInput = this.onInput;
-
-    return renderProps;
-};
-
-InputPrototype.render = function() {
-    return new View("input", null, null, this.__getRenderProps(), this.children, null, null);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var process = require(3);
-var virt = require(58),
-    has = require(69);
-
-
-var View = virt.View,
-    Component = virt.Component,
-    TextAreaPrototype;
-
-
-virt.registerNativeComponent("textarea", TextArea);
-
-
-module.exports = TextArea;
-
-
-function TextArea(props, children, context) {
-    var _this = this;
-
-    if (process.env.NODE_ENV !== "production") {
-        if (children.length > 0) {
-            throw new Error("TextArea: textarea can't have children, set prop.value instead");
-        }
-    }
-
-    Component.call(this, props, children, context);
-
-    this.onInput = function(e) {
-        return _this.__onInput(e);
-    };
-    this.onChange = function(e) {
-        return _this.__onChange(e);
-    };
-    this.getValue = function(callback) {
-        return _this.__getValue(callback);
-    };
-    this.setValue = function(value, callback) {
-        return _this.__setValue(value, callback);
-    };
-    this.focus = function(callback) {
-        return _this.__focus(callback);
-    };
-    this.blur = function(callback) {
-        return _this.__blur(callback);
-    };
-}
-Component.extend(TextArea, "textarea");
-TextAreaPrototype = TextArea.prototype;
-
-TextAreaPrototype.componentDidMount = function() {
-    if (this.props.autoFocus) {
-        this.focus();
-    }
-};
-
-TextAreaPrototype.__update = function() {
-    var props = this.props;
-
-    if (props.value != null) {
-        this.__setValue(props.value = props.value);
-    }
-};
-
-TextAreaPrototype.__onInput = function(e) {
-    if (this.props.onInput) {
-        this.props.onInput(e);
-    }
-    this.__onChange(e);
-};
-
-TextAreaPrototype.__onChange = function(e) {
-    if (this.props.onChange) {
-        this.props.onChange(e);
-    }
-    this.__update();
-};
-
-TextAreaPrototype.__getValue = function(callback) {
-    this.emitMessage("virt.dom.TextArea.getValue", {
-        id: this.getInternalId()
-    }, callback);
-};
-
-TextAreaPrototype.__setValue = function(value, callback) {
-    this.emitMessage("virt.dom.TextArea.setValue", {
-        id: this.getInternalId(),
-        value: value
-    }, callback);
-};
-
-TextAreaPrototype.__focus = function(callback) {
-    this.emitMessage("virt.dom.TextArea.focus", {
-        id: this.getInternalId()
-    }, callback);
-};
-
-TextAreaPrototype.__blur = function(callback) {
-    this.emitMessage("virt.dom.TextArea.blur", {
-        id: this.getInternalId()
-    }, callback);
-};
-
-TextAreaPrototype.__getRenderProps = function() {
-    var props = this.props,
-
-        value = props.value,
-        defaultValue = props.defaultValue,
-        initialValue = defaultValue != null ? defaultValue : null,
-
-        renderProps = {},
-        key;
-
-    for (key in props) {
-        if (has(props, key)) {
-            renderProps[key] = props[key];
-        }
-    }
-
-    renderProps.defaultValue = undefined;
-    renderProps.value = value != null ? value : initialValue;
-
-    renderProps.onChange = this.onChange;
-    renderProps.onInput = this.onInput;
-
-    return renderProps;
-};
-
-TextAreaPrototype.render = function() {
-    return new View("textarea", null, null, this.__getRenderProps(), this.children, null, null);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var virt = require(58),
-    indexOf = require(100),
-    has = require(69);
-
-
-var View = virt.View,
-    Component = virt.Component,
-
-    mouseListenerNames = [
-        "onClick",
-        "onDoubleClick",
-        "onMouseDown",
-        "onMouseMove",
-        "onMouseUp",
-
-        "onClickCapture",
-        "onDoubleClickCapture",
-        "onMouseDownCapture",
-        "onMouseMoveCapture",
-        "onMouseUpCapture"
-    ],
-
-    ButtonPrototype;
-
-
-virt.registerNativeComponent("button", Button);
-
-
-module.exports = Button;
-
-
-function Button(props, children, context) {
-    var _this = this,
-        localHas = has,
-        nativeProps = {},
-        key;
-
-    if (props.disabled) {
-        localHas = has;
-        nativeProps = {};
-
-        for (key in props) {
-            if (localHas(props, key) && indexOf(mouseListenerNames, key) === -1) {
-                nativeProps[key] = props[key];
-            }
-        }
-        nativeProps.disabled = true;
-    } else {
-        for (key in props) {
-            if (localHas(props, key) && key !== "disabled") {
-                nativeProps[key] = props[key];
-            }
-        }
-    }
-
-    Component.call(this, props, children, context);
-
-    this.focus = function(e) {
-        return _this.__focus(e);
-    };
-    this.blur = function(e) {
-        return _this.__blur(e);
-    };
-}
-Component.extend(Button, "button");
-ButtonPrototype = Button.prototype;
-
-ButtonPrototype.componentDidMount = function() {
-    if (this.props.autoFocus) {
-        this.focus();
-    }
-};
-
-ButtonPrototype.__focus = function(callback) {
-    this.emitMessage("virt.dom.Button.focus", {
-        id: this.getInternalId()
-    }, callback);
-};
-
-ButtonPrototype.__blur = function(callback) {
-    this.emitMessage("virt.dom.Button.blur", {
-        id: this.getInternalId()
-    }, callback);
-};
-
-ButtonPrototype.__getRenderProps = function() {
-    var props = this.props,
-        localHas = has,
-        renderProps = {},
-        key;
-
-    if (props.disabled) {
-        localHas = has;
-        renderProps = {};
-
-        for (key in props) {
-            if (localHas(props, key) && indexOf(mouseListenerNames, key) === -1) {
-                renderProps[key] = props[key];
-            }
-        }
-
-        renderProps.disabled = true;
-    } else {
-        for (key in props) {
-            if (localHas(props, key) && key !== "disabled") {
-                renderProps[key] = props[key];
-            }
-        }
-    }
-
-    return renderProps;
-};
-
-ButtonPrototype.render = function() {
-    return new View("button", null, null, this.__getRenderProps(), this.children, null, null);
-};
-
-
-},
-function(require, exports, module, global) {
-
-var findDOMNode = require(128),
-    sharedHandlers = require(131);
-
-
-var inputHandlers = exports;
-
-
-inputHandlers["virt.dom.Input.getValue"] = sharedHandlers.getValue;
-inputHandlers["virt.dom.Input.setValue"] = sharedHandlers.setValue;
-inputHandlers["virt.dom.Input.focus"] = sharedHandlers.focus;
-inputHandlers["virt.dom.Input.blur"] = sharedHandlers.blur;
-
-
-inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
-    var node = findDOMNode(data.id);
-
-    if (node) {
-        if (data.checked) {
-            node.setAttribute("checked", true);
-        } else {
-            node.removeAttribute("checked");
-        }
-        callback();
-    } else {
-        callback(new Error("setChecked(value, callback): No DOM node found with id " + data.id));
-    }
-};
-
-
-},
-function(require, exports, module, global) {
-
-var isString = require(65),
-    getNodeById = require(129);
-
-
-module.exports = findDOMNode;
-
-
-function findDOMNode(value) {
-    if (isString(value)) {
-        return getNodeById(value);
-    } else if (value && value.__node) {
-        return getNodeById(value.__node.id);
-    } else if (value && value.id) {
-        return getNodeById(value.id);
-    } else {
-        return null;
-    }
-}
-
-
-},
-function(require, exports, module, global) {
-
-var nodeCache = require(130);
-
-
-module.exports = getNodeById;
-
-
-function getNodeById(id) {
-    return nodeCache[id];
-}
-
-
-},
-function(require, exports, module, global) {
-
-
-
-
-},
-function(require, exports, module, global) {
-
-var findDOMNode = require(128),
-    blurNode = require(132),
-    focusNode = require(133);
-
-
-var sharedInputHandlers = exports;
-
-
-sharedInputHandlers.getValue = function(data, callback) {
-    var node = findDOMNode(data.id);
-
-    if (node) {
-        callback(undefined, node.value);
-    } else {
-        callback(new Error("getValue(callback): No DOM node found with id " + data.id));
-    }
-};
-
-sharedInputHandlers.setValue = function(data, callback) {
-    var node = findDOMNode(data.id);
-
-    if (node) {
-        node.value = data.value || "";
-        callback();
-    } else {
-        callback(new Error("setValue(value, callback): No DOM node found with id " + data.id));
-    }
-};
-
-sharedInputHandlers.focus = function(data, callback) {
-    var node = findDOMNode(data.id);
-
-    if (node) {
-        focusNode(node);
-        callback();
-    } else {
-        callback(new Error("focus(callback): No DOM node found with id " + data.id));
-    }
-};
-
-sharedInputHandlers.blur = function(data, callback) {
-    var node = findDOMNode(data.id);
-
-    if (node) {
-        blurNode(node);
-        callback();
-    } else {
-        callback(new Error("blur(callback): No DOM node found with id " + data.id));
-    }
-};
-
-
-},
-function(require, exports, module, global) {
-
-var isNode = require(8);
-
-
-module.exports = blurNode;
-
-
-function blurNode(node) {
-    if (isNode(node) && node.blur) {
-        try {
-            node.blur();
-        } catch (e) {}
-    }
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isNode = require(8);
-
-
-module.exports = focusNode;
-
-
-function focusNode(node) {
-    if (isNode(node) && node.focus) {
-        try {
-            node.focus();
-        } catch (e) {}
-    }
-}
-
-
-},
-function(require, exports, module, global) {
-
-var sharedHandlers = require(131);
-
-
-var textareaHandlers = exports;
-
-
-textareaHandlers["virt.dom.TextArea.getValue"] = sharedHandlers.getValue;
-textareaHandlers["virt.dom.TextArea.setValue"] = sharedHandlers.setValue;
-textareaHandlers["virt.dom.TextArea.focus"] = sharedHandlers.focus;
-textareaHandlers["virt.dom.TextArea.blur"] = sharedHandlers.blur;
-
-
-},
-function(require, exports, module, global) {
-
-var sharedHandlers = require(131);
-
-
-var buttonHandlers = exports;
-
-
-buttonHandlers["virt.dom.Button.focus"] = sharedHandlers.focus;
-buttonHandlers["virt.dom.Button.blur"] = sharedHandlers.blur;
-
-
-},
-function(require, exports, module, global) {
-
-var has = require(69);
+var has = require(66);
 
 
 module.exports = registerNativeComponents;
@@ -12893,7 +13055,7 @@ function registerNativeComponents(root, nativeDOMComponents) {
 },
 function(require, exports, module, global) {
 
-var has = require(69);
+var has = require(66);
 
 
 module.exports = registerNativeComponentHandlers;
@@ -12914,9 +13076,9 @@ function registerNativeComponentHandlers(messenger, nativeDOMHandlers) {
 },
 function(require, exports, module, global) {
 
-var map = require(71),
-    forEach = require(139),
-    keyMirror = require(86);
+var map = require(67),
+    forEach = require(144),
+    keyMirror = require(85);
 
 
 var consts = exports,
@@ -12998,10 +13160,10 @@ function removeTop(str) {
 },
 function(require, exports, module, global) {
 
-var keys = require(72),
+var keys = require(68),
     isNullOrUndefined = require(6),
-    fastBindThis = require(73),
-    isArrayLike = require(74);
+    fastBindThis = require(72),
+    isArrayLike = require(73);
 
 
 module.exports = forEach;
@@ -13046,12 +13208,12 @@ function forEachObject(object, callback) {
 },
 function(require, exports, module, global) {
 
-var has = require(69),
+var has = require(66),
     eventListener = require(2),
-    consts = require(138),
-    getEventTarget = require(141),
-    getNodeAttributeId = require(142),
-    isEventSupported = require(144);
+    consts = require(143),
+    getEventTarget = require(146),
+    getNodeAttributeId = require(147),
+    isEventSupported = require(148);
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -13202,7 +13364,7 @@ function getEventTarget(nativeEvent, window) {
 },
 function(require, exports, module, global) {
 
-var DOM_ID_NAME = require(143);
+var DOM_ID_NAME = require(120);
 
 
 module.exports = getNodeAttributeId;
@@ -13216,15 +13378,9 @@ function getNodeAttributeId(node) {
 },
 function(require, exports, module, global) {
 
-module.exports = "data-virtid";
-
-
-},
-function(require, exports, module, global) {
-
 var isFunction = require(5),
-    has = require(69),
-    supports = require(145),
+    has = require(66),
+    supports = require(149),
     environment = require(1);
 
 
@@ -13286,15 +13442,15 @@ supports.touch = supports.dom && "ontouchstart" in environment.window;
 },
 function(require, exports, module, global) {
 
-var SyntheticClipboardEvent = require(147),
-    SyntheticDragEvent = require(152),
-    SyntheticFocusEvent = require(159),
-    SyntheticInputEvent = require(161),
-    SyntheticKeyboardEvent = require(163),
-    SyntheticMouseEvent = require(154),
-    SyntheticTouchEvent = require(167),
-    SyntheticUIEvent = require(156),
-    SyntheticWheelEvent = require(171);
+var SyntheticClipboardEvent = require(151),
+    SyntheticDragEvent = require(156),
+    SyntheticFocusEvent = require(163),
+    SyntheticInputEvent = require(165),
+    SyntheticKeyboardEvent = require(167),
+    SyntheticMouseEvent = require(158),
+    SyntheticTouchEvent = require(171),
+    SyntheticUIEvent = require(160),
+    SyntheticWheelEvent = require(175);
 
 
 module.exports = {
@@ -13356,8 +13512,8 @@ module.exports = {
 },
 function(require, exports, module, global) {
 
-var getClipboardEvent = require(148),
-    SyntheticEvent = require(149);
+var getClipboardEvent = require(152),
+    SyntheticEvent = require(153);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -13411,10 +13567,10 @@ function getClipboardData(nativeEvent, window) {
 },
 function(require, exports, module, global) {
 
-var inherits = require(106),
-    createPool = require(82),
-    nativeEventToJSON = require(150),
-    getEvent = require(151);
+var inherits = require(105),
+    createPool = require(81),
+    nativeEventToJSON = require(154),
+    getEvent = require(155);
 
 
 var SyntheticEventPrototype;
@@ -13509,7 +13665,7 @@ SyntheticEventPrototype.toJSON = function(json) {
 },
 function(require, exports, module, global) {
 
-var has = require(69),
+var has = require(66),
     isNode = require(8),
     isFunction = require(5);
 
@@ -13546,7 +13702,7 @@ function nativeEventToJSON(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getEventTarget = require(141);
+var getEventTarget = require(146);
 
 
 module.exports = getEvent;
@@ -13572,8 +13728,8 @@ function getEvent(obj, nativeEvent, eventHandler) {
 },
 function(require, exports, module, global) {
 
-var getDragEvent = require(153),
-    SyntheticMouseEvent = require(154);
+var getDragEvent = require(157),
+    SyntheticMouseEvent = require(158);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -13623,8 +13779,8 @@ function getDragEvent(obj, nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getMouseEvent = require(155),
-    SyntheticUIEvent = require(156);
+var getMouseEvent = require(159),
+    SyntheticUIEvent = require(160);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -13643,7 +13799,7 @@ function SyntheticMouseEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticMouseEvent);
 SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype;
 
-SyntheticMouseEventPrototype.getModifierState = require(158);
+SyntheticMouseEventPrototype.getModifierState = require(162);
 
 SyntheticMouseEventPrototype.destructor = function() {
 
@@ -13736,8 +13892,8 @@ function getButton(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getUIEvent = require(157),
-    SyntheticEvent = require(149);
+var getUIEvent = require(161),
+    SyntheticEvent = require(153);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -13778,8 +13934,8 @@ SyntheticUIEventPrototype.toJSON = function(json) {
 },
 function(require, exports, module, global) {
 
-var getWindow = require(122),
-    getEventTarget = require(141);
+var getWindow = require(140),
+    getEventTarget = require(146);
 
 
 module.exports = getUIEvent;
@@ -13843,8 +13999,8 @@ function getEventModifierState(keyArg) {
 },
 function(require, exports, module, global) {
 
-var getFocusEvent = require(160),
-    SyntheticUIEvent = require(156);
+var getFocusEvent = require(164),
+    SyntheticUIEvent = require(160);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -13894,8 +14050,8 @@ function getFocusEvent(obj, nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getInputEvent = require(162),
-    SyntheticEvent = require(149);
+var getInputEvent = require(166),
+    SyntheticEvent = require(153);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -13945,8 +14101,8 @@ function getInputEvent(obj, nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getKeyboardEvent = require(164),
-    SyntheticUIEvent = require(156);
+var getKeyboardEvent = require(168),
+    SyntheticUIEvent = require(160);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -13965,7 +14121,7 @@ function SynthetiKeyboardEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SynthetiKeyboardEvent);
 SynthetiKeyboardEventPrototype = SynthetiKeyboardEvent.prototype;
 
-SynthetiKeyboardEventPrototype.getModifierState = require(158);
+SynthetiKeyboardEventPrototype.getModifierState = require(162);
 
 SynthetiKeyboardEventPrototype.destructor = function() {
 
@@ -14007,8 +14163,8 @@ SynthetiKeyboardEventPrototype.toJSON = function(json) {
 },
 function(require, exports, module, global) {
 
-var getEventKey = require(165),
-    getEventCharCode = require(166);
+var getEventKey = require(169),
+    getEventCharCode = require(170);
 
 
 module.exports = getKeyboardEvent;
@@ -14050,7 +14206,7 @@ function getWhich(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getEventCharCode = require(166);
+var getEventCharCode = require(170);
 
 
 var normalizeKey, translateToKey;
@@ -14169,9 +14325,9 @@ function getEventCharCode(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getTouchEvent = require(168),
-    SyntheticUIEvent = require(156),
-    SyntheticTouch = require(169);
+var getTouchEvent = require(172),
+    SyntheticUIEvent = require(160),
+    SyntheticTouch = require(173);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -14194,7 +14350,7 @@ function SyntheticTouchEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticTouchEvent);
 SyntheticTouchEventPrototype = SyntheticTouchEvent.prototype;
 
-SyntheticTouchEventPrototype.getModifierState = require(158);
+SyntheticTouchEventPrototype.getModifierState = require(162);
 
 SyntheticTouchEventPrototype.destructor = function() {
 
@@ -14265,9 +14421,9 @@ function getTouchEvent(obj, nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getTouch = require(170),
-    nativeEventToJSON = require(150),
-    createPool = require(82);
+var getTouch = require(174),
+    nativeEventToJSON = require(154),
+    createPool = require(81);
 
 
 var SyntheticTouchPrototype;
@@ -14405,8 +14561,8 @@ function getForce(nativeTouch) {
 },
 function(require, exports, module, global) {
 
-var getWheelEvent = require(172),
-    SyntheticMouseEvent = require(154);
+var getWheelEvent = require(176),
+    SyntheticMouseEvent = require(158);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -14479,7 +14635,7 @@ function getDeltaY(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var has = require(69);
+var has = require(66);
 
 
 module.exports = applyEvents;
@@ -14507,7 +14663,7 @@ function applyEvents(events, eventHandler) {
 function(require, exports, module, global) {
 
 var getNodeById = require(129),
-    applyPatch = require(175);
+    applyPatch = require(179);
 
 
 module.exports = applyPatches;
@@ -14537,15 +14693,15 @@ function applyPatchIndices(DOMNode, patchArray, id, document, rootDOMNode) {
 function(require, exports, module, global) {
 
 var virt = require(58),
-    createDOMElement = require(176),
-    renderMarkup = require(178),
-    renderString = require(180),
-    renderChildrenString = require(182),
-    addDOMNodes = require(183),
-    removeDOMNode = require(186),
-    removeDOMNodes = require(187),
+    createDOMElement = require(180),
+    renderMarkup = require(118),
+    renderString = require(57),
+    renderChildrenString = require(121),
+    addDOMNodes = require(182),
+    removeDOMNode = require(185),
+    removeDOMNodes = require(186),
     getNodeById = require(129),
-    applyProperties = require(177);
+    applyProperties = require(181);
 
 
 var consts = virt.consts;
@@ -14691,10 +14847,10 @@ function(require, exports, module, global) {
 var virt = require(58),
     isString = require(65),
 
-    DOM_ID_NAME = require(143),
+    DOM_ID_NAME = require(120),
     nodeCache = require(130),
 
-    applyProperties = require(177);
+    applyProperties = require(181);
 
 
 var View = virt.View,
@@ -14730,7 +14886,7 @@ function(require, exports, module, global) {
 var isString = require(65),
     isObject = require(4),
     isFunction = require(5),
-    getPrototypeOf = require(70);
+    getPrototypeOf = require(95);
 
 
 module.exports = applyProperties;
@@ -14836,219 +14992,8 @@ function applyObject(node, previous, propKey, propValues) {
 },
 function(require, exports, module, global) {
 
-var escapeTextContent = require(179);
-
-
-module.exports = renderMarkup;
-
-
-function renderMarkup(markup, props) {
-    if (props && props.dangerouslySetInnerHTML !== true) {
-        return escapeTextContent(markup);
-    } else {
-        return markup;
-    }
-}
-
-
-},
-function(require, exports, module, global) {
-
-var ESCAPE_REGEX = /[&><"']/g,
-    ESCAPE_LOOKUP = {
-        "&": "&amp;",
-        ">": "&gt;",
-        "<": "&lt;",
-        "\"": "&quot;",
-        "'": "&#x27;"
-    };
-
-
-module.exports = escapeTextContent;
-
-
-function escapeTextContent(text) {
-    return (text + "").replace(ESCAPE_REGEX, escaper);
-}
-
-function escaper(match) {
-    return ESCAPE_LOOKUP[match];
-}
-
-
-},
-function(require, exports, module, global) {
-
-var virt = require(58),
-
-    isFunction = require(5),
-    isString = require(65),
-    isObject = require(4),
-    isNullOrUndefined = require(6),
-
-    hyphenateStyleName = require(181),
-    renderMarkup = require(178),
-    DOM_ID_NAME = require(143);
-
-
-var View = virt.View,
-    isPrimitiveView = View.isPrimitiveView,
-
-    closedTags = {
-        area: true,
-        base: true,
-        br: true,
-        col: true,
-        command: true,
-        embed: true,
-        hr: true,
-        img: true,
-        input: true,
-        keygen: true,
-        link: true,
-        meta: true,
-        param: true,
-        source: true,
-        track: true,
-        wbr: true
-    };
-
-
-module.exports = render;
-
-
-var renderChildrenString = require(182);
-
-
-function render(view, parentProps, id) {
-    var type, props;
-
-    if (isPrimitiveView(view)) {
-        return isString(view) ? renderMarkup(view, parentProps) : view + "";
-    } else {
-        type = view.type;
-        props = view.props;
-
-        return (
-            closedTags[type] !== true ?
-            contentTag(type, renderChildrenString(view.children, props, id), id, props) :
-            closedTag(type, id, view.props)
-        );
-    }
-}
-
-function styleTag(props) {
-    var attributes = "",
-        key;
-
-    for (key in props) {
-        attributes += hyphenateStyleName(key) + ':' + props[key] + ';';
-    }
-
-    return attributes;
-}
-
-function baseTagOptions(props) {
-    var attributes = "",
-        key, value;
-
-    for (key in props) {
-        if (key !== "dangerouslySetInnerHTML") {
-            value = props[key];
-
-            if (!isNullOrUndefined(value) && !isFunction(value)) {
-                if (key === "className") {
-                    key = "class";
-                }
-
-                if (key === "style") {
-                    attributes += 'style="' + styleTag(value) + '"';
-                } else {
-                    if (isObject(value)) {
-                        attributes += baseTagOptions(value);
-                    } else {
-                        attributes += key + '="' + value + '" ';
-                    }
-                }
-            }
-        }
-    }
-
-    return attributes;
-}
-
-function tagOptions(id, props) {
-    var attributes = baseTagOptions(props);
-    return attributes !== "" ? " " + attributes : attributes;
-}
-
-function dataId(id) {
-    return ' ' + DOM_ID_NAME + '="' + id + '"';
-}
-
-function closedTag(type, id, props) {
-    return "<" + type + (isObject(props) ? tagOptions(id, props) : "") + dataId(id) + "/>";
-}
-
-function contentTag(type, content, id, props) {
-    return (
-        "<" + type + (isObject(props) ? tagOptions(id, props) : "") + dataId(id) + ">" +
-        (isString(content) ? content : "") +
-        "</" + type + ">"
-    );
-}
-
-
-},
-function(require, exports, module, global) {
-
-var reUppercasePattern = /([A-Z])/g,
-    reMS = /^ms-/;
-
-
-module.exports = hyphenateStyleName;
-
-
-function hyphenateStyleName(str) {
-    return str.replace(reUppercasePattern, "-$1").toLowerCase().replace(reMS, "-ms-");
-}
-
-
-},
-function(require, exports, module, global) {
-
-var virt = require(58);
-
-
-var getChildKey = virt.getChildKey;
-
-
-module.exports = renderChildrenString;
-
-
-var renderString = require(180);
-
-
-function renderChildrenString(children, parentProps, id) {
-    var out = "",
-        i = -1,
-        il = children.length - 1,
-        child;
-
-    while (i++ < il) {
-        child = children[i];
-        out += renderString(child, parentProps, getChildKey(id, child, i));
-    }
-
-    return out;
-}
-
-
-},
-function(require, exports, module, global) {
-
-var isElement = require(184),
-    getNodeId = require(185);
+var isElement = require(183),
+    getNodeId = require(184);
 
 
 module.exports = addDOMNodes;
@@ -15088,9 +15033,9 @@ function isElement(obj) {
 },
 function(require, exports, module, global) {
 
-var has = require(69),
+var has = require(66),
     nodeCache = require(130),
-    getNodeAttributeId = require(142);
+    getNodeAttributeId = require(147);
 
 
 module.exports = getNodeId;
@@ -15125,15 +15070,15 @@ function getId(node) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(184),
+var isElement = require(183),
     nodeCache = require(130),
-    getNodeAttributeId = require(142);
+    getNodeAttributeId = require(147);
 
 
 module.exports = removeDOMNode;
 
 
-var removeDOMNodes = require(187);
+var removeDOMNodes = require(186);
 
 
 function removeDOMNode(node) {
@@ -15150,7 +15095,7 @@ function(require, exports, module, global) {
 module.exports = removeDOMNodes;
 
 
-var removeDOMNode = require(186);
+var removeDOMNode = require(185);
 
 
 function removeDOMNodes(nodes) {
@@ -15161,6 +15106,12 @@ function removeDOMNodes(nodes) {
         removeDOMNode(nodes[i]);
     }
 }
+
+
+},
+function(require, exports, module, global) {
+
+
 
 
 },
@@ -15185,15 +15136,38 @@ function getRootNodeInContainer(containerNode) {
 },
 function(require, exports, module, global) {
 
-var Messenger = require(120),
-    MessengerWorkerAdapter = require(190),
-    nativeDOM = require(123),
-    registerNativeComponentHandlers = require(137),
-    getWindow = require(122),
-    nativeEventToJSON = require(150),
-    EventHandler = require(140),
-    applyEvents = require(173),
-    applyPatches = require(174);
+var rootsById = require(187),
+    getRootNodeInContainer = require(188),
+    getNodeId = require(184);
+
+
+module.exports = unmount;
+
+
+function unmount(containerDOMNode) {
+    var rootDOMNode = getRootNodeInContainer(containerDOMNode),
+        id = getNodeId(rootDOMNode),
+        root = rootsById[id];
+
+    if (root !== undefined) {
+        root.unmount();
+        delete rootsById[id];
+    }
+}
+
+
+},
+function(require, exports, module, global) {
+
+var Messenger = require(138),
+    MessengerWorkerAdapter = require(191),
+    nativeDOM = require(122),
+    registerNativeComponentHandlers = require(142),
+    getWindow = require(140),
+    nativeEventToJSON = require(154),
+    EventHandler = require(145),
+    applyEvents = require(177),
+    applyPatches = require(178);
 
 
 module.exports = createWorkerRender;
@@ -15275,7 +15249,7 @@ MessengerWorkerAdapterPrototype.postMessage = function(data) {
 function(require, exports, module, global) {
 
 var virt = require(58),
-    WorkerAdapter = require(192);
+    WorkerAdapter = require(193);
 
 
 var root = null;
@@ -15305,12 +15279,12 @@ render.unmount = function() {
 function(require, exports, module, global) {
 
 var virt = require(58),
-    Messenger = require(120),
-    MessengerWorkerAdapter = require(190),
-    nativeDOM = require(123),
-    registerNativeComponents = require(136),
-    consts = require(138),
-    eventClassMap = require(146);
+    Messenger = require(138),
+    MessengerWorkerAdapter = require(191),
+    nativeDOM = require(122),
+    registerNativeComponents = require(141),
+    consts = require(143),
+    eventClassMap = require(150);
 
 
 var traverseAncestors = virt.traverseAncestors;
@@ -15386,15 +15360,15 @@ function WorkerAdapter(root) {
 },
 function(require, exports, module, global) {
 
-var Messenger = require(120),
-    MessengerWebSocketAdapter = require(194),
-    nativeDOM = require(123),
-    registerNativeComponentHandlers = require(137),
-    getWindow = require(122),
-    nativeEventToJSON = require(150),
-    EventHandler = require(140),
-    applyEvents = require(173),
-    applyPatches = require(174);
+var Messenger = require(138),
+    MessengerWebSocketAdapter = require(195),
+    nativeDOM = require(122),
+    registerNativeComponentHandlers = require(142),
+    getWindow = require(140),
+    nativeEventToJSON = require(154),
+    EventHandler = require(145),
+    applyEvents = require(177),
+    applyPatches = require(178);
 
 
 module.exports = createWebSocketRender;
@@ -15478,7 +15452,7 @@ function defaultSendMessage(socket, data) {
 function(require, exports, module, global) {
 
 var virt = require(58),
-    WebSocketAdapter = require(196);
+    WebSocketAdapter = require(197);
 
 
 module.exports = render;
@@ -15496,12 +15470,12 @@ function render(nextView, socket, attachMessage, sendMessage, callback) {
 function(require, exports, module, global) {
 
 var virt = require(58),
-    Messenger = require(120),
-    MessengerWebSocketAdapter = require(194),
-    nativeDOM = require(123),
-    registerNativeComponents = require(136),
-    consts = require(138),
-    eventClassMap = require(146);
+    Messenger = require(138),
+    MessengerWebSocketAdapter = require(195),
+    nativeDOM = require(122),
+    registerNativeComponents = require(141),
+    consts = require(143),
+    eventClassMap = require(150);
 
 
 var traverseAncestors = virt.traverseAncestors;

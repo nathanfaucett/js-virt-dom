@@ -24,8 +24,8 @@ function TodoForm(props, children, context) {
         return _this.__onSubmit(e);
     };
 
-    this.onInput = function(e) {
-        return _this.__onInput(e);
+    this.onInput = function(e, callback) {
+        return _this.__onInput(e, callback);
     };
 }
 virt.Component.extend(TodoForm, "TodoForm");
@@ -56,11 +56,11 @@ TodoFormPrototype.__onSubmit = function(e) {
     });
 };
 
-TodoFormPrototype.__onInput = function() {
+TodoFormPrototype.__onInput = function(e) {
     var _this = this;
 
-    this.refs.name.getValue(function(err, value) {
-        if (!err) {
+    this.refs.name.getValue(function(error, value) {
+        if (!error) {
             _this.setState({
                 name: value
             });
