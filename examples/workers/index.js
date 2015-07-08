@@ -3750,18 +3750,9 @@ var nativeDOM = exports;
 
 
 nativeDOM.components = {
-    input: {
-        type: "input",
-        constructor: require(73)
-    },
-    textarea: {
-        type: "textarea",
-        constructor: require(74)
-    },
-    button: {
-        type: "button",
-        constructor: require(75)
-    }
+    input: require(73),
+    textarea: require(74),
+    button: require(75)
 };
 
 nativeDOM.handlers = extend({},
@@ -4424,16 +4415,11 @@ module.exports = registerNativeComponents;
 
 function registerNativeComponents(root, nativeDOMComponents) {
     var localHas = has,
-        type, nativeComponent;
+        name;
 
-    for (type in nativeDOMComponents) {
-        if (localHas(nativeDOMComponents, type)) {
-            nativeComponent = nativeDOMComponents[type];
-
-            root.registerNativeComponent(
-                nativeComponent.type,
-                nativeComponent.constructor
-            );
+    for (name in nativeDOMComponents) {
+        if (localHas(nativeDOMComponents, name)) {
+            root.registerNativeComponent(name, nativeDOMComponents[name]);
         }
     }
 }

@@ -5,18 +5,9 @@ var nativeDOM = exports;
 
 
 nativeDOM.components = {
-    input: {
-        type: "input",
-        constructor: require("./Input")
-    },
-    textarea: {
-        type: "textarea",
-        constructor: require("./TextArea")
-    },
-    button: {
-        type: "button",
-        constructor: require("./Button")
-    }
+    input: require("./Input"),
+    textarea: require("./TextArea"),
+    button: require("./Button")
 };
 
 nativeDOM.handlers = extend({},

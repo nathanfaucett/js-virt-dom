@@ -6,16 +6,11 @@ module.exports = registerNativeComponents;
 
 function registerNativeComponents(root, nativeDOMComponents) {
     var localHas = has,
-        type, nativeComponent;
+        name;
 
-    for (type in nativeDOMComponents) {
-        if (localHas(nativeDOMComponents, type)) {
-            nativeComponent = nativeDOMComponents[type];
-
-            root.registerNativeComponent(
-                nativeComponent.type,
-                nativeComponent.constructor
-            );
+    for (name in nativeDOMComponents) {
+        if (localHas(nativeDOMComponents, name)) {
+            root.registerNativeComponent(name, nativeDOMComponents[name]);
         }
     }
 }
