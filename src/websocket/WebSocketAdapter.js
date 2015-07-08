@@ -1,7 +1,7 @@
 var virt = require("virt"),
     Messenger = require("messenger"),
     MessengerWebSocketAdapter = require("messenger_websocket_adapter"),
-    nativeComponents = require("../nativeComponents"),
+    nativeDOM = require("../nativeDOM"),
     registerNativeComponents = require("../utils/registerNativeComponents"),
     consts = require("../events/consts"),
     eventClassMap = require("../events/eventClassMap");
@@ -73,5 +73,5 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
         messenger.emit("__WebSocketAdapter:handleTransaction__", transaction, callback);
     };
 
-    registerNativeComponents(root, nativeComponents);
+    registerNativeComponents(root, nativeDOM.components);
 }

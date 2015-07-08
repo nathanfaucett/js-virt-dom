@@ -12,7 +12,6 @@
     "virt-dom.js"
   ],
   "scripts": {
-    "test": "",
     "test-browser-local": "zuul --local 8080 --ui tape -- ./test",
     "input_events": "comn -f examples/input_events/src/index.js -o examples/input_events/index.js",
     "simple": "comn -f examples/simple/src/index.js -o examples/simple/index.js",
@@ -40,6 +39,7 @@
     "environment": "git://github.com/nathanfaucett/environment",
     "escape_text_content": "git://github.com/nathanfaucett/escape_text_content",
     "event_listener": "git://github.com/nathanfaucett/event_listener",
+    "extend": "git://github.com/nathanfaucett/extend.git",
     "focus_node": "git://github.com/nathanfaucett/focus_node",
     "for_each": "git://github.com/nathanfaucett/for_each.git",
     "get_prototype_of": "git://github.com/nathanfaucett/get_prototype_of",

@@ -72,13 +72,13 @@ ButtonPrototype.componentDidMount = function() {
 };
 
 ButtonPrototype.__focus = function(callback) {
-    this.emitMessage("__Input:focus__", {
+    this.emitMessage("virt.dom.Button.focus", {
         id: this.getInternalId()
     }, callback);
 };
 
 ButtonPrototype.__blur = function(callback) {
-    this.emitMessage("__Input:blur__", {
+    this.emitMessage("virt.dom.Button.blur", {
         id: this.getInternalId()
     }, callback);
 };

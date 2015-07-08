@@ -4,23 +4,13 @@ var has = require("has");
 module.exports = registerNativeComponentHandlers;
 
 
-function registerNativeComponentHandlers(messenger, nativeComponents) {
+function registerNativeComponentHandlers(messenger, nativeDOMHandlers) {
     var localHas = has,
-        type, nativeComponent, nativeComponentHandlers, key;
+        key;
 
-    for (type in nativeComponents) {
-        if (localHas(nativeComponents, type)) {
-            nativeComponent = nativeComponents[type];
-
-            if (localHas(nativeComponent, "handlers")) {
-                nativeComponentHandlers = nativeComponent.handlers;
-
-                for (key in nativeComponentHandlers) {
-                    if (localHas(nativeComponentHandlers, key)) {
-                        messenger.on(key, nativeComponentHandlers[key]);
-                    }
-                }
-            }
+    for (key in nativeDOMHandlers) {
+        if (localHas(nativeDOMHandlers, key)) {
+            messenger.on(key, nativeDOMHandlers[key]);
         }
     }
 }

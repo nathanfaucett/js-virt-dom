@@ -1,7 +1,7 @@
 var virt = require("virt"),
     Messenger = require("messenger"),
     MessengerWorkerAdapter = require("messenger_worker_adapter"),
-    nativeComponents = require("../nativeComponents"),
+    nativeDOM = require("../nativeDOM"),
     registerNativeComponents = require("../utils/registerNativeComponents"),
     consts = require("../events/consts"),
     eventClassMap = require("../events/eventClassMap");
@@ -73,5 +73,5 @@ function WorkerAdapter(root) {
         messenger.emit("__WorkerAdapter:handleTransaction__", transaction, callback);
     };
 
-    registerNativeComponents(root, nativeComponents);
+    registerNativeComponents(root, nativeDOM.components);
 }

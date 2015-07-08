@@ -2,7 +2,7 @@ var virt = require("virt"),
     Messenger = require("messenger"),
     createMessengerAdapter = require("messenger_adapter"),
     getWindow = require("./utils/getWindow"),
-    nativeComponents = require("./nativeComponents"),
+    nativeDOM = require("./nativeDOM"),
     registerNativeComponents = require("./utils/registerNativeComponents"),
     registerNativeComponentHandlers = require("./utils/registerNativeComponentHandlers"),
     getNodeById = require("./utils/getNodeById"),
@@ -64,8 +64,8 @@ function Adapter(root, containerDOMNode) {
         }
     };
 
-    registerNativeComponents(root, nativeComponents);
-    registerNativeComponentHandlers(messengerClient, nativeComponents);
+    registerNativeComponents(root, nativeDOM.components);
+    registerNativeComponentHandlers(messengerClient, nativeDOM.handlers);
 }
 
 AdapterPrototype = Adapter.prototype;

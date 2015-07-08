@@ -28,6 +28,28 @@ AppPrototype.getChildContext = function() {
     };
 };
 
+AppPrototype.componentDidMount = function() {
+    this.getHeight(function(error, height) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(height);
+        }
+    });
+};
+
+AppPrototype.getHeight = function(callback) {
+    this.emitMessage("worker_form.App.getHeight", {
+        id: this.getInternalId()
+    }, function(error, data) {
+        if (error || !data.height) {
+            callback(error);
+        } else {
+            callback(undefined, data.height);
+        }
+    });
+};
+
 AppPrototype.render = function() {
     return (
         virt.createView("div", {

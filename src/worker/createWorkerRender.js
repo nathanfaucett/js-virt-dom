@@ -1,6 +1,6 @@
 var Messenger = require("messenger"),
     MessengerWorkerAdapter = require("messenger_worker_adapter"),
-    nativeComponents = require("../nativeComponents"),
+    nativeDOM = require("../nativeDOM"),
     registerNativeComponentHandlers = require("../utils/registerNativeComponentHandlers"),
     getWindow = require("../utils/getWindow"),
     nativeEventToJSON = require("../utils/nativeEventToJSON"),
@@ -44,7 +44,7 @@ function createWorkerRender(url, containerDOMNode) {
         });
     };
 
-    registerNativeComponentHandlers(messenger, nativeComponents);
+    registerNativeComponentHandlers(messenger, nativeDOM.handlers);
 
     return messenger;
 }
