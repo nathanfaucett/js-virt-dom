@@ -32,7 +32,7 @@ function WorkerAdapter(root) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("__WorkerAdapter:handleEventDispatch__", function(data, callback) {
+    messenger.on("virt.dom.WorkerAdapter.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -70,7 +70,7 @@ function WorkerAdapter(root) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("__WorkerAdapter:handleTransaction__", transaction, callback);
+        messenger.emit("virt.dom.WorkerAdapter.handleTransaction", transaction, callback);
     };
 
     registerNativeComponents(root, nativeDOM.components);

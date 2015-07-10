@@ -8859,7 +8859,7 @@ var virt = exports;
 
 virt.Root = require(78);
 
-virt.Component = require(104);
+virt.Component = require(103);
 
 virt.View = View;
 virt.cloneView = View.clone;
@@ -9545,7 +9545,7 @@ function(require, exports, module, global) {
 var owner = exports;
 
 
-exports.current = null;
+owner.current = null;
 
 
 },
@@ -10746,12 +10746,11 @@ var has = require(66),
     isArray = require(61),
     isFunction = require(5),
     extend = require(74),
-    mixin = require(100),
     owner = require(76),
     context = require(77),
     shouldUpdate = require(96),
-    componentState = require(101),
-    getComponentClassForType = require(102),
+    componentState = require(100),
+    getComponentClassForType = require(101),
     View = require(59),
     getChildKey = require(108),
     emptyObject = require(107),
@@ -11309,43 +11308,6 @@ function arrayIndexOf(array, value, fromIndex) {
 },
 function(require, exports, module, global) {
 
-var keys = require(68),
-    isNullOrUndefined = require(6);
-
-
-module.exports = mixin;
-
-
-function mixin(out) {
-    var i = 0,
-        il = arguments.length - 1;
-
-    while (i++ < il) {
-        baseMixin(out, arguments[i]);
-    }
-
-    return out;
-}
-
-function baseMixin(a, b) {
-    var objectKeys = keys(b),
-        i = -1,
-        il = objectKeys.length - 1,
-        key, value;
-
-    while (i++ < il) {
-        key = objectKeys[i];
-
-        if (isNullOrUndefined(a[key]) && !isNullOrUndefined((value = b[key]))) {
-            a[key] = value;
-        }
-    }
-}
-
-
-},
-function(require, exports, module, global) {
-
 var keyMirror = require(85);
 
 
@@ -11362,7 +11324,7 @@ module.exports = keyMirror([
 },
 function(require, exports, module, global) {
 
-var createNativeComponentForType = require(103);
+var createNativeComponentForType = require(102);
 
 
 module.exports = getComponentClassForType;
@@ -11385,7 +11347,7 @@ function getComponentClassForType(type, rootNativeComponents) {
 function(require, exports, module, global) {
 
 var View = require(59),
-    Component = require(104);
+    Component = require(103);
 
 
 module.exports = createNativeComponentForType;
@@ -11408,9 +11370,9 @@ function createNativeComponentForType(type) {
 },
 function(require, exports, module, global) {
 
-var inherits = require(105),
+var inherits = require(104),
     extend = require(74),
-    componentState = require(101),
+    componentState = require(100),
     emptyObject = require(107);
 
 
@@ -11505,9 +11467,9 @@ ComponentPrototype.shouldComponentUpdate = function( /* nextProps, nextChildren,
 },
 function(require, exports, module, global) {
 
-var create = require(106),
+var create = require(105),
     extend = require(74),
-    mixin = require(100),
+    mixin = require(106),
     defineProperty = require(82);
 
 
@@ -11571,6 +11533,43 @@ if (Object.create) {
 
 
 module.exports = create;
+
+
+},
+function(require, exports, module, global) {
+
+var keys = require(68),
+    isNullOrUndefined = require(6);
+
+
+module.exports = mixin;
+
+
+function mixin(out) {
+    var i = 0,
+        il = arguments.length - 1;
+
+    while (i++ < il) {
+        baseMixin(out, arguments[i]);
+    }
+
+    return out;
+}
+
+function baseMixin(a, b) {
+    var objectKeys = keys(b),
+        i = -1,
+        il = objectKeys.length - 1,
+        key, value;
+
+    while (i++ < il) {
+        key = objectKeys[i];
+
+        if (isNullOrUndefined(a[key]) && !isNullOrUndefined((value = b[key]))) {
+            a[key] = value;
+        }
+    }
+}
 
 
 },
@@ -12762,8 +12761,7 @@ var virt = require(58),
     applyPatches = require(178);
 
 
-var traverseAncestors = virt.traverseAncestors,
-    AdapterPrototype;
+var traverseAncestors = virt.traverseAncestors;
 
 
 module.exports = Adapter;
@@ -12793,8 +12791,19 @@ function Adapter(root, containerDOMNode) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
-        var eventType = events[topLevelType],
+    eventHandler.handleDispatch = function handleDispatch(topLevelType, nativeEvent, targetId) {
+        messengerServer.emit("virt.dom.Adapter.handleEventDispatch", {
+            topLevelType: topLevelType,
+            nativeEvent: nativeEvent,
+            targetId: targetId
+        });
+    };
+
+    messengerClient.on("virt.dom.Adapter.handleEventDispatch", function onHandleDispatch(data, callback) {
+        var topLevelType = data.topLevelType,
+            nativeEvent = data.nativeEvent,
+            targetId = data.targetId,
+            eventType = events[topLevelType],
             event;
 
         traverseAncestors(targetId, function traverseAncestor(currentTargetId) {
@@ -12811,25 +12820,24 @@ function Adapter(root, containerDOMNode) {
         if (event && event.isPersistent !== true) {
             event.destroy();
         }
+
+        callback();
+    });
+
+    this.handle = function(transaction, callback) {
+        messengerServer.emit("virt.dom.Adapter.handleTransaction", transaction, callback);
     };
+
+    messengerClient.on("virt.dom.Adapter.handleTransaction", function onHandleTransaction__(transaction, callback) {
+        applyPatches(transaction.patches, containerDOMNode, document);
+        applyEvents(transaction.events, eventHandler);
+        applyPatches(transaction.removes, containerDOMNode, document);
+        callback();
+    });
 
     registerNativeComponents(root, nativeDOM.components);
     registerNativeComponentHandlers(messengerClient, nativeDOM.handlers);
 }
-
-AdapterPrototype = Adapter.prototype;
-
-AdapterPrototype.handle = function(transaction, callback) {
-    var containerDOMNode = this.containerDOMNode,
-        eventHandler = this.eventHandler,
-        document = this.document;
-
-    applyPatches(transaction.patches, containerDOMNode, document);
-    applyEvents(transaction.events, eventHandler);
-    applyPatches(transaction.removes, containerDOMNode, document);
-
-    callback();
-};
 
 
 },
@@ -13569,7 +13577,7 @@ function getClipboardData(nativeEvent, window) {
 },
 function(require, exports, module, global) {
 
-var inherits = require(105),
+var inherits = require(104),
     createPool = require(81),
     nativeEventToJSON = require(154),
     getEvent = require(155);
@@ -15184,7 +15192,7 @@ function createWorkerRender(url, containerDOMNode) {
 
         messenger = new Messenger(new MessengerWorkerAdapter(url));
 
-    messenger.on("__WorkerAdapter:handleTransaction__", function handleTransaction(transaction, callback) {
+    messenger.on("virt.dom.WorkerAdapter.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -15198,7 +15206,7 @@ function createWorkerRender(url, containerDOMNode) {
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("__WorkerAdapter:handleEventDispatch__", {
+        messenger.emit("virt.dom.WorkerAdapter.handleEventDispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,
@@ -15314,7 +15322,7 @@ function WorkerAdapter(root) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("__WorkerAdapter:handleEventDispatch__", function(data, callback) {
+    messenger.on("virt.dom.WorkerAdapter.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -15352,7 +15360,7 @@ function WorkerAdapter(root) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("__WorkerAdapter:handleTransaction__", transaction, callback);
+        messenger.emit("virt.dom.WorkerAdapter.handleTransaction", transaction, callback);
     };
 
     registerNativeComponents(root, nativeDOM.components);
@@ -15385,7 +15393,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
 
         messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage));
 
-    messenger.on("__WebSocketAdapter:handleTransaction__", function handleTransaction(transaction, callback) {
+    messenger.on("virt.dom.WorkerAdapter.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -15399,7 +15407,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("__WebSocketAdapter:handleEventDispatch__", {
+        messenger.emit("virt.dom.WorkerAdapter.handleEventDispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,
@@ -15505,7 +15513,7 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("__WebSocketAdapter:handleEventDispatch__", function(data, callback) {
+    messenger.on("virt.dom.WorkerAdapter.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -15543,7 +15551,7 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("__WebSocketAdapter:handleTransaction__", transaction, callback);
+        messenger.emit("virt.dom.WorkerAdapter.handleTransaction", transaction, callback);
     };
 
     registerNativeComponents(root, nativeDOM.components);
