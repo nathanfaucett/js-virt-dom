@@ -23,7 +23,7 @@
     "examples": "npm run simple && npm run replace && npm run components && npm run workers && npm run worker_form && npm run websocket_form"
   },
   "author": "Nathan Faucett",
-  "license": "BSD-2-Clause",
+  "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
     "comn": "git://github.com/nathanfaucett/comn",

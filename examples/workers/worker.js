@@ -860,7 +860,7 @@ function(require, exports, module, global) {
 var owner = exports;
 
 
-owner.current = null;
+exports.current = null;
 
 
 },
@@ -2448,10 +2448,6 @@ NodePrototype.__processProps = function(props) {
     var ComponentClass = this.ComponentClass,
         propTypes;
 
-    if (ComponentClass.getDefaultProps) {
-        props = mixin({}, props, ComponentClass.getDefaultProps());
-    }
-
     if (process.env.NODE_ENV !== "production") {
         propTypes = ComponentClass.propTypes;
 
@@ -3363,13 +3359,19 @@ var renderString = require(65),
     nativeDOM = require(71);
 
 
-var virtDOM = exports;
+var virtDOM = exports,
+    nativeDOMComponents = nativeDOM.components,
+    nativeDOMHandlers = nativeDOM.handlers;
 
 
 virtDOM.virt = require(1);
 
-virtDOM.nativeComponents = nativeDOM.components;
-virtDOM.nativeHandlers = nativeDOM.handlers;
+virtDOM.addNativeComponent = function(type, constructor) {
+    nativeDOMComponents[type] = constructor;
+};
+virtDOM.addNativeHandler = function(name, fn) {
+    nativeDOMHandlers[name] = fn;
+};
 
 virtDOM.render = require(86);
 virtDOM.unmount = require(142);
@@ -3695,7 +3697,7 @@ InputPrototype.componentDidMount = function() {
 InputPrototype.componentDidUpdate = function(previousProps) {
     var value = this.props.value,
         previousValue = previousProps.value;
-    
+
     if (value != null && value === previousValue) {
         this.__setValue(value);
     }
@@ -3707,14 +3709,14 @@ InputPrototype.__onInput = function(e) {
 
 InputPrototype.__onChange = function(e, fromInput) {
     var props = this.props;
-    
+
     if (fromInput && props.onInput) {
         props.onInput(e);
     }
     if (props.onChange) {
         props.onChange(e);
     }
-    
+
     this.forceUpdate();
 };
 
@@ -3778,10 +3780,10 @@ InputPrototype.__getRenderProps = function() {
     renderProps.defaultChecked = undefined;
     renderProps.defaultValue = undefined;
     renderProps.value = value != null ? value : initialValue;
-    
+
     renderProps.onInput = this.onInput;
     renderProps.onChange = this.onChange;
-    
+
     return renderProps;
 };
 
@@ -3848,7 +3850,7 @@ TextAreaPrototype.componentDidMount = function() {
 TextAreaPrototype.componentDidUpdate = function(previousProps) {
     var value = this.props.value,
         previousValue = previousProps.value;
-    
+
     if (value != null && value === previousValue) {
         this.__setValue(value);
     }
@@ -3860,14 +3862,14 @@ TextAreaPrototype.__onInput = function(e) {
 
 TextAreaPrototype.__onChange = function(e, fromInput) {
     var props = this.props;
-    
+
     if (fromInput && props.onInput) {
         props.onInput(e);
     }
     if (props.onChange) {
         props.onChange(e);
     }
-    
+
     this.forceUpdate();
 };
 
@@ -4461,7 +4463,7 @@ MessengerPrototype.onMessage = function(message) {
         adapter = this.__adapter;
 
         if (listeners[name]) {
-            emit(listeners[name], message.data, function callback(error, data) {
+            Messenger_emit(this, listeners[name], message.data, function callback(error, data) {
                 adapter.postMessage({
                     id: id,
                     error: error || undefined,
@@ -4520,7 +4522,7 @@ MessengerPrototype.off = function(name, callback) {
     }
 };
 
-function emit(listeners, data, callback) {
+function Messenger_emit(_this, listeners, data, callback) {
     var index = 0,
         length = listeners.length,
         called = false;
@@ -4536,7 +4538,7 @@ function emit(listeners, data, callback) {
         if (err || index === length) {
             done(err, data);
         } else {
-            listeners[index++](data, next);
+            listeners[index++](data, next, _this);
         }
     }
 

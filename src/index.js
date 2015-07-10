@@ -2,13 +2,19 @@ var renderString = require("./utils/renderString"),
     nativeDOM = require("./nativeDOM");
 
 
-var virtDOM = exports;
+var virtDOM = exports,
+    nativeDOMComponents = nativeDOM.components,
+    nativeDOMHandlers = nativeDOM.handlers;
 
 
 virtDOM.virt = require("virt");
 
-virtDOM.nativeComponents = nativeDOM.components;
-virtDOM.nativeHandlers = nativeDOM.handlers;
+virtDOM.addNativeComponent = function(type, constructor) {
+    nativeDOMComponents[type] = constructor;
+};
+virtDOM.addNativeHandler = function(name, fn) {
+    nativeDOMHandlers[name] = fn;
+};
 
 virtDOM.render = require("./render");
 virtDOM.unmount = require("./unmount");
