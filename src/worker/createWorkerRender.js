@@ -44,6 +44,14 @@ function createWorkerRender(url, containerDOMNode) {
         });
     };
 
+    eventHandler.handleResize = function handleResize(viewport, width, height) {
+        messenger.emit("virt.dom.resize", {
+            viewport: viewport,
+            width: width,
+            height: height
+        });
+    };
+
     registerNativeComponentHandlers(messenger, nativeDOM.handlers);
 
     return messenger;

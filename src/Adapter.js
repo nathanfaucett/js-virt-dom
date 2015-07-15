@@ -51,6 +51,14 @@ function Adapter(root, containerDOMNode) {
         });
     };
 
+    eventHandler.handleResize = function handleResize(viewport, width, height) {
+        messengerClient.emit("virt.dom.resize", {
+            viewport: viewport,
+            width: width,
+            height: height
+        });
+    };
+
     messengerClient.on("virt.dom.Adapter.handleEventDispatch", function onHandleDispatch(data, callback) {
         var topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -80,7 +88,7 @@ function Adapter(root, containerDOMNode) {
         messengerServer.emit("virt.dom.Adapter.handleTransaction", transaction, callback);
     };
 
-    messengerClient.on("virt.dom.Adapter.handleTransaction", function onHandleTransaction__(transaction, callback) {
+    messengerClient.on("virt.dom.Adapter.handleTransaction", function onHandleTransaction(transaction, callback) {
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
         applyPatches(transaction.removes, containerDOMNode, document);

@@ -1,6 +1,8 @@
 var has = require("has"),
     eventListener = require("event_listener"),
     consts = require("./consts"),
+    getWindowWidth = require("./getters/getWindowWidth"),
+    getWindowHeight = require("./getters/getWindowHeight"),
     getEventTarget = require("./getters/getEventTarget"),
     getNodeAttributeId = require("../utils/getNodeAttributeId"),
     isEventSupported = require("./isEventSupported");
@@ -15,26 +17,35 @@ module.exports = EventHandler;
 
 
 function EventHandler(document, window) {
-    var viewport = {
-        currentScrollLeft: 0,
-        currentScrollTop: 0
-    };
+    var _this = this,
+        documentElement = document.documentElement ? document.documentElement : document.body,
+        viewport = {
+            currentScrollLeft: 0,
+            currentScrollTop: 0
+        };
 
     this.document = document;
     this.window = window;
     this.viewport = viewport;
     this.handleDispatch = null;
+    this.handleResize = null;
 
     this.__isListening = {};
     this.__listening = {};
 
     function callback() {
-        viewport.currentScrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-        viewport.currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        viewport.currentScrollLeft = window.pageXOffset || documentElement.scrollLeft;
+        viewport.currentScrollTop = window.pageYOffset || documentElement.scrollTop;
+
+        _this.handleResize(
+            viewport,
+            getWindowWidth(window, documentElement, document),
+            getWindowHeight(window, documentElement, document)
+        );
     }
 
     this.__callback = callback;
-    eventListener.on(window, "scroll resize", callback);
+    eventListener.on(window, "scroll resize orientationchange", callback);
 }
 
 EventHandlerPrototype = EventHandler.prototype;
