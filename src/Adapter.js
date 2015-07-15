@@ -51,13 +51,13 @@ function Adapter(root, containerDOMNode) {
         });
     };
 
-    eventHandler.handleResize = function handleResize(viewport, width, height) {
-        messengerClient.emit("virt.dom.resize", {
-            viewport: viewport,
-            width: width,
-            height: height
-        });
+    eventHandler.handleResize = function handleResize(dimensions) {
+        messengerClient.emit("virt.resize", dimensions);
     };
+
+    messengerClient.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
+        callback(eventHandler.getDimensions());
+    });
 
     messengerClient.on("virt.dom.Adapter.handleEventDispatch", function onHandleDispatch(data, callback) {
         var topLevelType = data.topLevelType,

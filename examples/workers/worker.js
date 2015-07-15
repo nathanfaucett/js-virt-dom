@@ -4392,13 +4392,13 @@ function Adapter(root, containerDOMNode) {
         });
     };
 
-    eventHandler.handleResize = function handleResize(viewport, width, height) {
-        messengerClient.emit("virt.dom.resize", {
-            viewport: viewport,
-            width: width,
-            height: height
-        });
+    eventHandler.handleResize = function handleResize(dimensions) {
+        messengerClient.emit("virt.resize", dimensions);
     };
+
+    messengerClient.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
+        callback(eventHandler.getDimensions());
+    });
 
     messengerClient.on("virt.dom.Adapter.handleEventDispatch", function onHandleDispatch(data, callback) {
         var topLevelType = data.topLevelType,
@@ -4846,6 +4846,7 @@ function EventHandler(document, window) {
         };
 
     this.document = document;
+    this.documentElement = documentElement;
     this.window = window;
     this.viewport = viewport;
     this.handleDispatch = null;
@@ -4857,12 +4858,7 @@ function EventHandler(document, window) {
     function callback() {
         viewport.currentScrollLeft = window.pageXOffset || documentElement.scrollLeft;
         viewport.currentScrollTop = window.pageYOffset || documentElement.scrollTop;
-
-        _this.handleResize(
-            viewport,
-            getWindowWidth(window, documentElement, document),
-            getWindowHeight(window, documentElement, document)
-        );
+        _this.handleResize(_this.getDimensions());
     }
 
     this.__callback = callback;
@@ -4870,6 +4866,20 @@ function EventHandler(document, window) {
 }
 
 EventHandlerPrototype = EventHandler.prototype;
+
+EventHandlerPrototype.getDimensions = function() {
+    var viewport = this.viewport,
+        window = this.window,
+        documentElement = this.documentElement,
+        document = this.document;
+
+    return {
+        currentScrollLeft: viewport.currentScrollLeft,
+        currentScrollTop: viewport.currentScrollTop,
+        width: getWindowWidth(window, documentElement, document),
+        height: getWindowHeight(window, documentElement, document)
+    };
+};
 
 EventHandlerPrototype.clear = function() {
     var listening = this.__listening,
@@ -7439,13 +7449,13 @@ function createWorkerRender(url, containerDOMNode) {
         });
     };
 
-    eventHandler.handleResize = function handleResize(viewport, width, height) {
-        messenger.emit("virt.dom.resize", {
-            viewport: viewport,
-            width: width,
-            height: height
-        });
+    eventHandler.handleResize = function handleResize(dimensions) {
+        messenger.emit("virt.resize", dimensions);
     };
+
+    messenger.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
+        callback(eventHandler.getDimensions());
+    });
 
     registerNativeComponentHandlers(messenger, nativeDOM.handlers);
 
@@ -7648,13 +7658,13 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         });
     };
 
-    eventHandler.handleResize = function handleResize(viewport, width, height) {
-        messenger.emit("virt.dom.resize", {
-            viewport: viewport,
-            width: width,
-            height: height
-        });
+    eventHandler.handleResize = function handleResize(dimensions) {
+        messenger.emit("virt.resize", dimensions);
     };
+
+    messenger.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
+        callback(eventHandler.getDimensions());
+    });
 
     registerNativeComponentHandlers(messenger, nativeDOM.handlers);
 
