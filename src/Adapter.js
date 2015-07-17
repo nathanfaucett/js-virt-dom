@@ -41,6 +41,17 @@ function Adapter(root, containerDOMNode) {
 
     this.eventHandler = eventHandler;
 
+    this.handle = function(transaction, callback) {
+        messengerServer.emit("virt.dom.Adapter.handleTransaction", transaction, callback);
+    };
+
+    messengerClient.on("virt.dom.Adapter.handleTransaction", function onHandleTransaction(transaction, callback) {
+        applyPatches(transaction.patches, containerDOMNode, document);
+        applyEvents(transaction.events, eventHandler);
+        applyPatches(transaction.removes, containerDOMNode, document);
+        callback();
+    });
+
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
     eventHandler.handleDispatch = function handleDispatch(topLevelType, nativeEvent, targetId) {
@@ -51,15 +62,7 @@ function Adapter(root, containerDOMNode) {
         });
     };
 
-    eventHandler.handleResize = function handleResize(dimensions) {
-        messengerClient.emit("virt.resize", dimensions);
-    };
-
-    messengerClient.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
-        callback(eventHandler.getDimensions());
-    });
-
-    messengerClient.on("virt.dom.Adapter.handleEventDispatch", function onHandleDispatch(data, callback) {
+    messengerClient.on("virt.dom.Adapter.handleEventDispatch", function onHandleEventDispatch(data, callback) {
         var topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
             targetId = data.targetId,
@@ -84,15 +87,12 @@ function Adapter(root, containerDOMNode) {
         callback();
     });
 
-    this.handle = function(transaction, callback) {
-        messengerServer.emit("virt.dom.Adapter.handleTransaction", transaction, callback);
+    eventHandler.handleResize = function handleDispatch(data) {
+        messengerClient.emit("virt.resize", data);
     };
 
-    messengerClient.on("virt.dom.Adapter.handleTransaction", function onHandleTransaction(transaction, callback) {
-        applyPatches(transaction.patches, containerDOMNode, document);
-        applyEvents(transaction.events, eventHandler);
-        applyPatches(transaction.removes, containerDOMNode, document);
-        callback();
+    messengerClient.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
+        callback(undefined, eventHandler.getDimensions());
     });
 
     registerNativeComponents(root, nativeDOM.components);

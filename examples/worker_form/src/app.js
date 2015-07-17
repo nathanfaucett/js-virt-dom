@@ -36,6 +36,13 @@ AppPrototype.componentDidMount = function() {
             console.log(height);
         }
     });
+    this.onMessage("virt.resize", function(data, callback) {
+        console.log(data);
+        callback();
+    });
+    this.sendMessage("virt.getDeviceDimensions", null, function(error, data) {
+        console.log(data);
+    });
 };
 
 AppPrototype.getHeight = function(callback) {

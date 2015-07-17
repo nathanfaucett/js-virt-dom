@@ -44,12 +44,12 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         });
     };
 
-    eventHandler.handleResize = function handleResize(dimensions) {
-        messenger.emit("virt.resize", dimensions);
+    eventHandler.handleResize = function handleDispatch(data) {
+        messenger.emit("virt.resize", data);
     };
 
     messenger.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
-        callback(eventHandler.getDimensions());
+        callback(undefined, eventHandler.getDimensions());
     });
 
     registerNativeComponentHandlers(messenger, nativeDOM.handlers);
