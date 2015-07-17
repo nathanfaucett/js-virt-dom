@@ -1526,24 +1526,39 @@ var isObject = require(4),
     isNullOrUndefined = require(6);
 
 
-var nativeGetPrototypeOf = Object.getPrototypeOf;
+var nativeGetPrototypeOf = Object.getPrototypeOf,
+    baseGetPrototypeOf;
 
 
 module.exports = getPrototypeOf;
 
 
-function getPrototypeOf(obj) {
-    return isNullOrUndefined(obj) ? null : nativeGetPrototypeOf(
-        (isObject(obj) ? obj : Object(obj))
-    );
+function getPrototypeOf(value) {
+    if (isNullOrUndefined(value)) {
+        return null;
+    } else {
+        return baseGetPrototypeOf(value);
+    }
 }
 
-if (!isNative(nativeGetPrototypeOf)) {
-    nativeGetPrototypeOf = function getPrototypeOf(obj) {
-        return obj.__proto__ || (
-            obj.constructor ? obj.constructor.prototype : null
-        );
+if (isNative(nativeGetPrototypeOf)) {
+    baseGetPrototypeOf = function baseGetPrototypeOf(value) {
+        if (isObject(value)) {
+            return nativeGetPrototypeOf(value);
+        } else {
+            return nativeGetPrototypeOf(Object(value));
+        }
     };
+} else {
+    if (isObject("".__proto__)) {
+        baseGetPrototypeOf = function baseGetPrototypeOf(value) {
+            return value.__proto__ || null;
+        };
+    } else {
+        baseGetPrototypeOf = function baseGetPrototypeOf(value) {
+            return value.constructor ? value.constructor.prototype : null;
+        };
+    }
 }
 
 
@@ -1598,6 +1613,7 @@ function(require, exports, module, global) {
 
 var has = require(22),
     isNative = require(15),
+    isNullOrUndefined = require(6),
     isObject = require(4);
 
 
@@ -1607,19 +1623,23 @@ var nativeKeys = Object.keys;
 module.exports = keys;
 
 
-function keys(obj) {
-    return nativeKeys(isObject(obj) ? obj : Object(obj));
+function keys(value) {
+    if (isNullOrUndefined(value)) {
+        return [];
+    } else {
+        return nativeKeys(isObject(value) ? value : Object(value));
+    }
 }
 
 if (!isNative(nativeKeys)) {
-    nativeKeys = function keys(obj) {
+    nativeKeys = function() {
         var localHas = has,
             out = [],
             i = 0,
             key;
 
-        for (key in obj) {
-            if (localHas(obj, key)) {
+        for (key in value) {
+            if (localHas(value, key)) {
                 out[i++] = key;
             }
         }
