@@ -1,6 +1,7 @@
-var findDOMNode = require("../utils/findDOMNode"),
+var domCaret = require("dom_caret"),
     blurNode = require("blur_node"),
-    focusNode = require("focus_node");
+    focusNode = require("focus_node"),
+    findDOMNode = require("../utils/findDOMNode");
 
 
 var sharedInputHandlers = exports;
@@ -17,10 +18,39 @@ sharedInputHandlers.getValue = function(data, callback) {
 };
 
 sharedInputHandlers.setValue = function(data, callback) {
+    var node = findDOMNode(data.id),
+        keepSelection = data.keepSelection,
+        selection;
+
+    if (node) {
+        if (keepSelection) {
+            selection = domCaret.get(node);
+        }
+        node.value = data.value || "";
+        if (keepSelection) {
+            domCaret.set(node, selection.start, selection.end);
+        }
+        callback();
+    } else {
+        callback(new Error("setValue(value, callback): No DOM node found with id " + data.id));
+    }
+};
+
+sharedInputHandlers.getSelection = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
-        node.value = data.value || "";
+        callback(undefined, domCaret.get(node));
+    } else {
+        callback(new Error("getValue(callback): No DOM node found with id " + data.id));
+    }
+};
+
+sharedInputHandlers.setSelection = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        domCaret.set(node, data.start, data.end);
         callback();
     } else {
         callback(new Error("setValue(value, callback): No DOM node found with id " + data.id));

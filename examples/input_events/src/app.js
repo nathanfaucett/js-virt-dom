@@ -35,6 +35,16 @@ AppPrototype.render = function() {
             virt.createView("input", {
                 ref: "input",
                 value: this.state.inputValue,
+                onClick: function(e) {
+                    e.currentComponentTarget.getSelection(function(error, data) {
+                        console.log(data);
+                    });
+                },
+                onKeyDown: function(e) {
+                    e.currentComponentTarget.getSelection(function(error, data) {
+                        console.log(data);
+                    });
+                },
                 onChange: function(e) {
                     _this.setState({
                         inputValue: e.target.value
