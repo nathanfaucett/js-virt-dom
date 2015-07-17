@@ -21,7 +21,7 @@ function createWorkerRender(url, containerDOMNode) {
 
         messenger = new Messenger(new MessengerWorkerAdapter(url));
 
-    messenger.on("virt.dom.WorkerAdapter.handleTransaction", function handleTransaction(transaction, callback) {
+    messenger.on("virt.dom.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -35,7 +35,7 @@ function createWorkerRender(url, containerDOMNode) {
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("virt.dom.WorkerAdapter.handleEventDispatch", {
+        messenger.emit("virt.dom.handleEventDispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,

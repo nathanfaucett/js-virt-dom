@@ -49,7 +49,7 @@ virtDOM.createWorkerRender("worker.js", document.getElementById("app"));
 function(require, exports, module, global) {
 
 var renderString = require(2),
-    nativeDOM = require(71);
+    nativeDOM = require(72);
 
 
 var virtDOM = exports,
@@ -66,20 +66,20 @@ virtDOM.addNativeHandler = function(name, fn) {
     nativeDOMHandlers[name] = fn;
 };
 
-virtDOM.render = require(86);
-virtDOM.unmount = require(144);
+virtDOM.render = require(87);
+virtDOM.unmount = require(145);
 
 virtDOM.renderString = function(view, id) {
     return renderString(view, null, id || ".0");
 };
 
-virtDOM.findDOMNode = require(77);
+virtDOM.findDOMNode = require(78);
 
-virtDOM.createWorkerRender = require(145);
-virtDOM.renderWorker = require(147);
+virtDOM.createWorkerRender = require(146);
+virtDOM.renderWorker = require(148);
 
-virtDOM.createWebSocketRender = require(149);
-virtDOM.renderWebSocket = require(151);
+virtDOM.createWebSocketRender = require(150);
+virtDOM.renderWebSocket = require(152);
 
 
 },
@@ -92,9 +92,9 @@ var virt = require(3),
     isObject = require(18),
     isNullOrUndefined = require(6),
 
-    hyphenateStyleName = require(66),
-    renderMarkup = require(67),
-    DOM_ID_NAME = require(69);
+    hyphenateStyleName = require(67),
+    renderMarkup = require(68),
+    DOM_ID_NAME = require(70);
 
 
 var View = virt.View,
@@ -123,7 +123,7 @@ var View = virt.View,
 module.exports = render;
 
 
-var renderChildrenString = require(70);
+var renderChildrenString = require(71);
 
 
 function render(view, parentProps, id) {
@@ -225,11 +225,11 @@ virt.createFactory = View.createFactory;
 
 virt.consts = require(33);
 
-virt.getChildKey = require(56);
+virt.getChildKey = require(57);
 
-virt.traverseAncestors = require(60);
-virt.traverseDescendants = require(64);
-virt.traverseTwoPhase = require(65);
+virt.traverseAncestors = require(61);
+virt.traverseDescendants = require(65);
+virt.traverseTwoPhase = require(66);
 
 virt.context = require(26);
 virt.owner = require(25);
@@ -799,14 +799,10 @@ function getPrototypeOf(value) {
 
 if (isNative(nativeGetPrototypeOf)) {
     baseGetPrototypeOf = function baseGetPrototypeOf(value) {
-        if (isObject(value)) {
-            return nativeGetPrototypeOf(value);
-        } else {
-            return nativeGetPrototypeOf(Object(value));
-        }
+        return nativeGetPrototypeOf(isObject(value) ? value : Object(value)) || null;
     };
 } else {
-    if (isObject("".__proto__)) {
+    if ("".__proto__ === String.prototype) {
         baseGetPrototypeOf = function baseGetPrototypeOf(value) {
             return value.__proto__ || null;
         };
@@ -903,7 +899,7 @@ function keys(value) {
 }
 
 if (!isNative(nativeKeys)) {
-    nativeKeys = function() {
+    nativeKeys = function(value) {
         var localHas = has,
             out = [],
             i = 0,
@@ -1595,18 +1591,33 @@ function createReleaser(Constructor) {
 },
 function(require, exports, module, global) {
 
-var isObjectLike = require(15),
+var isObject = require(18),
+    isFunction = require(7),
+    isPrimitive = require(5),
     isNative = require(9),
     has = require(16);
 
 
-var defineProperty;
+var nativeDefineProperty = Object.defineProperty;
 
 
-if (isNative(Object.defineProperty) && (function() {
+module.exports = defineProperty;
+
+
+function defineProperty(object, name, descriptor) {
+    if (isPrimitive(descriptor) || isFunction(descriptor)) {
+        descriptor = {
+            value: descriptor
+        };
+    }
+    return nativeDefineProperty(object, name, descriptor);
+}
+
+
+if (!isNative(nativeDefineProperty) || !(function() {
         var object = {};
         try {
-            Object.defineProperty(object, "key", {
+            nativeDefineProperty(object, "key", {
                 value: "value"
             });
             if (has(object, "key") && object.key === "value") {
@@ -1615,21 +1626,16 @@ if (isNative(Object.defineProperty) && (function() {
         } catch (e) {}
         return false;
     }())) {
-    defineProperty = Object.defineProperty;
-} else {
-    defineProperty = function defineProperty(object, name, value) {
-        if (!isObjectLike(object)) {
-            throw new TypeError("defineProperty(object, name, value) called on non-object");
+    nativeDefineProperty = function defineProperty(object, name, descriptor) {
+        if (!isObject(object)) {
+            throw new TypeError("defineProperty(object, name, descriptor) called on non-object");
         }
-        if (has(value, "get") || has(value, "set")) {
-            throw new TypeError("defineProperty(object, name, value) this environment does not support getters or setters");
+        if (has(descriptor, "get") || has(descriptor, "set")) {
+            throw new TypeError("defineProperty(object, name, descriptor) this environment does not support getters or setters");
         }
-        object[name] = isObjectLike(value) ? value.value : value;
+        object[name] = descriptor.value;
     };
 }
-
-
-module.exports = defineProperty;
 
 
 },
@@ -2238,8 +2244,8 @@ var has = require(16),
     componentState = require(49),
     getComponentClassForType = require(50),
     View = require(4),
-    getChildKey = require(56),
-    emptyObject = require(58),
+    getChildKey = require(57),
+    emptyObject = require(59),
     diffChildren;
 
 
@@ -2250,7 +2256,7 @@ var NodePrototype,
 module.exports = Node;
 
 
-diffChildren = require(59);
+diffChildren = require(60);
 
 
 function Node(parentId, id, currentView) {
@@ -3044,7 +3050,7 @@ function(require, exports, module, global) {
 
 var create = require(54),
     extend = require(23),
-    mixin = require(55),
+    mixin = require(56),
     defineProperty = require(31);
 
 
@@ -3093,24 +3099,54 @@ function defineStatic(name, value) {
 },
 function(require, exports, module, global) {
 
-var isNative = require(9);
+var isNull = require(55),
+    isNative = require(9),
+    isPrimitive = require(5);
 
 
-var create, F;
+var nativeCreate = Object.create;
 
 
-if (isNative(Object.create)) {
-    create = Object.create;
-} else {
-    F = function F() {};
-    create = function create(object) {
-        F.prototype = object;
-        return new F();
+module.exports = create;
+
+
+function create(object) {
+    return nativeCreate(isPrimitive(object) ? null : object);
+}
+
+if (!isNative(nativeCreate)) {
+    nativeCreate = function nativeCreate(object) {
+        var newObject;
+
+        function F() {
+            this.constructor = F;
+        }
+
+        if (isNull(object)) {
+            newObject = new F();
+            newObject.constructor = newObject.__proto__ = null;
+            delete newObject.__proto__;
+            return newObject;
+        } else {
+            F.prototype = object;
+            return new F();
+        }
     };
 }
 
 
 module.exports = create;
+
+
+},
+function(require, exports, module, global) {
+
+module.exports = isNull;
+
+
+function isNull(obj) {
+    return obj === null;
+}
 
 
 },
@@ -3153,7 +3189,7 @@ function baseMixin(a, b) {
 },
 function(require, exports, module, global) {
 
-var getViewKey = require(57);
+var getViewKey = require(58);
 
 
 module.exports = getChildKey;
@@ -3201,7 +3237,7 @@ function(require, exports, module, global) {
 function(require, exports, module, global) {
 
 var isNullOrUndefined = require(6),
-    getChildKey = require(56),
+    getChildKey = require(57),
     shouldUpdate = require(44),
     View = require(4),
     Node;
@@ -3400,7 +3436,7 @@ function keyIndex(children) {
 },
 function(require, exports, module, global) {
 
-var traversePath = require(61);
+var traversePath = require(62);
 
 
 module.exports = traverseAncestors;
@@ -3414,8 +3450,8 @@ function traverseAncestors(id, callback) {
 },
 function(require, exports, module, global) {
 
-var isBoundary = require(62),
-    isAncestorIdOf = require(63);
+var isBoundary = require(63),
+    isAncestorIdOf = require(64);
 
 
 module.exports = traversePath;
@@ -3478,7 +3514,7 @@ function isBoundary(id, index) {
 },
 function(require, exports, module, global) {
 
-var isBoundary = require(62);
+var isBoundary = require(63);
 
 
 module.exports = isAncestorIdOf;
@@ -3495,7 +3531,7 @@ function isAncestorIdOf(ancestorID, descendantID) {
 },
 function(require, exports, module, global) {
 
-var traversePath = require(61);
+var traversePath = require(62);
 
 
 module.exports = traverseDescendant;
@@ -3509,7 +3545,7 @@ function traverseDescendant(id, callback) {
 },
 function(require, exports, module, global) {
 
-var traversePath = require(61);
+var traversePath = require(62);
 
 
 module.exports = traverseTwoPhase;
@@ -3541,7 +3577,7 @@ function hyphenateStyleName(str) {
 },
 function(require, exports, module, global) {
 
-var escapeTextContent = require(68);
+var escapeTextContent = require(69);
 
 
 module.exports = renderMarkup;
@@ -3627,16 +3663,16 @@ var nativeDOM = exports;
 
 
 nativeDOM.components = {
-    input: require(72),
-    textarea: require(73),
-    button: require(74),
-    img: require(75)
+    input: require(73),
+    textarea: require(74),
+    button: require(75),
+    img: require(76)
 };
 
 nativeDOM.handlers = extend({},
-    require(76),
-    require(84),
-    require(85)
+    require(77),
+    require(85),
+    require(86)
 );
 
 
@@ -4094,8 +4130,8 @@ ImagePrototype.render = function() {
 },
 function(require, exports, module, global) {
 
-var findDOMNode = require(77),
-    sharedHandlers = require(80);
+var findDOMNode = require(78),
+    sharedHandlers = require(81);
 
 
 var inputHandlers = exports;
@@ -4127,7 +4163,7 @@ inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
 function(require, exports, module, global) {
 
 var isString = require(12),
-    getNodeById = require(78);
+    getNodeById = require(79);
 
 
 module.exports = findDOMNode;
@@ -4149,7 +4185,7 @@ function findDOMNode(value) {
 },
 function(require, exports, module, global) {
 
-var nodeCache = require(79);
+var nodeCache = require(80);
 
 
 module.exports = getNodeById;
@@ -4169,9 +4205,9 @@ function(require, exports, module, global) {
 },
 function(require, exports, module, global) {
 
-var findDOMNode = require(77),
-    blurNode = require(81),
-    focusNode = require(83);
+var findDOMNode = require(78),
+    blurNode = require(82),
+    focusNode = require(84);
 
 
 var sharedInputHandlers = exports;
@@ -4224,7 +4260,7 @@ sharedInputHandlers.blur = function(data, callback) {
 },
 function(require, exports, module, global) {
 
-var isNode = require(82);
+var isNode = require(83);
 
 
 module.exports = blurNode;
@@ -4269,7 +4305,7 @@ module.exports = isNode;
 },
 function(require, exports, module, global) {
 
-var isNode = require(82);
+var isNode = require(83);
 
 
 module.exports = focusNode;
@@ -4287,7 +4323,7 @@ function focusNode(node) {
 },
 function(require, exports, module, global) {
 
-var sharedHandlers = require(80);
+var sharedHandlers = require(81);
 
 
 var textareaHandlers = exports;
@@ -4302,7 +4338,7 @@ textareaHandlers["virt.dom.TextArea.blur"] = sharedHandlers.blur;
 },
 function(require, exports, module, global) {
 
-var sharedHandlers = require(80);
+var sharedHandlers = require(81);
 
 
 var buttonHandlers = exports;
@@ -4316,10 +4352,10 @@ buttonHandlers["virt.dom.Button.blur"] = sharedHandlers.blur;
 function(require, exports, module, global) {
 
 var virt = require(3),
-    Adapter = require(87),
-    rootsById = require(142),
-    getRootNodeInContainer = require(143),
-    getNodeId = require(139);
+    Adapter = require(88),
+    rootsById = require(143),
+    getRootNodeInContainer = require(144),
+    getNodeId = require(140);
 
 
 var Root = virt.Root;
@@ -4352,18 +4388,18 @@ function render(nextView, containerDOMNode, callback) {
 function(require, exports, module, global) {
 
 var virt = require(3),
-    Messenger = require(88),
-    createMessengerAdapter = require(89),
-    getWindow = require(90),
-    nativeDOM = require(71),
-    registerNativeComponents = require(91),
-    registerNativeComponentHandlers = require(92),
-    getNodeById = require(78),
-    consts = require(93),
-    EventHandler = require(95),
-    eventClassMap = require(105),
-    applyEvents = require(132),
-    applyPatches = require(133);
+    Messenger = require(89),
+    createMessengerAdapter = require(90),
+    getWindow = require(91),
+    nativeDOM = require(72),
+    registerNativeComponents = require(92),
+    registerNativeComponentHandlers = require(93),
+    getNodeById = require(79),
+    consts = require(94),
+    EventHandler = require(96),
+    eventClassMap = require(106),
+    applyEvents = require(133),
+    applyPatches = require(134);
 
 
 var traverseAncestors = virt.traverseAncestors;
@@ -4395,10 +4431,10 @@ function Adapter(root, containerDOMNode) {
     this.eventHandler = eventHandler;
 
     this.handle = function(transaction, callback) {
-        messengerServer.emit("virt.dom.Adapter.handleTransaction", transaction, callback);
+        messengerServer.emit("virt.dom.handleTransaction", transaction, callback);
     };
 
-    messengerClient.on("virt.dom.Adapter.handleTransaction", function onHandleTransaction(transaction, callback) {
+    messengerClient.on("virt.dom.handleTransaction", function onHandleTransaction(transaction, callback) {
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
         applyPatches(transaction.removes, containerDOMNode, document);
@@ -4408,24 +4444,34 @@ function Adapter(root, containerDOMNode) {
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
     eventHandler.handleDispatch = function handleDispatch(topLevelType, nativeEvent, targetId) {
-        messengerServer.emit("virt.dom.Adapter.handleEventDispatch", {
+        messengerServer.emit("virt.dom.handleEventDispatch", {
             topLevelType: topLevelType,
             nativeEvent: nativeEvent,
             targetId: targetId
         });
     };
 
-    messengerClient.on("virt.dom.Adapter.handleEventDispatch", function onHandleEventDispatch(data, callback) {
-        var topLevelType = data.topLevelType,
+    messengerClient.on("virt.dom.handleEventDispatch", function onHandleEventDispatch(data, callback) {
+        var childHash = root.childHash,
+            topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
             targetId = data.targetId,
             eventType = events[topLevelType],
+            target = childHash[targetId],
             event;
+
+        if (target) {
+            target = target.component;
+        } else {
+            target = null;
+        }
 
         traverseAncestors(targetId, function traverseAncestor(currentTargetId) {
             if (eventType[currentTargetId]) {
                 event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
                 event.currentTarget = getNodeById(currentTargetId);
+                event.componentTarget = target;
+                event.currentComponentTarget = childHash[currentTargetId].component;
                 eventType[currentTargetId](event);
                 return event.returnValue;
             } else {
@@ -4700,7 +4746,7 @@ function registerNativeComponentHandlers(messenger, nativeDOMHandlers) {
 function(require, exports, module, global) {
 
 var map = require(19),
-    forEach = require(94),
+    forEach = require(95),
     keyMirror = require(34);
 
 
@@ -4834,13 +4880,13 @@ function forEachObject(object, callback) {
 function(require, exports, module, global) {
 
 var has = require(16),
-    eventListener = require(96),
-    consts = require(93),
-    getWindowWidth = require(99),
-    getWindowHeight = require(100),
-    getEventTarget = require(101),
-    getNodeAttributeId = require(102),
-    isEventSupported = require(103);
+    eventListener = require(97),
+    consts = require(94),
+    getWindowWidth = require(100),
+    getWindowHeight = require(101),
+    getEventTarget = require(102),
+    getNodeAttributeId = require(103),
+    isEventSupported = require(104);
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -5006,8 +5052,8 @@ function(require, exports, module, global) {
 var process = require(47);
 var isObject = require(18),
     isFunction = require(7),
-    environment = require(97),
-    eventTable = require(98);
+    environment = require(98),
+    eventTable = require(99);
 
 
 var eventListener = module.exports,
@@ -5183,8 +5229,8 @@ environment.document = typeof(document) !== "undefined" ? document : {};
 },
 function(require, exports, module, global) {
 
-var isNode = require(82),
-    environment = require(97);
+var isNode = require(83),
+    environment = require(98);
 
 
 var window = environment.window,
@@ -5627,7 +5673,7 @@ function getEventTarget(nativeEvent, window) {
 },
 function(require, exports, module, global) {
 
-var DOM_ID_NAME = require(69);
+var DOM_ID_NAME = require(70);
 
 
 module.exports = getNodeAttributeId;
@@ -5643,8 +5689,8 @@ function(require, exports, module, global) {
 
 var isFunction = require(7),
     has = require(16),
-    supports = require(104),
-    environment = require(97);
+    supports = require(105),
+    environment = require(98);
 
 
 var document = environment.document,
@@ -5686,7 +5732,7 @@ function isEventSupported(eventNameSuffix, capture) {
 },
 function(require, exports, module, global) {
 
-var environment = require(97);
+var environment = require(98);
 
 
 var supports = module.exports;
@@ -5705,15 +5751,15 @@ supports.touch = supports.dom && "ontouchstart" in environment.window;
 },
 function(require, exports, module, global) {
 
-var SyntheticClipboardEvent = require(106),
-    SyntheticDragEvent = require(111),
-    SyntheticFocusEvent = require(118),
-    SyntheticInputEvent = require(120),
-    SyntheticKeyboardEvent = require(122),
-    SyntheticMouseEvent = require(113),
-    SyntheticTouchEvent = require(126),
-    SyntheticUIEvent = require(115),
-    SyntheticWheelEvent = require(130);
+var SyntheticClipboardEvent = require(107),
+    SyntheticDragEvent = require(112),
+    SyntheticFocusEvent = require(119),
+    SyntheticInputEvent = require(121),
+    SyntheticKeyboardEvent = require(123),
+    SyntheticMouseEvent = require(114),
+    SyntheticTouchEvent = require(127),
+    SyntheticUIEvent = require(116),
+    SyntheticWheelEvent = require(131);
 
 
 module.exports = {
@@ -5775,8 +5821,8 @@ module.exports = {
 },
 function(require, exports, module, global) {
 
-var getClipboardEvent = require(107),
-    SyntheticEvent = require(108);
+var getClipboardEvent = require(108),
+    SyntheticEvent = require(109);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -5832,8 +5878,8 @@ function(require, exports, module, global) {
 
 var inherits = require(53),
     createPool = require(30),
-    nativeEventToJSON = require(109),
-    getEvent = require(110);
+    nativeEventToJSON = require(110),
+    getEvent = require(111);
 
 
 var SyntheticEventPrototype;
@@ -5863,6 +5909,8 @@ SyntheticEventPrototype.destructor = function() {
     this.type = null;
     this.target = null;
     this.currentTarget = null;
+    this.componentTarget = null;
+    this.currentComponentTarget = null;
     this.eventPhase = null;
     this.bubbles = null;
     this.cancelable = null;
@@ -5928,33 +5976,31 @@ SyntheticEventPrototype.toJSON = function(json) {
 },
 function(require, exports, module, global) {
 
-var has = require(16),
-    isNode = require(82),
+var indexOf = require(48),
+    isNode = require(83),
     isFunction = require(7);
 
 
-var ignoreNativeEventProp = {
-    path: true,
-    view: true
-};
-
+var ignoreNativeEventProp = [
+    "view", "target", "currentTarget", "path", "srcElement",
+    "cancelBubble", "stopPropagation", "stopImmediatePropagation", "preventDefault", "initEvent",
+    "NONE", "CAPTURING_PHASE", "AT_TARGET", "BUBBLING_PHASE", "MOUSEDOWN", "MOUSEUP",
+    "MOUSEOVER", "MOUSEOUT", "MOUSEMOVE", "MOUSEDRAG", "CLICK", "DBLCLICK", "KEYDOWN",
+    "KEYUP", "KEYPRESS", "DRAGDROP", "FOCUS", "BLUR", "SELECT", "CHANGE"
+];
 
 module.exports = nativeEventToJSON;
 
 
 function nativeEventToJSON(nativeEvent) {
     var json = {},
-        localHas = has,
         key, value;
 
-
     for (key in nativeEvent) {
-        if (localHas(nativeEvent, key)) {
-            value = nativeEvent[key];
+        value = nativeEvent[key];
 
-            if (ignoreNativeEventProp[key] !== true && !isNode(value) && !isFunction(value)) {
-                json[key] = value;
-            }
+        if (!(isFunction(value) || isNode(value) || indexOf(ignoreNativeEventProp, key) !== -1)) {
+            json[key] = value;
         }
     }
 
@@ -5965,7 +6011,7 @@ function nativeEventToJSON(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getEventTarget = require(101);
+var getEventTarget = require(102);
 
 
 module.exports = getEvent;
@@ -5991,8 +6037,8 @@ function getEvent(obj, nativeEvent, eventHandler) {
 },
 function(require, exports, module, global) {
 
-var getDragEvent = require(112),
-    SyntheticMouseEvent = require(113);
+var getDragEvent = require(113),
+    SyntheticMouseEvent = require(114);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -6042,8 +6088,8 @@ function getDragEvent(obj, nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getMouseEvent = require(114),
-    SyntheticUIEvent = require(115);
+var getMouseEvent = require(115),
+    SyntheticUIEvent = require(116);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -6062,7 +6108,7 @@ function SyntheticMouseEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticMouseEvent);
 SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype;
 
-SyntheticMouseEventPrototype.getModifierState = require(117);
+SyntheticMouseEventPrototype.getModifierState = require(118);
 
 SyntheticMouseEventPrototype.destructor = function() {
 
@@ -6155,8 +6201,8 @@ function getButton(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getUIEvent = require(116),
-    SyntheticEvent = require(108);
+var getUIEvent = require(117),
+    SyntheticEvent = require(109);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -6197,8 +6243,8 @@ SyntheticUIEventPrototype.toJSON = function(json) {
 },
 function(require, exports, module, global) {
 
-var getWindow = require(90),
-    getEventTarget = require(101);
+var getWindow = require(91),
+    getEventTarget = require(102);
 
 
 module.exports = getUIEvent;
@@ -6262,8 +6308,8 @@ function getEventModifierState(keyArg) {
 },
 function(require, exports, module, global) {
 
-var getFocusEvent = require(119),
-    SyntheticUIEvent = require(115);
+var getFocusEvent = require(120),
+    SyntheticUIEvent = require(116);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -6313,8 +6359,8 @@ function getFocusEvent(obj, nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getInputEvent = require(121),
-    SyntheticEvent = require(108);
+var getInputEvent = require(122),
+    SyntheticEvent = require(109);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -6364,8 +6410,8 @@ function getInputEvent(obj, nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getKeyboardEvent = require(123),
-    SyntheticUIEvent = require(115);
+var getKeyboardEvent = require(124),
+    SyntheticUIEvent = require(116);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -6384,7 +6430,7 @@ function SynthetiKeyboardEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SynthetiKeyboardEvent);
 SynthetiKeyboardEventPrototype = SynthetiKeyboardEvent.prototype;
 
-SynthetiKeyboardEventPrototype.getModifierState = require(117);
+SynthetiKeyboardEventPrototype.getModifierState = require(118);
 
 SynthetiKeyboardEventPrototype.destructor = function() {
 
@@ -6426,8 +6472,8 @@ SynthetiKeyboardEventPrototype.toJSON = function(json) {
 },
 function(require, exports, module, global) {
 
-var getEventKey = require(124),
-    getEventCharCode = require(125);
+var getEventKey = require(125),
+    getEventCharCode = require(126);
 
 
 module.exports = getKeyboardEvent;
@@ -6469,7 +6515,7 @@ function getWhich(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getEventCharCode = require(125);
+var getEventCharCode = require(126);
 
 
 var normalizeKey, translateToKey;
@@ -6588,9 +6634,9 @@ function getEventCharCode(nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getTouchEvent = require(127),
-    SyntheticUIEvent = require(115),
-    SyntheticTouch = require(128);
+var getTouchEvent = require(128),
+    SyntheticUIEvent = require(116),
+    SyntheticTouch = require(129);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -6613,7 +6659,7 @@ function SyntheticTouchEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticTouchEvent);
 SyntheticTouchEventPrototype = SyntheticTouchEvent.prototype;
 
-SyntheticTouchEventPrototype.getModifierState = require(117);
+SyntheticTouchEventPrototype.getModifierState = require(118);
 
 SyntheticTouchEventPrototype.destructor = function() {
 
@@ -6684,8 +6730,8 @@ function getTouchEvent(obj, nativeEvent) {
 },
 function(require, exports, module, global) {
 
-var getTouch = require(129),
-    nativeEventToJSON = require(109),
+var getTouch = require(130),
+    nativeEventToJSON = require(110),
     createPool = require(30);
 
 
@@ -6824,8 +6870,8 @@ function getForce(nativeTouch) {
 },
 function(require, exports, module, global) {
 
-var getWheelEvent = require(131),
-    SyntheticMouseEvent = require(113);
+var getWheelEvent = require(132),
+    SyntheticMouseEvent = require(114);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -6925,8 +6971,8 @@ function applyEvents(events, eventHandler) {
 },
 function(require, exports, module, global) {
 
-var getNodeById = require(78),
-    applyPatch = require(134);
+var getNodeById = require(79),
+    applyPatch = require(135);
 
 
 module.exports = applyPatches;
@@ -6956,15 +7002,15 @@ function applyPatchIndices(DOMNode, patchArray, id, document, rootDOMNode) {
 function(require, exports, module, global) {
 
 var virt = require(3),
-    createDOMElement = require(135),
-    renderMarkup = require(67),
+    createDOMElement = require(136),
+    renderMarkup = require(68),
     renderString = require(2),
-    renderChildrenString = require(70),
-    addDOMNodes = require(137),
-    removeDOMNode = require(140),
-    removeDOMNodes = require(141),
-    getNodeById = require(78),
-    applyProperties = require(136);
+    renderChildrenString = require(71),
+    addDOMNodes = require(138),
+    removeDOMNode = require(141),
+    removeDOMNodes = require(142),
+    getNodeById = require(79),
+    applyProperties = require(137);
 
 
 var consts = virt.consts;
@@ -7110,10 +7156,10 @@ function(require, exports, module, global) {
 var virt = require(3),
     isString = require(12),
 
-    DOM_ID_NAME = require(69),
-    nodeCache = require(79),
+    DOM_ID_NAME = require(70),
+    nodeCache = require(80),
 
-    applyProperties = require(136);
+    applyProperties = require(137);
 
 
 var View = virt.View,
@@ -7255,8 +7301,8 @@ function applyObject(node, previous, propKey, propValues) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(138),
-    getNodeId = require(139);
+var isElement = require(139),
+    getNodeId = require(140);
 
 
 module.exports = addDOMNodes;
@@ -7282,7 +7328,7 @@ function addDOMNode(node) {
 },
 function(require, exports, module, global) {
 
-var isNode = require(82);
+var isNode = require(83);
 
 
 module.exports = isElement;
@@ -7297,8 +7343,8 @@ function isElement(obj) {
 function(require, exports, module, global) {
 
 var has = require(16),
-    nodeCache = require(79),
-    getNodeAttributeId = require(102);
+    nodeCache = require(80),
+    getNodeAttributeId = require(103);
 
 
 module.exports = getNodeId;
@@ -7333,15 +7379,15 @@ function getId(node) {
 },
 function(require, exports, module, global) {
 
-var isElement = require(138),
-    nodeCache = require(79),
-    getNodeAttributeId = require(102);
+var isElement = require(139),
+    nodeCache = require(80),
+    getNodeAttributeId = require(103);
 
 
 module.exports = removeDOMNode;
 
 
-var removeDOMNodes = require(141);
+var removeDOMNodes = require(142);
 
 
 function removeDOMNode(node) {
@@ -7358,7 +7404,7 @@ function(require, exports, module, global) {
 module.exports = removeDOMNodes;
 
 
-var removeDOMNode = require(140);
+var removeDOMNode = require(141);
 
 
 function removeDOMNodes(nodes) {
@@ -7399,9 +7445,9 @@ function getRootNodeInContainer(containerNode) {
 },
 function(require, exports, module, global) {
 
-var rootsById = require(142),
-    getRootNodeInContainer = require(143),
-    getNodeId = require(139);
+var rootsById = require(143),
+    getRootNodeInContainer = require(144),
+    getNodeId = require(140);
 
 
 module.exports = unmount;
@@ -7422,15 +7468,15 @@ function unmount(containerDOMNode) {
 },
 function(require, exports, module, global) {
 
-var Messenger = require(88),
-    MessengerWorkerAdapter = require(146),
-    nativeDOM = require(71),
-    registerNativeComponentHandlers = require(92),
-    getWindow = require(90),
-    nativeEventToJSON = require(109),
-    EventHandler = require(95),
-    applyEvents = require(132),
-    applyPatches = require(133);
+var Messenger = require(89),
+    MessengerWorkerAdapter = require(147),
+    nativeDOM = require(72),
+    registerNativeComponentHandlers = require(93),
+    getWindow = require(91),
+    nativeEventToJSON = require(110),
+    EventHandler = require(96),
+    applyEvents = require(133),
+    applyPatches = require(134);
 
 
 module.exports = createWorkerRender;
@@ -7445,7 +7491,7 @@ function createWorkerRender(url, containerDOMNode) {
 
         messenger = new Messenger(new MessengerWorkerAdapter(url));
 
-    messenger.on("virt.dom.WorkerAdapter.handleTransaction", function handleTransaction(transaction, callback) {
+    messenger.on("virt.dom.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -7459,7 +7505,7 @@ function createWorkerRender(url, containerDOMNode) {
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("virt.dom.WorkerAdapter.handleEventDispatch", {
+        messenger.emit("virt.dom.handleEventDispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,
@@ -7485,7 +7531,7 @@ function createWorkerRender(url, containerDOMNode) {
 },
 function(require, exports, module, global) {
 
-var environment = require(97);
+var environment = require(98);
 
 
 var MessengerWorkerAdapterPrototype,
@@ -7520,7 +7566,7 @@ MessengerWorkerAdapterPrototype.postMessage = function(data) {
 function(require, exports, module, global) {
 
 var virt = require(3),
-    WorkerAdapter = require(148);
+    WorkerAdapter = require(149);
 
 
 var root = null;
@@ -7550,12 +7596,12 @@ render.unmount = function() {
 function(require, exports, module, global) {
 
 var virt = require(3),
-    Messenger = require(88),
-    MessengerWorkerAdapter = require(146),
-    nativeDOM = require(71),
-    registerNativeComponents = require(91),
-    consts = require(93),
-    eventClassMap = require(105);
+    Messenger = require(89),
+    MessengerWorkerAdapter = require(147),
+    nativeDOM = require(72),
+    registerNativeComponents = require(92),
+    consts = require(94),
+    eventClassMap = require(106);
 
 
 var traverseAncestors = virt.traverseAncestors;
@@ -7583,7 +7629,7 @@ function WorkerAdapter(root) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("virt.dom.WorkerAdapter.handleEventDispatch", function(data, callback) {
+    messenger.on("virt.dom.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -7604,8 +7650,8 @@ function WorkerAdapter(root) {
         traverseAncestors(targetId, function(currentTargetId) {
             if (eventType[currentTargetId]) {
                 event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
-                event.target = target;
-                event.currentTarget = childHash[currentTargetId].component;
+                event.target = event.componentTarget = target;
+                event.currentTarget = event.currentComponentTarget = childHash[currentTargetId].component;
                 eventType[currentTargetId](event);
                 return event.returnValue;
             } else {
@@ -7621,7 +7667,7 @@ function WorkerAdapter(root) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("virt.dom.WorkerAdapter.handleTransaction", transaction, callback);
+        messenger.emit("virt.dom.handleTransaction", transaction, callback);
     };
 
     registerNativeComponents(root, nativeDOM.components);
@@ -7631,15 +7677,15 @@ function WorkerAdapter(root) {
 },
 function(require, exports, module, global) {
 
-var Messenger = require(88),
-    MessengerWebSocketAdapter = require(150),
-    nativeDOM = require(71),
-    registerNativeComponentHandlers = require(92),
-    getWindow = require(90),
-    nativeEventToJSON = require(109),
-    EventHandler = require(95),
-    applyEvents = require(132),
-    applyPatches = require(133);
+var Messenger = require(89),
+    MessengerWebSocketAdapter = require(151),
+    nativeDOM = require(72),
+    registerNativeComponentHandlers = require(93),
+    getWindow = require(91),
+    nativeEventToJSON = require(110),
+    EventHandler = require(96),
+    applyEvents = require(133),
+    applyPatches = require(134);
 
 
 module.exports = createWebSocketRender;
@@ -7654,7 +7700,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
 
         messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage));
 
-    messenger.on("virt.dom.WorkerAdapter.handleTransaction", function handleTransaction(transaction, callback) {
+    messenger.on("virt.dom.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -7668,7 +7714,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
             nativeEvent.preventDefault();
         }
 
-        messenger.emit("virt.dom.WorkerAdapter.handleEventDispatch", {
+        messenger.emit("virt.dom.handleEventDispatch", {
             currentScrollLeft: viewport.currentScrollLeft,
             currentScrollTop: viewport.currentScrollTop,
             topLevelType: topLevelType,
@@ -7731,7 +7777,7 @@ function defaultSendMessage(socket, data) {
 function(require, exports, module, global) {
 
 var virt = require(3),
-    WebSocketAdapter = require(152);
+    WebSocketAdapter = require(153);
 
 
 module.exports = render;
@@ -7749,12 +7795,12 @@ function render(nextView, socket, attachMessage, sendMessage, callback) {
 function(require, exports, module, global) {
 
 var virt = require(3),
-    Messenger = require(88),
-    MessengerWebSocketAdapter = require(150),
-    nativeDOM = require(71),
-    registerNativeComponents = require(91),
-    consts = require(93),
-    eventClassMap = require(105);
+    Messenger = require(89),
+    MessengerWebSocketAdapter = require(151),
+    nativeDOM = require(72),
+    registerNativeComponents = require(92),
+    consts = require(94),
+    eventClassMap = require(106);
 
 
 var traverseAncestors = virt.traverseAncestors;
@@ -7782,7 +7828,7 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 
     eventManager.propNameToTopLevel = consts.propNameToTopLevel;
 
-    messenger.on("virt.dom.WorkerAdapter.handleEventDispatch", function(data, callback) {
+    messenger.on("virt.dom.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
@@ -7803,8 +7849,8 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
         traverseAncestors(targetId, function(currentTargetId) {
             if (eventType[currentTargetId]) {
                 event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
-                event.target = target;
-                event.currentTarget = childHash[currentTargetId].component;
+                event.target = event.componentTarget = target;
+                event.currentTarget = event.currentComponentTarget = childHash[currentTargetId].component;
                 eventType[currentTargetId](event);
                 return event.returnValue;
             } else {
@@ -7820,7 +7866,7 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
     });
 
     this.handle = function(transaction, callback) {
-        messenger.emit("virt.dom.WorkerAdapter.handleTransaction", transaction, callback);
+        messenger.emit("virt.dom.handleTransaction", transaction, callback);
     };
 
     registerNativeComponents(root, nativeDOM.components);

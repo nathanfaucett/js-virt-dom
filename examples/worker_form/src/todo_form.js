@@ -35,7 +35,12 @@ TodoFormPrototype = TodoForm.prototype;
 TodoFormPrototype.__onSubmit = function(e) {
     var _this = this,
         nameInput = this.refs.name;
-
+    
+    e.preventDefault();
+    e.persist();
+    
+    console.log(e);
+    
     parallel([
         nameInput.getValue
     ], function(error, values) {
