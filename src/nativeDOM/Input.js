@@ -36,7 +36,7 @@ function Input(props, children, context) {
         return _this.__getValue(callback);
     };
     this.setValue = function(value, callback) {
-        return _this.__setValue(value, false, callback);
+        return _this.__setValue(value, callback);
     };
     this.getSelection = function(callback) {
         return _this.__getSelection(callback);
@@ -72,7 +72,7 @@ InputPrototype.componentDidUpdate = function(previousProps) {
         previousValue = previousProps.value;
 
     if (!isNullOrUndefined(value) && value === previousValue) {
-        this.__setValue(value, true);
+        this.__setValue(value);
     }
 };
 
@@ -106,14 +106,9 @@ InputPrototype.__getValue = function(callback) {
     }, callback);
 };
 
-InputPrototype.__setValue = function(value, keepSelection, callback) {
-    if (isFunction(keepSelection)) {
-        callback = keepSelection;
-        keepSelection = false;
-    }
+InputPrototype.__setValue = function(value, callback) {
     this.emitMessage("virt.dom.Input.setValue", {
         id: this.getInternalId(),
-        keepSelection: !!keepSelection,
         value: value
     }, callback);
 };

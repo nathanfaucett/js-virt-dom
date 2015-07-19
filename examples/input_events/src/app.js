@@ -63,7 +63,15 @@ AppPrototype.render = function() {
                 type: "checkbox",
                 checked: false
             }),
+            
             virt.createView("input", {
+                name: "yesOrNo",
+                value: "yes",
+                type: "radio"
+            }),
+            virt.createView("input", {
+                name: "yesOrNo",
+                value: "no",
                 type: "radio"
             }),
 

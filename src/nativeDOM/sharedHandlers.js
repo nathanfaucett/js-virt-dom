@@ -18,18 +18,10 @@ sharedInputHandlers.getValue = function(data, callback) {
 };
 
 sharedInputHandlers.setValue = function(data, callback) {
-    var node = findDOMNode(data.id),
-        keepSelection = data.keepSelection,
-        selection;
+    var node = findDOMNode(data.id);
 
     if (node) {
-        if (keepSelection) {
-            selection = domCaret.get(node);
-        }
         node.value = data.value || "";
-        if (keepSelection) {
-            domCaret.set(node, selection.start, selection.end);
-        }
         callback();
     } else {
         callback(new Error("setValue(value, callback): No DOM node found with id " + data.id));
