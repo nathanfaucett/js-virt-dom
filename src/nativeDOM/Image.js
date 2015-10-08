@@ -1,5 +1,7 @@
 var virt = require("virt"),
-    has = require("has");
+    has = require("has"),
+    extend = require("extend"),
+    emptyFunction = require("empty_function");
 
 
 var View = virt.View,
@@ -36,10 +38,16 @@ ImagePrototype.__getRenderProps = function() {
         localHas, renderProps, key;
 
     if (!this.__hasEvents || this.isMounted()) {
-        return props;
+        return extend({
+            onLoad: emptyFunction,
+            onError: emptyFunction
+        }, props);
     } else {
         localHas = has;
-        renderProps = {};
+        renderProps = {
+            onLoad: emptyFunction,
+            onError: emptyFunction
+        };
 
         for (key in props) {
             if (localHas(props, key) && key !== "src") {
