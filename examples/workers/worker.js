@@ -1111,7 +1111,7 @@ RootPrototype.render = function(nextView, id, callback) {
     node.mount(transaction);
 
     this.__enqueueTransaction(transaction, callback);
-    
+
     return this;
 };
 
@@ -2371,7 +2371,7 @@ NodePrototype.updateComponent = function(
             component.componentWillReceiveProps(nextProps, nextChildren, nextContext);
         }
     }
-    
+
     nextState = component.__nextState || component.state;
 
     if (component.shouldComponentUpdate ? component.shouldComponentUpdate(nextProps, nextChildren, nextState, nextContext) : true) {
@@ -2830,7 +2830,7 @@ module.exports = createNativeComponentForType;
 
 
 function createNativeComponentForType(type) {
-    
+
     function NativeComponent(props, children) {
         Component.call(this, props, children);
     }
@@ -3855,27 +3855,24 @@ function Image(props, children, context) {
     }
 
     Component.call(this, props, children, context);
+
+    this.__hasEvents = !!(props.onLoad || props.onError);
 }
 Component.extend(Image, "img");
 ImagePrototype = Image.prototype;
 
 ImagePrototype.componentDidMount = function() {
-    var props = this.props,
-        src = props.src;
-
-    if (src) {
-        this.emitMessage("virt.dom.Image.mount", {
-            id: this.getInternalId(),
-            src: src
-        });
-    }
+    this.emitMessage("virt.dom.Image.mount", {
+        id: this.getInternalId(),
+        src: this.props.src
+    });
 };
 
 ImagePrototype.__getRenderProps = function() {
     var props = this.props,
         localHas, renderProps, key;
 
-    if (this.isMounted()) {
+    if (!this.__hasEvents || this.isMounted()) {
         return props;
     } else {
         localHas = has;
@@ -4654,12 +4651,18 @@ var topLevelTypes = consts.topLevelTypes,
 imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
     var id = data.id,
         eventHandler = findEventHandler(id),
-        node = findDOMNode(id);
+        node = findDOMNode(id),
+        src;
 
     if (eventHandler && node) {
         eventHandler.addBubbledEvent(topLevelTypes.topLoad, topLevelToEvent.topLoad, node);
         eventHandler.addBubbledEvent(topLevelTypes.topError, topLevelToEvent.topError, node);
-        node.src = data.src;
+
+        src = data.src;
+        if (node.src !== src) {
+            node.src = src;
+        }
+        
         callback();
     } else {
         callback(new Error("events(data, callback): No DOM node found with id " + data.id));

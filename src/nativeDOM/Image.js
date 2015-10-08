@@ -18,27 +18,24 @@ function Image(props, children, context) {
     }
 
     Component.call(this, props, children, context);
+
+    this.__hasEvents = !!(props.onLoad || props.onError);
 }
 Component.extend(Image, "img");
 ImagePrototype = Image.prototype;
 
 ImagePrototype.componentDidMount = function() {
-    var props = this.props,
-        src = props.src;
-
-    if (src) {
-        this.emitMessage("virt.dom.Image.mount", {
-            id: this.getInternalId(),
-            src: src
-        });
-    }
+    this.emitMessage("virt.dom.Image.mount", {
+        id: this.getInternalId(),
+        src: this.props.src
+    });
 };
 
 ImagePrototype.__getRenderProps = function() {
     var props = this.props,
         localHas, renderProps, key;
 
-    if (this.isMounted()) {
+    if (!this.__hasEvents || this.isMounted()) {
         return props;
     } else {
         localHas = has;
