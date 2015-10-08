@@ -39,7 +39,7 @@ TodoFormPrototype.__onSubmit = function(e) {
     parallel([
         nameInput.getValue
     ], function(error, values) {
-        var name = values[0];
+        var name = values[0][0];
 
         if (!error && name) {
             dispatcher.handleViewAction({

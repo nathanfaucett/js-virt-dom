@@ -26,4 +26,8 @@ eventListener.on(environment.window, "load", function() {
             }
         );
     });
+
+    socket.on("error", function(error) {
+        throw error;
+    });
 });

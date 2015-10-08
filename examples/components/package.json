@@ -4,11 +4,11 @@
   "main": "index.js",
   "author": "Nathan Faucett",
   "dependencies": {
-    "environment": "nathanfaucett/environment",
-    "event_emitter": "nathanfaucett/event_emitter",
-    "event_listener": "nathanfaucett/event_listener",
-    "map": "nathanfaucett/map",
-    "prop_types": "git://github.com/nathanfaucett/prop_types",
-    "values": "nathanfaucett/values"
+    "environment": "git://github.com/nathanfaucett/environment.git",
+    "event_emitter": "git://github.com/nathanfaucett/event_emitter.git",
+    "event_listener": "git://github.com/nathanfaucett/event_listener.git",
+    "map": "git://github.com/nathanfaucett/map.git",
+    "prop_types": "git://github.com/nathanfaucett/prop_types.git",
+    "values": "git://github.com/nathanfaucett/values.git"
   }
 }

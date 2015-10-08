@@ -1,8 +1,10 @@
 var virt = require("virt"),
     Messenger = require("messenger"),
     createMessengerAdapter = require("messenger_adapter"),
+    eventHandlersById = require("./eventHandlersById"),
     getWindow = require("./utils/getWindow"),
-    nativeDOM = require("./nativeDOM"),
+    nativeDOMComponents = require("./nativeDOM/components"),
+    nativeDOMHandlers = require("./nativeDOM/handlers"),
     registerNativeComponents = require("./utils/registerNativeComponents"),
     registerNativeComponentHandlers = require("./utils/registerNativeComponentHandlers"),
     getNodeById = require("./utils/getNodeById"),
@@ -29,6 +31,8 @@ function Adapter(root, containerDOMNode) {
         eventManager = root.eventManager,
         events = eventManager.events,
         eventHandler = new EventHandler(document, window);
+
+    eventHandlersById[root.id] = eventHandler;
 
     this.messenger = messengerServer;
     this.messengerClient = messengerClient;
@@ -105,6 +109,6 @@ function Adapter(root, containerDOMNode) {
         callback(undefined, eventHandler.getDimensions());
     });
 
-    registerNativeComponents(root, nativeDOM.components);
-    registerNativeComponentHandlers(messengerClient, nativeDOM.handlers);
+    registerNativeComponents(root, nativeDOMComponents);
+    registerNativeComponentHandlers(messengerClient, nativeDOMHandlers);
 }

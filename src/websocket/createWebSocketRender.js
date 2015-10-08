@@ -1,6 +1,8 @@
 var Messenger = require("messenger"),
     MessengerWebSocketAdapter = require("messenger_websocket_adapter"),
-    nativeDOM = require("../nativeDOM"),
+    eventHandlersById = require("../eventHandlersById"),
+    getRootNodeId = require("../utils/getRootNodeId"),
+    nativeDOMHandlers = require("../nativeDOM/handlers"),
     registerNativeComponentHandlers = require("../utils/registerNativeComponentHandlers"),
     getWindow = require("../utils/getWindow"),
     nativeEventToJSON = require("../utils/nativeEventToJSON"),
@@ -19,13 +21,20 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         eventHandler = new EventHandler(document, window),
         viewport = eventHandler.viewport,
 
-        messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage));
+        messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage)),
+
+        rootId = null;
 
     messenger.on("virt.dom.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
         applyPatches(transaction.removes, containerDOMNode, document);
+
+        if (rootId === null) {
+            rootId = getRootNodeId(containerDOMNode);
+            eventHandlersById[rootId] = eventHandler;
+        }
 
         callback();
     });
@@ -52,7 +61,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         callback(undefined, eventHandler.getDimensions());
     });
 
-    registerNativeComponentHandlers(messenger, nativeDOM.handlers);
+    registerNativeComponentHandlers(messenger, nativeDOMHandlers);
 
     return messenger;
 }

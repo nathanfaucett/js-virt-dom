@@ -1,8 +1,7 @@
 var virt = require("virt"),
     Adapter = require("./Adapter"),
     rootsById = require("./rootsById"),
-    getRootNodeInContainer = require("./utils/getRootNodeInContainer"),
-    getNodeId = require("./utils/getNodeId");
+    getRootNodeId = require("./utils/getRootNodeId");
 
 
 var Root = virt.Root;
@@ -12,8 +11,7 @@ module.exports = render;
 
 
 function render(nextView, containerDOMNode, callback) {
-    var rootDOMNode = getRootNodeInContainer(containerDOMNode),
-        id = getNodeId(rootDOMNode),
+    var id = getRootNodeId(containerDOMNode),
         root;
 
     if (id === null || rootsById[id] === undefined) {

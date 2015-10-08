@@ -1,4 +1,5 @@
-var virt = require("virt");
+var virt = require("virt"),
+    has = require("has");
 
 
 var View = virt.View,
@@ -10,7 +11,6 @@ module.exports = Image;
 
 
 function Image(props, children, context) {
-
     if (process.env.NODE_ENV !== "production") {
         if (children.length > 0) {
             throw new Error("Image: img can not have children");
@@ -18,11 +18,42 @@ function Image(props, children, context) {
     }
 
     Component.call(this, props, children, context);
-
 }
 Component.extend(Image, "img");
 ImagePrototype = Image.prototype;
 
+ImagePrototype.componentDidMount = function() {
+    var props = this.props,
+        src = props.src;
+
+    if (src) {
+        this.emitMessage("virt.dom.Image.mount", {
+            id: this.getInternalId(),
+            src: src
+        });
+    }
+};
+
+ImagePrototype.__getRenderProps = function() {
+    var props = this.props,
+        localHas, renderProps, key;
+
+    if (this.isMounted()) {
+        return props;
+    } else {
+        localHas = has;
+        renderProps = {};
+
+        for (key in props) {
+            if (localHas(props, key) && key !== "src") {
+                renderProps[key] = props[key];
+            }
+        }
+
+        return renderProps;
+    }
+};
+
 ImagePrototype.render = function() {
-    return new View("img", null, null, this.props, this.children, null, null);
+    return new View("img", null, null, this.__getRenderProps(), this.children, null, null);
 };

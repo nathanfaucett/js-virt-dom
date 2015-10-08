@@ -60,9 +60,6 @@ ButtonPrototype.__getRenderProps = function() {
         key;
 
     if (props.disabled) {
-        localHas = has;
-        renderProps = {};
-
         for (key in props) {
             if (localHas(props, key) && indexOf(mouseListenerNames, key) === -1) {
                 renderProps[key] = props[key];

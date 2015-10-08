@@ -20,6 +20,12 @@ AppPrototype.render = function() {
         virt.createView("div", {
                 className: "app"
             },
+            virt.createView("img", {
+                onLoad: function(e) {
+                    e.persist();
+                },
+                src: "img.png"
+            }),
             virt.createView(TodoForm),
             virt.createView(TodoList)
         )

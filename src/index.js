@@ -1,10 +1,9 @@
 var renderString = require("./utils/renderString"),
-    nativeDOM = require("./nativeDOM");
+    nativeDOMComponents = require("./nativeDOM/components"),
+    nativeDOMHandlers = require("./nativeDOM/handlers");
 
 
-var virtDOM = exports,
-    nativeDOMComponents = nativeDOM.components,
-    nativeDOMHandlers = nativeDOM.handlers;
+var virtDOM = exports;
 
 
 virtDOM.virt = require("virt");
@@ -24,6 +23,8 @@ virtDOM.renderString = function(view, id) {
 };
 
 virtDOM.findDOMNode = require("./utils/findDOMNode");
+virtDOM.findRoot = require("./utils/findRoot");
+virtDOM.findEventHandler = require("./utils/findEventHandler");
 
 virtDOM.createWorkerRender = require("./worker/createWorkerRender");
 virtDOM.renderWorker = require("./worker/renderWorker");
