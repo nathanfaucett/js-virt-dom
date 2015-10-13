@@ -33,9 +33,17 @@ ImagePrototype.componentDidMount = function() {
     });
 };
 
+ImagePrototype.componentDidUpdate = function() {
+    this.emitMessage("virt.dom.Image.setSrc", {
+        id: this.getInternalId(),
+        src: this.props.src
+    });
+};
+
 ImagePrototype.__getRenderProps = function() {
     var props = this.props,
         localHas, renderProps, key;
+
 
     if (!this.__hasEvents || this.isMounted()) {
         return extend({

@@ -3917,9 +3917,17 @@ ImagePrototype.componentDidMount = function() {
     });
 };
 
+ImagePrototype.componentDidUpdate = function() {
+    this.emitMessage("virt.dom.Image.setSrc", {
+        id: this.getInternalId(),
+        src: this.props.src
+    });
+};
+
 ImagePrototype.__getRenderProps = function() {
     var props = this.props,
         localHas, renderProps, key;
+
 
     if (!this.__hasEvents || this.isMounted()) {
         return extend({
@@ -4718,6 +4726,23 @@ imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
             node.src = src;
         }
 
+        callback();
+    } else {
+        callback(new Error("events(data, callback): No DOM node found with id " + data.id));
+    }
+};
+
+imageHandlers["virt.dom.Image.setSrc"] = function(data, callback) {
+    var id = data.id,
+        node = findDOMNode(id),
+        src;
+
+    if (node) {
+        src = data.src;
+
+        if (node.src !== src) {
+            node.src = src;
+        }
         callback();
     } else {
         callback(new Error("events(data, callback): No DOM node found with id " + data.id));
