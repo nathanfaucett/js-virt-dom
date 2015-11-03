@@ -1,6 +1,8 @@
 var isString = require("is_string"),
     isObject = require("is_object"),
     isFunction = require("is_function"),
+    isUndefined = require("is_undefined"),
+    isNullOrUndefined = require("is_null_or_undefined"),
     getPrototypeOf = require("get_prototype_of");
 
 
@@ -14,11 +16,11 @@ function applyProperties(node, id, props, previous) {
         propValue = props[propKey];
 
         if (propKey !== "dangerouslySetInnerHTML" && !isFunction(propValue)) {
-            if (propValue == null && previous != null) {
+            if (isNullOrUndefined(propValue) && !isNullOrUndefined(previous)) {
                 removeProperty(node, id, previous, propKey);
             } else if (isObject(propValue)) {
                 applyObject(node, previous, propKey, propValue);
-            } else if (propValue != null && (!previous || previous[propKey] !== propValue)) {
+            } else if (!isNullOrUndefined(propValue) && (!previous || previous[propKey] !== propValue)) {
                 applyProperty(node, id, propKey, propValue);
             }
         }
@@ -68,7 +70,7 @@ function applyObject(node, previous, propKey, propValues) {
         for (key in propValues) {
             value = propValues[key];
 
-            if (value === undefined) {
+            if (isUndefined(value)) {
                 node.removeAttribute(key);
             } else {
                 node.setAttribute(key, value);
@@ -78,10 +80,9 @@ function applyObject(node, previous, propKey, propValues) {
         return;
     }
 
-    previousValue = previous ? previous[propKey] : undefined;
+    previousValue = previous ? previous[propKey] : void(0);
 
-    if (
-        previousValue != null &&
+    if (!isNullOrUndefined(previousValue) &&
         isObject(previousValue) &&
         getPrototypeOf(previousValue) !== getPrototypeOf(propValues)
     ) {
@@ -95,10 +96,10 @@ function applyObject(node, previous, propKey, propValues) {
         nodeProps = node[propKey] = {};
     }
 
-    replacer = propKey === "style" ? "" : undefined;
+    replacer = propKey === "style" ? "" : void(0);
 
     for (key in propValues) {
         value = propValues[key];
-        nodeProps[key] = (value === undefined) ? replacer : value;
+        nodeProps[key] = isUndefined(value) ? replacer : value;
     }
 }

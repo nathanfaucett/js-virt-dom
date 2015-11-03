@@ -1,4 +1,5 @@
 var Messenger = require("messenger"),
+    isNull = require("is_null"),
     MessengerWebSocketAdapter = require("messenger_websocket_adapter"),
     eventHandlersById = require("../eventHandlersById"),
     getRootNodeId = require("../utils/getRootNodeId"),
@@ -31,7 +32,7 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         applyEvents(transaction.events, eventHandler);
         applyPatches(transaction.removes, containerDOMNode, document);
 
-        if (rootId === null) {
+        if (isNull(rootId)) {
             rootId = getRootNodeId(containerDOMNode);
             eventHandlersById[rootId] = eventHandler;
         }

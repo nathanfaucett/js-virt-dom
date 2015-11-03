@@ -1,4 +1,6 @@
 var virt = require("virt"),
+    isNull = require("is_null"),
+    isUndefined = require("is_undefined"),
     Adapter = require("./Adapter"),
     rootsById = require("./rootsById"),
     getRootNodeId = require("./utils/getRootNodeId");
@@ -14,7 +16,7 @@ function render(nextView, containerDOMNode, callback) {
     var id = getRootNodeId(containerDOMNode),
         root;
 
-    if (id === null || rootsById[id] === undefined) {
+    if (isNull(id) || isUndefined(rootsById[id])) {
         root = new Root();
         root.adapter = new Adapter(root, containerDOMNode);
         id = root.id;

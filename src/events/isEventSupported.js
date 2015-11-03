@@ -1,4 +1,5 @@
 var isFunction = require("is_function"),
+    isNullOrUndefined = require("is_null_or_undefined"),
     has = require("has"),
     supports = require("supports"),
     environment = require("environment");
@@ -19,7 +20,7 @@ module.exports = isEventSupported;
 function isEventSupported(eventNameSuffix, capture) {
     var isSupported, eventName, element;
 
-    if (!supports.dom || capture && document.addEventListener == null) {
+    if (!supports.dom || capture && isNullOrUndefined(document.addEventListener)) {
         return false;
     } else {
         eventName = "on" + eventNameSuffix;

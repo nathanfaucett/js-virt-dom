@@ -1,4 +1,7 @@
 var virt = require("virt"),
+    isNull = require("is_null"),
+    isUndefined = require("is_undefined"),
+    isNullOrUndefined = require("is_null_or_undefined"),
     createDOMElement = require("./utils/createDOMElement"),
     renderMarkup = require("./utils/renderMarkup"),
     renderString = require("./utils/renderString"),
@@ -48,7 +51,7 @@ function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
 function remove(parentNode, id, index) {
     var node;
 
-    if (id === null) {
+    if (isNull(id)) {
         node = parentNode.childNodes[index];
     } else {
         node = getNodeById(id);
@@ -123,7 +126,7 @@ function order(parentNode, orderIndex) {
     while (i++ < length) {
         move = orderIndex[i];
 
-        if (move !== undefined && move !== i) {
+        if (!isUndefined(move) && move !== i) {
             if (reverseIndex[i] > i) {
                 insertOffset++;
             }
@@ -140,7 +143,7 @@ function order(parentNode, orderIndex) {
             }
         }
 
-        if (removes[i] != null) {
+        if (!isNullOrUndefined(removes[i])) {
             insertOffset++;
         }
     }

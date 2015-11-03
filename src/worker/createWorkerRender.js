@@ -1,4 +1,5 @@
 var Messenger = require("messenger"),
+    isNull = require("is_null"),
     MessengerWorkerAdapter = require("messenger_worker_adapter"),
     eventHandlersById = require("../eventHandlersById"),
     nativeDOMHandlers = require("../nativeDOM/handlers"),
@@ -32,7 +33,7 @@ function createWorkerRender(url, containerDOMNode) {
         applyEvents(transaction.events, eventHandler);
         applyPatches(transaction.removes, containerDOMNode, document);
 
-        if (rootId === null) {
+        if (isNull(rootId)) {
             rootId = getRootNodeId(containerDOMNode);
             eventHandlersById[rootId] = eventHandler;
         }

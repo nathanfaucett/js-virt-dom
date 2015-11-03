@@ -1,4 +1,5 @@
 var virt = require("virt"),
+    isNull = require("is_null"),
     rootsById = require("../rootsById"),
     WorkerAdapter = require("./WorkerAdapter");
 
@@ -10,7 +11,7 @@ module.exports = render;
 
 
 function render(nextView, callback) {
-    if (root === null) {
+    if (isNull(root)) {
         root = new virt.Root();
         root.adapter = new WorkerAdapter(root);
         rootsById[root.id] = root;
@@ -20,7 +21,7 @@ function render(nextView, callback) {
 }
 
 render.unmount = function() {
-    if (root !== null) {
+    if (!isNull(root)) {
         delete rootsById[root.id];
         root.unmount();
         root = null;

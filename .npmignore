@@ -1,9 +1,8 @@
-benchmark
-examples
+test
+Gruntfile.js
 node_modules
 npm-debug.log
-Gruntfile.js
-README.md
 .npmignore
 .gitignore
-.envrc
+.editorconfig
+.travis.yml
