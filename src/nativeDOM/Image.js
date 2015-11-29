@@ -1,6 +1,5 @@
 var virt = require("virt"),
     has = require("has"),
-    extend = require("extend"),
     emptyFunction = require("empty_function");
 
 
@@ -19,8 +18,9 @@ function Image(props, children, context) {
         }
     }
 
-    Component.call(this, props, children, context);
+    Component.call(this, getProps(props), children, context);
 
+    this.__originalProps = props;
     this.__hasEvents = !!(props.onLoad || props.onError);
 }
 Component.extend(Image, "img");
@@ -29,44 +29,47 @@ ImagePrototype = Image.prototype;
 ImagePrototype.componentDidMount = function() {
     this.emitMessage("virt.dom.Image.mount", {
         id: this.getInternalId(),
-        src: this.props.src
+        src: this.__originalProps.src
     });
+};
+
+ImagePrototype.componentWillReceiveProps = function(nextProps) {
+    Image_onProps(this, nextProps);
 };
 
 ImagePrototype.componentDidUpdate = function() {
+
+    Image_onProps(this, this.__originalProps);
+
     this.emitMessage("virt.dom.Image.setSrc", {
         id: this.getInternalId(),
-        src: this.props.src
+        src: this.__originalProps.src
     });
 };
 
-ImagePrototype.__getRenderProps = function() {
-    var props = this.props,
-        localHas, renderProps, key;
+ImagePrototype.render = function() {
+    return new View("img", null, null, this.props, this.children, null, null);
+};
 
+function Image_onProps(_this, props) {
+    _this.props = getProps(props);
+    _this.__originalProps = props;
+    _this.__hasEvents = !!(props.onLoad || props.onError);
+}
 
-    if (!this.__hasEvents || this.isMounted()) {
-        return extend({
-            onLoad: emptyFunction,
-            onError: emptyFunction
-        }, props);
-    } else {
-        localHas = has;
+function getProps(props) {
+    var localHas = has,
         renderProps = {
             onLoad: emptyFunction,
             onError: emptyFunction
-        };
+        },
+        key;
 
-        for (key in props) {
-            if (localHas(props, key) && key !== "src") {
-                renderProps[key] = props[key];
-            }
+    for (key in props) {
+        if (localHas(props, key) && key !== "src") {
+            renderProps[key] = props[key];
         }
-
-        return renderProps;
     }
-};
 
-ImagePrototype.render = function() {
-    return new View("img", null, null, this.__getRenderProps(), this.children, null, null);
-};
+    return renderProps;
+}

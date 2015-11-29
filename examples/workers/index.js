@@ -4319,7 +4319,6 @@ function(require, exports, module, undefined, global) {
 var process = require(72);
 var virt = require(5),
     has = require(38),
-    extend = require(40),
     emptyFunction = require(54);
 
 
@@ -4338,8 +4337,9 @@ function Image(props, children, context) {
         }
     }
 
-    Component.call(this, props, children, context);
+    Component.call(this, getProps(props), children, context);
 
+    this.__originalProps = props;
     this.__hasEvents = !!(props.onLoad || props.onError);
 }
 Component.extend(Image, "img");
@@ -4348,47 +4348,50 @@ ImagePrototype = Image.prototype;
 ImagePrototype.componentDidMount = function() {
     this.emitMessage("virt.dom.Image.mount", {
         id: this.getInternalId(),
-        src: this.props.src
+        src: this.__originalProps.src
     });
+};
+
+ImagePrototype.componentWillReceiveProps = function(nextProps) {
+    Image_onProps(this, nextProps);
 };
 
 ImagePrototype.componentDidUpdate = function() {
+
+    Image_onProps(this, this.__originalProps);
+
     this.emitMessage("virt.dom.Image.setSrc", {
         id: this.getInternalId(),
-        src: this.props.src
+        src: this.__originalProps.src
     });
 };
 
-ImagePrototype.__getRenderProps = function() {
-    var props = this.props,
-        localHas, renderProps, key;
+ImagePrototype.render = function() {
+    return new View("img", null, null, this.props, this.children, null, null);
+};
 
+function Image_onProps(_this, props) {
+    _this.props = getProps(props);
+    _this.__originalProps = props;
+    _this.__hasEvents = !!(props.onLoad || props.onError);
+}
 
-    if (!this.__hasEvents || this.isMounted()) {
-        return extend({
-            onLoad: emptyFunction,
-            onError: emptyFunction
-        }, props);
-    } else {
-        localHas = has;
+function getProps(props) {
+    var localHas = has,
         renderProps = {
             onLoad: emptyFunction,
             onError: emptyFunction
-        };
+        },
+        key;
 
-        for (key in props) {
-            if (localHas(props, key) && key !== "src") {
-                renderProps[key] = props[key];
-            }
+    for (key in props) {
+        if (localHas(props, key) && key !== "src") {
+            renderProps[key] = props[key];
         }
-
-        return renderProps;
     }
-};
 
-ImagePrototype.render = function() {
-    return new View("img", null, null, this.__getRenderProps(), this.children, null, null);
-};
+    return renderProps;
+}
 
 
 },
@@ -4768,6 +4771,7 @@ var consts = require(107),
 
 var topLevelTypes = consts.topLevelTypes,
     topLevelToEvent = consts.topLevelToEvent,
+    GLOBAL_IMAGE = typeof(Image) !== "undefined" ? new Image() : {},
     imageHandlers = exports;
 
 
@@ -4775,14 +4779,18 @@ imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
     var id = data.id,
         eventHandler = findEventHandler(id),
         node = findDOMNode(id),
-        src;
+        localImage = GLOBAL_IMAGE,
+        src, originalSrc;
 
     if (eventHandler && node) {
         eventHandler.addBubbledEvent(topLevelTypes.topLoad, topLevelToEvent.topLoad, node);
         eventHandler.addBubbledEvent(topLevelTypes.topError, topLevelToEvent.topError, node);
 
         src = data.src;
-        if (node.src !== src) {
+        localImage.src = src;
+        originalSrc = localImage.src;
+
+        if (src !== originalSrc) {
             node.src = src;
         }
 
@@ -4795,14 +4803,18 @@ imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
 imageHandlers["virt.dom.Image.setSrc"] = function(data, callback) {
     var id = data.id,
         node = findDOMNode(id),
+        localImage = GLOBAL_IMAGE,
         src;
 
     if (node) {
         src = data.src;
+        localImage.src = src;
+        originalSrc = localImage.src;
 
-        if (node.src !== src) {
+        if (src !== originalSrc) {
             node.src = src;
         }
+
         callback();
     } else {
         callback(new Error("events(data, callback): No DOM node found with id " + data.id));
