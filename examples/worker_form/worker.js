@@ -4772,22 +4772,13 @@ var topLevelTypes = consts.topLevelTypes,
 imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
     var id = data.id,
         eventHandler = findEventHandler(id),
-        node = findDOMNode(id),
-        localImage = GLOBAL_IMAGE,
-        src, originalSrc;
+        node = findDOMNode(id);
 
     if (eventHandler && node) {
         eventHandler.addBubbledEvent(topLevelTypes.topLoad, topLevelToEvent.topLoad, node);
         eventHandler.addBubbledEvent(topLevelTypes.topError, topLevelToEvent.topError, node);
 
-        src = data.src;
-        localImage.src = src;
-        originalSrc = localImage.src;
-
-        if (src !== originalSrc) {
-            node.src = src;
-        }
-
+        node.src = data.src;
         callback();
     } else {
         callback(new Error("events(data, callback): No DOM node found with id " + data.id));
