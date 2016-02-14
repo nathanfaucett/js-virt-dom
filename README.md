@@ -1,7 +1,7 @@
 virt DOM
 =======
 
-virt adapter for the DOM
+virt adapter for the DOM. [examples](http://nathanfaucett.github.io/virt-dom/)
 
 ```javascript
 var virt = require("virt"),

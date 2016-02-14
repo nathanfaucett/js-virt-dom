@@ -14,24 +14,25 @@
   "scripts": {
     "test-browser-local": "zuul --local 8080 --ui tape -- ./test",
     "input_events": "comn -f ./examples/input_events/src/index.js -o ./examples/input_events/index.js",
-    "dragdrop": "comn -f ./examples/dragdrop/src/index.js -o ./examples/dragdrop/index.js",
     "simple": "comn -f ./examples/simple/src/index.js -o ./examples/simple/index.js",
     "replace": "comn -f ./examples/replace/src/index.js -o ./examples/replace/index.js",
     "components": "comn -f ./examples/components/src/index.js -o ./examples/components/index.js",
     "workers": "comn -f ./examples/workers/src/index.js -o ./examples/workers/index.js && comn -f ./examples/workers/src/worker.js -o ./examples/workers/worker.js",
     "worker_form": "comn -f ./examples/worker_form/src/index.js -o ./examples/worker_form/index.js && comn -f ./examples/worker_form/src/worker.js -o examples/worker_form/worker.js",
     "websocket_form": "comn -f ./examples/websocket_form/src/index.js -o ./examples/websocket_form/index.js",
-    "examples": "npm run dragdrop && npm run simple && npm run replace && npm run components && npm run workers && npm run worker_form && npm run websocket_form"
+    "examples": "npm run simple && npm run replace && npm run components && npm run workers && npm run worker_form && npm run websocket_form"
   },
   "author": "Nathan Faucett",
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
+    "bufferutil": "^1.2.1",
     "comn": "git://github.com/nathanfaucett/comn.git",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.3",
     "grunt-jsbeautifier": "^0.2.10",
     "tape": "^4.2.2",
+    "utf-8-validate": "^1.2.1",
     "zuul": "^3.7.2"
   },
   "dependencies": {

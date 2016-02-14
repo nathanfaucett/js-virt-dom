@@ -870,7 +870,7 @@ owner.current = null;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_primitive/src/index.js */
+/* ../../../node_modules/is_primitive/src/index.js */
 
 var isNullOrUndefined = require(20);
 
@@ -886,7 +886,7 @@ function isPrimitive(obj) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_function/src/index.js */
+/* ../../../node_modules/is_function/src/index.js */
 
 var objectToString = Object.prototype.toString,
     isFunction;
@@ -912,7 +912,7 @@ module.exports = isFunction;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_array/src/index.js */
+/* ../../../node_modules/is_array/src/index.js */
 
 var isNative = require(28),
     isLength = require(29),
@@ -942,7 +942,7 @@ module.exports = isArray;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_string/src/index.js */
+/* ../../../node_modules/is_string/src/index.js */
 
 module.exports = isString;
 
@@ -954,7 +954,7 @@ function isString(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_object_like/src/index.js */
+/* ../../../node_modules/is_object_like/src/index.js */
 
 var isNullOrUndefined = require(20);
 
@@ -969,7 +969,7 @@ function isObjectLike(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_null_or_undefined/src/index.js */
+/* ../../../node_modules/is_null_or_undefined/src/index.js */
 
 var isNull = require(26),
     isUndefined = require(27);
@@ -997,7 +997,7 @@ function isNullOrUndefined(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_number/src/index.js */
+/* ../../../node_modules/is_number/src/index.js */
 
 module.exports = isNumber;
 
@@ -1009,7 +1009,7 @@ function isNumber(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/has/src/index.js */
+/* ../../../node_modules/has/src/index.js */
 
 var isNative = require(28),
     getPrototypeOf = require(33),
@@ -1050,7 +1050,7 @@ if (isNative(nativeHasOwnProp)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/array-map/src/index.js */
+/* ../../../node_modules/array-map/src/index.js */
 
 module.exports = arrayMap;
 
@@ -1071,7 +1071,7 @@ function arrayMap(array, callback) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/extend/src/index.js */
+/* ../../../node_modules/extend/src/index.js */
 
 var keys = require(34);
 
@@ -1146,7 +1146,7 @@ function toJSON(props, json) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_null/src/index.js */
+/* ../../../node_modules/is_null/src/index.js */
 
 module.exports = isNull;
 
@@ -1158,7 +1158,7 @@ function isNull(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_undefined/src/index.js */
+/* ../../../node_modules/is_undefined/src/index.js */
 
 module.exports = isUndefined;
 
@@ -1170,7 +1170,7 @@ function isUndefined(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_native/src/index.js */
+/* ../../../node_modules/is_native/src/index.js */
 
 var isFunction = require(16),
     isNullOrUndefined = require(20),
@@ -1220,7 +1220,7 @@ isHostObject = function isHostObject(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_length/src/index.js */
+/* ../../../node_modules/is_length/src/index.js */
 
 var isNumber = require(21);
 
@@ -1238,7 +1238,7 @@ function isLength(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_object/src/index.js */
+/* ../../../node_modules/is_object/src/index.js */
 
 var isNull = require(26);
 
@@ -1254,7 +1254,7 @@ function isObject(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/escape_regexp/src/index.js */
+/* ../../../node_modules/escape_regexp/src/index.js */
 
 var toString = require(32);
 
@@ -1278,7 +1278,7 @@ function escapeRegExp(string) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/to_string/src/index.js */
+/* ../../../node_modules/to_string/src/index.js */
 
 var isString = require(18),
     isNullOrUndefined = require(20);
@@ -1300,7 +1300,7 @@ function toString(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/get_prototype_of/src/index.js */
+/* ../../../node_modules/get_prototype_of/src/index.js */
 
 var isObject = require(30),
     isNative = require(28),
@@ -1341,7 +1341,7 @@ if (isNative(nativeGetPrototypeOf)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/keys/src/index.js */
+/* ../../../node_modules/keys/src/index.js */
 
 var has = require(22),
     isNative = require(28),
@@ -1383,7 +1383,7 @@ if (!isNative(nativeKeys)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/empty_function/src/index.js */
+/* ../../../node_modules/empty_function/src/index.js */
 
 module.exports = emptyFunction;
 
@@ -2253,7 +2253,7 @@ function mountEvents(id, props, eventManager, transaction) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/create_pool/src/index.js */
+/* ../../../node_modules/create_pool/src/index.js */
 
 var isFunction = require(16),
     isNumber = require(21),
@@ -2441,7 +2441,7 @@ function createReleaser(Constructor) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/queue/src/index.js */
+/* ../../../node_modules/queue/src/index.js */
 
 var createPool = require(41);
 
@@ -2836,7 +2836,7 @@ TextPatchPrototype.toJSON = function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/define_property/src/index.js */
+/* ../../../node_modules/define_property/src/index.js */
 
 var isObject = require(30),
     isFunction = require(16),
@@ -2896,7 +2896,7 @@ if (!isNative(nativeDefineProperty) || !(function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/key_mirror/src/index.js */
+/* ../../../node_modules/key_mirror/src/index.js */
 
 var keys = require(34),
     isArrayLike = require(53);
@@ -2940,7 +2940,7 @@ function keyMirrorObject(object) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_array_like/src/index.js */
+/* ../../../node_modules/key_mirror/node_modules/is_array_like/src/index.js */
 
 var isLength = require(29),
     isFunction = require(16),
@@ -2957,7 +2957,7 @@ function isArrayLike(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/process/browser.js */
+/* ../../../node_modules/process/browser.js */
 
 // shim for using process in browser
 
@@ -3054,7 +3054,7 @@ process.umask = function() { return 0; };
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/index_of/src/index.js */
+/* ../../../node_modules/index_of/src/index.js */
 
 var isEqual = require(60);
 
@@ -3330,7 +3330,7 @@ function keyIndex(children) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_equal/src/index.js */
+/* ../../../node_modules/is_equal/src/index.js */
 
 module.exports = isEqual;
 
@@ -3368,7 +3368,7 @@ function createNativeComponentForType(type) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/inherits/src/index.js */
+/* ../../../node_modules/inherits/src/index.js */
 
 var create = require(63),
     extend = require(24),
@@ -3420,7 +3420,7 @@ function defineStatic(name, value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/create/src/index.js */
+/* ../../../node_modules/create/src/index.js */
 
 var isNull = require(26),
     isNative = require(28),
@@ -3463,7 +3463,7 @@ module.exports = create;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/mixin/src/index.js */
+/* ../../../node_modules/mixin/src/index.js */
 
 var keys = require(34),
     isNullOrUndefined = require(20);
@@ -8801,9 +8801,10 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 function(require, exports, module, undefined, global) {
 /* ../node_modules/prop_types/src/index.js */
 
-var isArray = require(17),
-    isRegExp = require(180),
-    isNullOrUndefined = require(181),
+var i18n = require(180),
+    isArray = require(17),
+    isRegExp = require(181),
+    isNullOrUndefined = require(20),
     emptyFunction = require(35),
     isFunction = require(16),
     has = require(22),
@@ -8811,42 +8812,73 @@ var isArray = require(17),
 
 
 var propTypes = exports,
-    ANONYMOUS_CALLER = "<<anonymous>>";
+    defaultLocale = "en";
 
+
+i18n = i18n.create(true, true);
+
+
+if (!i18n.has("en", "prop_types.anonymous")) {
+    i18n.add("en", require(182));
+}
+
+
+propTypes.createTypeChecker = createTypeChecker;
+
+function createTypeChecker(validate) {
+
+    function checkType(props, propName, callerName, locale) {
+        if (isNullOrUndefined(props[propName])) {
+            return null;
+        } else {
+            return validate(props, propName, callerName || ("<<" + i18n(locale || defaultLocale, "prop_types.anonymous") + ">>"), locale || defaultLocale);
+        }
+    }
+
+    checkType.isRequired = function checkIsRequired(props, propName, callerName, locale) {
+        callerName = callerName || ("<<" + i18n(locale || defaultLocale, "prop_types.anonymous") + ">>");
+
+        if (isNullOrUndefined(props[propName])) {
+            return new TypeError(i18n(locale || defaultLocale, "prop_types.is_required", propName, callerName));
+        } else {
+            return validate(props, propName, callerName, locale || defaultLocale);
+        }
+    };
+
+    return checkType;
+}
 
 propTypes.array = createPrimitiveTypeChecker("array");
 propTypes.bool = createPrimitiveTypeChecker("boolean");
+propTypes["boolean"] = propTypes.bool;
 propTypes.func = createPrimitiveTypeChecker("function");
+propTypes["function"] = propTypes.func;
 propTypes.number = createPrimitiveTypeChecker("number");
 propTypes.object = createPrimitiveTypeChecker("object");
 propTypes.string = createPrimitiveTypeChecker("string");
 
-propTypes.regexp = createTypeChecker(function validate(props, propName, callerName) {
+propTypes.regexp = createTypeChecker(function validateRegExp(props, propName, callerName, locale) {
     var propValue = props[propName];
 
     if (isRegExp(propValue)) {
         return null;
     } else {
-        return new TypeError(
-            "Invalid " + propName + " of value " + propValue + " supplied to " + callerName + ", " +
-            "expected RexExp."
-        );
+        return new TypeError(i18n(locale || defaultLocale, "prop_types.regexp", propName, propValue, callerName));
     }
 });
 
 propTypes.instanceOf = function createInstanceOfCheck(expectedClass) {
-    return createTypeChecker(function validate(props, propName, callerName) {
+    return createTypeChecker(function validateInstanceOf(props, propName, callerName, locale) {
         var propValue = props[propName],
             expectedClassName;
 
         if (propValue instanceof expectedClass) {
             return null;
         } else {
-            expectedClassName = expectedClass.name || ANONYMOUS_CALLER;
+            expectedClassName = expectedClass.name || ("<<" + i18n(locale || defaultLocale, "prop_types.anonymous") + ">>");
 
             return new TypeError(
-                "Invalid " + propName + " of type " + getPreciseType(propValue) + " supplied to " + callerName + ", " +
-                "expected instance of " + expectedClassName + "."
+                i18n(locale || defaultLocale, "prop_types.instance_of", propName, getPreciseType(propValue), callerName, expectedClassName)
             );
         }
     });
@@ -8855,15 +8887,14 @@ propTypes.instanceOf = function createInstanceOfCheck(expectedClass) {
 propTypes.any = createTypeChecker(emptyFunction.thatReturnsNull);
 
 propTypes.oneOf = function createOneOfCheck(expectedValues) {
-    return createTypeChecker(function validate(props, propName, callerName) {
+    return createTypeChecker(function validateOneOf(props, propName, callerName, locale) {
         var propValue = props[propName];
 
         if (indexOf(expectedValues, propValue) !== -1) {
             return null;
         } else {
             return new TypeError(
-                "Invalid " + propName + " of value " + propValue + " supplied to " + callerName + ", " +
-                "expected one of " + JSON.stringify(expectedValues) + "."
+                i18n(locale || defaultLocale, "prop_types.one_of", propName, propValue, callerName, JSON.stringify(expectedValues))
             );
         }
     });
@@ -8875,21 +8906,22 @@ propTypes.implement = function createImplementCheck(expectedInterface) {
     for (key in expectedInterface) {
         if (has(expectedInterface, key) && !isFunction(expectedInterface[key])) {
             throw new TypeError(
-                "Invalid Interface value " + key + ", must be functions " +
-                "(props : Object, propName : String[, callerName : String]) return Error or null."
+                "Invalid Function Interface for " + key + ", must be functions " +
+                "Function(props: Object, propName: String, callerName: String, locale) return Error or null."
             );
         }
     }
 
-    return createTypeChecker(function validate(props, propName, callerName) {
+    return createTypeChecker(function validateImplement(props, propName, callerName, locale) {
         var results = null,
+            localHas = has,
             propInterface = props[propName],
             propKey, propValidate, result;
 
         for (propKey in expectedInterface) {
-            if (has(expectedInterface, propKey)) {
+            if (localHas(expectedInterface, propKey)) {
                 propValidate = expectedInterface[propKey];
-                result = propValidate(propInterface, propKey, callerName + "." + propKey);
+                result = propValidate(propInterface, propKey, callerName + "." + propKey, locale || defaultLocale);
 
                 if (result) {
                     results = results || [];
@@ -8902,46 +8934,16 @@ propTypes.implement = function createImplementCheck(expectedInterface) {
     });
 };
 
-
-propTypes.createTypeChecker = createTypeChecker;
-
-
-function createTypeChecker(validate) {
-
-    function checkType(props, propName, callerName) {
-        if (isNullOrUndefined(props[propName])) {
-            return null;
-        } else {
-            return validate(props, propName, callerName || ANONYMOUS_CALLER);
-        }
-    }
-
-    checkType.isRequired = function checkIsRequired(props, propName, callerName) {
-        callerName = callerName || ANONYMOUS_CALLER;
-
-        if (isNullOrUndefined(props[propName])) {
-            return new TypeError(
-                "Required " + propName + " was not specified in " + callerName + "."
-            );
-        } else {
-            return validate(props, propName, callerName);
-        }
-    };
-
-    return checkType;
-}
-
 function createPrimitiveTypeChecker(expectedType) {
-    return createTypeChecker(function validate(props, propName, callerName) {
+    return createTypeChecker(function validatePrimitive(props, propName, callerName, locale) {
         var propValue = props[propName],
             type = getPropType(propValue);
 
         if (type !== expectedType) {
-            callerName = callerName || ANONYMOUS_CALLER;
+            callerName = callerName || ("<<" + i18n(locale || defaultLocale, "prop_types.anonymous") + ">>");
 
             return new TypeError(
-                "Invalid " + propName + " of type " + getPreciseType(propValue) + " " +
-                "supplied to " + callerName + " expected " + expectedType + "."
+                i18n(locale || defaultLocale, "prop_types.primitive", propName, getPreciseType(propValue), callerName, expectedType)
             );
         } else {
             return null;
@@ -8984,9 +8986,9 @@ function(require, exports, module, undefined, global) {
 
 var virt = require(1),
     map = require(106),
-    dispatcher = require(182),
-    TodoStore = require(183),
-    TodoItem = require(184);
+    dispatcher = require(186),
+    TodoStore = require(187),
+    TodoItem = require(188);
 
 
 var TodoListPrototype;
@@ -9065,10 +9067,10 @@ function(require, exports, module, undefined, global) {
 /* todo_form.js */
 
 var virt = require(1),
-    parallel = require(188),
+    parallel = require(191),
     eventListener = require(125),
-    dispatcher = require(182),
-    TodoStore = require(183);
+    dispatcher = require(186),
+    TodoStore = require(187);
 
 
 var TodoFormPrototype;
@@ -9167,12 +9169,167 @@ TodoFormPrototype.render = function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../node_modules/prop_types/node_modules/is_regexp/src/isRegExp.js */
+/* ../node_modules/i18n/src/index.js */
 
-var isObjectLike = require(19);
+var isArray = require(17),
+    isString = require(18),
+    isObject = require(30),
+    format = require(183),
+    fastSlice = require(184),
+    has = require(22),
+    defineProperty = require(51);
+
+
+var translationCache = global.__I18N_TRANSLATIONS__;
+
+
+if (!translationCache) {
+    translationCache = {};
+    defineProperty(global, "__I18N_TRANSLATIONS__", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: translationCache
+    });
+}
+
+
+module.exports = create(false, false);
+
+
+function create(flatMode, throwMissingError) {
+
+    flatMode = !!flatMode;
+    throwMissingError = !!throwMissingError;
+
+
+    function i18n(locale, key) {
+        return i18n.translate(locale, key, fastSlice(arguments, 2));
+    }
+
+    i18n.create = create;
+
+    i18n.translate = function(locale, key, args) {
+        var translations = translationCache[locale] || null;
+
+        if (translations === null) {
+            throw new Error("i18n(key[, locale[, ...args]]) no translations for " + locale + " locale");
+        }
+        if (!isString(key)) {
+            throw new TypeError("i18n(key[, locale[, ...args]]) key must be a String");
+        }
+
+        args = isArray(args) ? args : [];
+
+        if (flatMode === true) {
+            return translateFlat(key, translations, args);
+        } else {
+            return translate(key, translations, args);
+        }
+    };
+
+    i18n.flatMode = function(value) {
+        flatMode = !!value;
+    };
+
+    i18n.throwMissingError = function(value) {
+        throwMissingError = !!value;
+    };
+
+    i18n.reset = function() {
+        flatMode = false;
+        throwMissingError = false;
+    };
+
+    i18n.has = function(locale, key) {
+        if (has(translationCache[locale], key)) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    i18n.add = function(locale, object) {
+        var translations = translationCache[locale] || (translationCache[locale] = {}),
+            localHas, key;
+
+        if (isObject(object)) {
+            localHas = has;
+
+            for (key in object) {
+                if (localHas(object, key)) {
+                    if (localHas(translations, key)) {
+                        throw new TypeError("i18n.add(locale, object) cannot override " + locale + " translation with key " + key);
+                    } else {
+                        translations[key] = object[key];
+                    }
+                }
+            }
+        } else {
+            throw new TypeError("i18n.add(locale, object) object must be an Object");
+        }
+    };
+
+    function missingTranslation(key) {
+        if (throwMissingError) {
+            throw new Error("i18n(locale, key) missing translation for key " + key);
+        } else {
+            return "--" + key + "--";
+        }
+    }
+
+    function translate(key, translations, args) {
+        var origKey = key,
+            keys = key.split("."),
+            length = keys.length - 1,
+            i = 0,
+            value = translations[keys[i]];
+
+
+        while (i++ < length) {
+            key = keys[i];
+
+            if (isObject(value)) {
+                value = value[key];
+
+                if (value == null) {
+                    return missingTranslation(origKey);
+                }
+            } else {
+                return missingTranslation(origKey);
+            }
+        }
+
+        if (value == null || isObject(value)) {
+            return missingTranslation(origKey);
+        } else {
+            return args.length !== 0 ? format.array(value, args) : value;
+        }
+    }
+
+    function translateFlat(key, translations, args) {
+        var value = translations[key];
+
+        if (value == null || isObject(value)) {
+            return missingTranslation(key);
+        } else {
+            return args.length !== 0 ? format.array(value, args) : value;
+        }
+    }
+
+    return i18n;
+}
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../node_modules/is_regexp/src/index.js */
+
+var isObject = require(30);
 
 
 var objectToString = Object.prototype.toString;
+
 
 module.exports = isRegExp;
 
@@ -9190,7 +9347,7 @@ module.exports = isRegExp;
 */
 function isRegExp(value) {
     return (
-        isObjectLike(value) &&
+        isObject(value) &&
         objectToString.call(value) === "[object RegExp]"
     ) || false;
 }
@@ -9198,27 +9355,187 @@ function isRegExp(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../node_modules/prop_types/node_modules/is_null_or_undefined/src/isNullOrUndefined.js */
+/* ../node_modules/prop_types/src/en.js */
 
-module.exports = isNullOrUndefined;
+module.exports = {
+    "prop_types.regexp": "Invalid %s of value %s supplied to %s, expected RexExp.",
+    "prop_types.instance_of": "Invalid %s of type %s supplied to %s, expected instance of %s.",
+    "prop_types.one_of": "Invalid %s of value %s supplied to %s, expected one of %s.",
+    "prop_types.is_required": "Required %s was not specified in %s.",
+    "prop_types.primitive": "Invalid %s of type %s supplied to %s expected %s.",
+    "prop_types.anonymous": "anonymous"
+};
 
-/**
-  isNullOrUndefined accepts any value and returns true
-  if the value is null or undefined. For all other values
-  false is returned.
-  
-  @param {Any}        any value to test
-  @returns {Boolean}  the boolean result of testing value
 
-  @example
-    isNullOrUndefined(null);   // returns true
-    isNullOrUndefined(undefined);   // returns true
-    isNullOrUndefined("string");    // returns false
-**/
-function isNullOrUndefined(obj) {
+},
+function(require, exports, module, undefined, global) {
+/* ../node_modules/format/src/index.js */
 
-    return (obj === null || obj === void 0);
+var isString = require(18),
+    isObject = require(30),
+    isPrimitive = require(15),
+    isArrayLike = require(53),
+    isFunction = require(16),
+    indexOf = require(55),
+    fastSlice = require(184);
 
+
+var reFormat = /%([a-z%])/g,
+    toString = Object.prototype.toString;
+
+
+module.exports = format;
+
+
+function format(str) {
+    return baseFormat(str, fastSlice(arguments, 1));
+}
+
+format.array = baseFormat;
+
+function baseFormat(str, args) {
+    var i = 0,
+        length = args ? args.length : 0;
+
+    return (isString(str) ? str + "" : "").replace(reFormat, function(match, s) {
+        var value, formatter;
+
+        if (match === "%%") {
+            return "%";
+        }
+        if (i >= length) {
+            return "";
+        }
+
+        formatter = format[s];
+        value = args[i++];
+
+        return value != null && isFunction(formatter) ? formatter(value) : "";
+    });
+}
+
+format.s = function(value) {
+    return String(value);
+};
+
+format.d = function(value) {
+    return Number(value);
+};
+
+format.j = function(value) {
+    try {
+        return JSON.stringify(value);
+    } catch (e) {
+        return "[Circular]";
+    }
+};
+
+function inspectObject(value, inspected, depth, maxDepth) {
+    var out, i, il, keys, key;
+
+    if (indexOf(inspected, value) !== -1) {
+        return toString.call(value);
+    }
+
+    inspected[inspected.length] = value;
+
+    if (isFunction(value) || depth >= maxDepth) {
+        return toString.call(value);
+    }
+
+    if (isArrayLike(value) && value !== global) {
+        depth++;
+        out = [];
+
+        i = -1;
+        il = value.length - 1;
+        while (i++ < il) {
+            out[i] = inspect(value[i], inspected, depth, maxDepth);
+        }
+
+        return out;
+    } else if (isObject(value)) {
+        depth++;
+        out = {};
+        keys = utils.keys(value);
+
+        i = -1;
+        il = keys.length - 1;
+        while (i++ < il) {
+            key = keys[i];
+            out[key] = inspect(value[key], inspected, depth, maxDepth);
+        }
+
+        return out;
+    }
+
+    return isFunction(value.toString) ? value.toString() : value + "";
+}
+
+function inspectPrimitive(value) {
+    return isNumber(value) ? Number(value) : String(value);
+}
+
+function inspect(value, inspected, depth, maxDepth) {
+    return isPrimitive(value) ? inspectPrimitive(value) : inspectObject(value, inspected, depth, maxDepth);
+}
+
+format.o = function(value) {
+    try {
+        return JSON.stringify(inspect(value, [], 0, 5), null, 2);
+    } catch (e) {
+        return "[Circular]";
+    }
+};
+
+format.inspect = format.o;
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../node_modules/fast_slice/src/index.js */
+
+var clamp = require(185),
+    isNumber = require(21);
+
+
+module.exports = fastSlice;
+
+
+function fastSlice(array, offset) {
+    var length = array.length,
+        newLength, i, il, result, j;
+
+    offset = clamp(isNumber(offset) ? offset : 0, 0, length);
+    i = offset - 1;
+    il = length - 1;
+    newLength = length - offset;
+    result = new Array(newLength);
+    j = 0;
+
+    while (i++ < il) {
+        result[j++] = array[i];
+    }
+
+    return result;
+}
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../node_modules/clamp/src/index.js */
+
+module.exports = clamp;
+
+
+function clamp(x, min, max) {
+    if (x < min) {
+        return min;
+    } else if (x > max) {
+        return max;
+    } else {
+        return x;
+    }
 }
 
 
@@ -9226,7 +9543,7 @@ function isNullOrUndefined(obj) {
 function(require, exports, module, undefined, global) {
 /* dispatcher.js */
 
-var EventEmitter = require(185);
+var EventEmitter = require(189);
 
 
 var dispatcher = module.exports = new EventEmitter(-1),
@@ -9251,9 +9568,9 @@ dispatcher.handleViewAction = function(action) {
 function(require, exports, module, undefined, global) {
 /* todo_store.js */
 
-var EventEmitter = require(185),
-    values = require(187),
-    dispatcher = require(182);
+var EventEmitter = require(189),
+    values = require(190),
+    dispatcher = require(186);
 
 
 var TodoStore = module.exports = new EventEmitter(-1),
@@ -9401,16 +9718,25 @@ function(require, exports, module, undefined, global) {
 
 var isFunction = require(16),
     inherits = require(62),
-    fastSlice = require(186),
-    keys = require(34);
+    fastSlice = require(184),
+    keys = require(34),
+    isNumber = require(21),
+    isNullOrUndefined = require(20);
+
+
+var EventEmitterPrototype;
+
+
+module.exports = EventEmitter;
 
 
 function EventEmitter(maxListeners) {
     this.__events = {};
-    this.__maxListeners = maxListeners != null ? maxListeners : EventEmitter.defaultMaxListeners;
+    this.__maxListeners = isNumber(maxListeners) ? +maxListeners : EventEmitter.defaultMaxListeners;
 }
+EventEmitterPrototype = EventEmitter.prototype;
 
-EventEmitter.prototype.on = function(name, listener) {
+EventEmitterPrototype.on = function(name, listener) {
     var events, eventList, maxListeners;
 
     if (!isFunction(listener)) {
@@ -9432,9 +9758,9 @@ EventEmitter.prototype.on = function(name, listener) {
     return this;
 };
 
-EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+EventEmitterPrototype.addEventListener = EventEmitterPrototype.addListener = EventEmitterPrototype.on;
 
-EventEmitter.prototype.once = function(name, listener) {
+EventEmitterPrototype.once = function(name, listener) {
     var _this = this;
 
     function once() {
@@ -9462,23 +9788,23 @@ EventEmitter.prototype.once = function(name, listener) {
     return once;
 };
 
-EventEmitter.prototype.listenTo = function(obj, name) {
+EventEmitterPrototype.listenTo = function(value, name) {
     var _this = this;
 
-    if (!obj || !(isFunction(obj.on) || isFunction(obj.addListener))) {
-        throw new TypeError("EventEmitter.listenTo(obj, name) obj must have a on function taking (name, listener[, ctx])");
+    if (!value || !(isFunction(value.on) || isFunction(value.addListener))) {
+        throw new TypeError("EventEmitter.listenTo(value, name) value must have a on function taking (name, listener[, ctx])");
     }
 
     function handler() {
         _this.emitArgs(name, arguments);
     }
 
-    obj.on(name, handler);
+    value.on(name, handler);
 
     return handler;
 };
 
-EventEmitter.prototype.off = function(name, listener) {
+EventEmitterPrototype.off = function(name, listener) {
     var events = this.__events || (this.__events = {}),
         eventList, event, i;
 
@@ -9515,9 +9841,9 @@ EventEmitter.prototype.off = function(name, listener) {
     return this;
 };
 
-EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
+EventEmitterPrototype.removeEventListener = EventEmitterPrototype.removeListener = EventEmitterPrototype.off;
 
-EventEmitter.prototype.removeAllListeners = function() {
+EventEmitterPrototype.removeAllListeners = function() {
     var events = this.__events || (this.__events = {}),
         objectKeys = keys(events),
         i = -1,
@@ -9543,121 +9869,213 @@ EventEmitter.prototype.removeAllListeners = function() {
     return this;
 };
 
-function emit(eventList, args) {
-    var a1, a2, a3, a4, a5,
-        length = eventList.length - 1,
-        i = -1,
+EventEmitterPrototype.dispatchEvent = function(event) {
+    return this.emitArg(event.type, event);
+};
+
+EventEmitterPrototype.attachEvent = function(type, listener) {
+    return this.on(type.slice(2), listener);
+};
+
+EventEmitterPrototype.detachEvent = function(type, listener) {
+    return this.off(type.slice(2), listener);
+};
+
+EventEmitterPrototype.fireEvent = function(type, event) {
+    return this.emitArg(type.slice(2), event);
+};
+
+function emit0(eventList) {
+    var i = -1,
+        il = eventList.length - 1,
         event;
 
+    while (i++ < il) {
+        if ((event = eventList[i])) {
+            event();
+        }
+    }
+}
+
+function emit1(eventList, a0) {
+    var i = -1,
+        il = eventList.length - 1,
+        event;
+
+    while (i++ < il) {
+        if ((event = eventList[i])) {
+            event(a0);
+        }
+    }
+}
+
+function emit2(eventList, args) {
+    var a0 = args[0],
+        a1 = args[1],
+        i = -1,
+        il = eventList.length - 1,
+        event;
+
+    while (i++ < il) {
+        if ((event = eventList[i])) {
+            event(a0, a1);
+        }
+    }
+}
+
+function emit3(eventList, args) {
+    var a0 = args[0],
+        a1 = args[1],
+        a2 = args[2],
+        i = -1,
+        il = eventList.length - 1,
+        event;
+
+    while (i++ < il) {
+        if ((event = eventList[i])) {
+            event(a0, a1, a2);
+        }
+    }
+}
+
+function emit4(eventList, args) {
+    var a0 = args[0],
+        a1 = args[1],
+        a2 = args[2],
+        a3 = args[3],
+        i = -1,
+        il = eventList.length - 1,
+        event;
+
+    while (i++ < il) {
+        if ((event = eventList[i])) {
+            event(a0, a1, a2, a3);
+        }
+    }
+}
+
+function emit5(eventList, args) {
+    var a0 = args[0],
+        a1 = args[1],
+        a2 = args[2],
+        a3 = args[3],
+        a4 = args[4],
+        i = -1,
+        il = eventList.length - 1,
+        event;
+
+    while (i++ < il) {
+        if ((event = eventList[i])) {
+            event(a0, a1, a2, a3, a4);
+        }
+    }
+}
+
+function emitApply(eventList, args) {
+    var i = -1,
+        il = eventList.length - 1,
+        event;
+
+    while (i++ < il) {
+        if ((event = eventList[i])) {
+            event.apply(null, args);
+        }
+    }
+}
+
+function emit(eventList, args) {
     switch (args.length) {
         case 0:
-            while (i++ < length) {
-                if ((event = eventList[i])) {
-                    event();
-                }
-            }
+            emit0(eventList);
             break;
         case 1:
-            a1 = args[0];
-            while (i++ < length) {
-                if ((event = eventList[i])) {
-                    event(a1);
-                }
-            }
+            emit1(eventList, args[0]);
             break;
         case 2:
-            a1 = args[0];
-            a2 = args[1];
-            while (i++ < length) {
-                if ((event = eventList[i])) {
-                    event(a1, a2);
-                }
-            }
+            emit2(eventList, args);
             break;
         case 3:
-            a1 = args[0];
-            a2 = args[1];
-            a3 = args[2];
-            while (i++ < length) {
-                if ((event = eventList[i])) {
-                    event(a1, a2, a3);
-                }
-            }
+            emit3(eventList, args);
             break;
         case 4:
-            a1 = args[0];
-            a2 = args[1];
-            a3 = args[2];
-            a4 = args[3];
-            while (i++ < length) {
-                if ((event = eventList[i])) {
-                    event(a1, a2, a3, a4);
-                }
-            }
+            emit4(eventList, args);
             break;
         case 5:
-            a1 = args[0];
-            a2 = args[1];
-            a3 = args[2];
-            a4 = args[3];
-            a5 = args[4];
-            while (i++ < length) {
-                if ((event = eventList[i])) {
-                    event(a1, a2, a3, a4, a5);
-                }
-            }
+            emit5(eventList, args);
             break;
         default:
-            while (i++ < length) {
-                if ((event = eventList[i])) {
-                    event.apply(null, args);
-                }
-            }
+            emitApply(eventList, args);
             break;
     }
 }
 
-EventEmitter.prototype.emitArgs = function(name, args) {
+EventEmitterPrototype.emitArg = function(name, arg) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
     if (!eventList || !eventList.length) {
         return this;
+    } else {
+        emit1(eventList, arg);
+        return this;
     }
-
-    emit(eventList, args);
-
-    return this;
 };
 
-EventEmitter.prototype.emit = function(name) {
+EventEmitterPrototype.emitArgs = function(name, args) {
+    var eventList = (this.__events || (this.__events = {}))[name];
+
+    if (!eventList || !eventList.length) {
+        return this;
+    } else {
+        emit(eventList, args);
+        return this;
+    }
+};
+
+EventEmitterPrototype.emit = function(name) {
     return this.emitArgs(name, fastSlice(arguments, 1));
 };
 
 function createFunctionCaller(args) {
+    var a0, a1, a2, a3, a4;
     switch (args.length) {
         case 0:
             return function functionCaller(fn) {
                 return fn();
             };
         case 1:
+            a0 = args[0];
             return function functionCaller(fn) {
-                return fn(args[0]);
+                return fn(a0);
             };
         case 2:
+            a0 = args[0];
+            a1 = args[1];
             return function functionCaller(fn) {
-                return fn(args[0], args[1]);
+                return fn(a0, a1);
             };
         case 3:
+            a0 = args[0];
+            a1 = args[1];
+            a2 = args[2];
             return function functionCaller(fn) {
-                return fn(args[0], args[1], args[2]);
+                return fn(a0, a1, a2);
             };
         case 4:
+            a0 = args[0];
+            a1 = args[1];
+            a2 = args[2];
+            a3 = args[3];
             return function functionCaller(fn) {
-                return fn(args[0], args[1], args[2], args[3]);
+                return fn(a0, a1, a2, a3);
             };
         case 5:
+            a0 = args[0];
+            a1 = args[1];
+            a2 = args[2];
+            a3 = args[3];
+            a4 = args[4];
             return function functionCaller(fn) {
-                return fn(args[0], args[1], args[2], args[3], args[4]);
+                return fn(a0, a1, a2, a3, a4);
             };
         default:
             return function functionCaller(fn) {
@@ -9672,11 +10090,11 @@ function emitAsync(eventList, args, callback) {
         called = false,
         functionCaller;
 
-    function next(err) {
+    function next(error) {
         if (called !== true) {
-            if (err || index === length) {
+            if (error || index === length) {
                 called = true;
-                callback(err);
+                callback(error);
             } else {
                 functionCaller(eventList[index++]);
             }
@@ -9688,7 +10106,7 @@ function emitAsync(eventList, args, callback) {
     next();
 }
 
-EventEmitter.prototype.emitAsync = function(name, args, callback) {
+EventEmitterPrototype.emitAsync = function(name, args, callback) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
     args = fastSlice(arguments, 1);
@@ -9696,30 +10114,27 @@ EventEmitter.prototype.emitAsync = function(name, args, callback) {
 
     if (!isFunction(callback)) {
         throw new TypeError("EventEmitter.emitAsync(name [, ...args], callback) callback must be a function");
-    }
-
-    if (!eventList || !eventList.length) {
-        callback();
     } else {
-        emitAsync(eventList, args, callback);
+        if (!eventList || !eventList.length) {
+            callback();
+        } else {
+            emitAsync(eventList, args, callback);
+        }
+        return this;
     }
-
-    return this;
 };
 
-EventEmitter.prototype.listeners = function(name) {
+EventEmitterPrototype.listeners = function(name) {
     var eventList = (this.__events || (this.__events = {}))[name];
-
     return eventList ? eventList.slice() : [];
 };
 
-EventEmitter.prototype.listenerCount = function(name) {
+EventEmitterPrototype.listenerCount = function(name) {
     var eventList = (this.__events || (this.__events = {}))[name];
-
     return eventList ? eventList.length : 0;
 };
 
-EventEmitter.prototype.setMaxListeners = function(value) {
+EventEmitterPrototype.setMaxListeners = function(value) {
     if ((value = +value) !== value) {
         throw new TypeError("EventEmitter.setMaxListeners(value) value must be a number");
     }
@@ -9728,28 +10143,26 @@ EventEmitter.prototype.setMaxListeners = function(value) {
     return this;
 };
 
-
 inherits.defineProperty(EventEmitter, "defaultMaxListeners", 10);
 
-
-inherits.defineProperty(EventEmitter, "listeners", function(obj, name) {
+inherits.defineProperty(EventEmitter, "listeners", function(value, name) {
     var eventList;
 
-    if (obj == null) {
-        throw new TypeError("EventEmitter.listeners(obj, name) obj required");
+    if (isNullOrUndefined(value)) {
+        throw new TypeError("EventEmitter.listeners(value, name) value required");
     }
-    eventList = obj.__events && obj.__events[name];
+    eventList = value.__events && value.__events[name];
 
     return eventList ? eventList.slice() : [];
 });
 
-inherits.defineProperty(EventEmitter, "listenerCount", function(obj, name) {
+inherits.defineProperty(EventEmitter, "listenerCount", function(value, name) {
     var eventList;
 
-    if (obj == null) {
-        throw new TypeError("EventEmitter.listenerCount(obj, name) obj required");
+    if (isNullOrUndefined(value)) {
+        throw new TypeError("EventEmitter.listenerCount(value, name) value required");
     }
-    eventList = obj.__events && obj.__events[name];
+    eventList = value.__events && value.__events[name];
 
     return eventList ? eventList.length : 0;
 });
@@ -9767,35 +10180,6 @@ EventEmitter.extend = function(child) {
     inherits(child, this);
     return child;
 };
-
-
-module.exports = EventEmitter;
-
-
-},
-function(require, exports, module, undefined, global) {
-/* ../node_modules/event_emitter/node_modules/fast_slice/src/index.js */
-
-module.exports = fastSlice;
-
-
-function fastSlice(array, offset) {
-    var length, i, il, result, j;
-
-    offset = offset || 0;
-
-    length = array.length;
-    i = offset - 1;
-    il = length - 1;
-    result = new Array(length - offset);
-    j = 0;
-
-    while (i++ < il) {
-        result[j++] = array[i];
-    }
-
-    return result;
-}
 
 
 },
@@ -9833,12 +10217,13 @@ function(require, exports, module, undefined, global) {
 /* ../node_modules/parallel/src/index.js */
 
 var keys = require(34),
-    objectValues = require(187).objectValues,
-    forEach = require(107),
+    objectValues = require(190).objectValues,
+    arrayForEach = require(110),
+    objectForEach = require(111),
     isArrayLike = require(53),
     isFunction = require(16),
     emptyFunction = require(35),
-    fastSlice = require(186);
+    fastSlice = require(184);
 
 
 module.exports = parallel;
@@ -9857,14 +10242,14 @@ function arrayParallel(tasks, callback) {
         count = tasks.length,
         called = false;
 
-    forEach(tasks, function(task, index) {
+    arrayForEach(tasks, function eachArrayParallel(task, index) {
         if (isFunction(task)) {
-            task(function(err) {
+            task(function next(error) {
                 var argsLength;
                 if (called === false) {
-                    if (err) {
+                    if (error) {
                         called = true;
-                        callback(err);
+                        callback(error);
                     } else {
                         argsLength = arguments.length;
                         if (argsLength > 1) {
@@ -9891,14 +10276,15 @@ function objectParallel(tasks, callback) {
         count = objectKeys.length,
         called = false;
 
-    forEach(values, function(task, index) {
+    objectForEach(values, function eachObjectParallel(task, index) {
         if (isFunction(task)) {
-            task(function(err) {
+            task(function next(error) {
                 var argsLength;
+
                 if (called === false) {
-                    if (err) {
+                    if (error) {
                         called = true;
-                        callback(err);
+                        callback(error);
                     } else {
                         argsLength = arguments.length;
                         if (argsLength > 1) {

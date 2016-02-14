@@ -1442,7 +1442,7 @@ owner.current = null;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_primitive/src/index.js */
+/* ../../../node_modules/is_primitive/src/index.js */
 
 var isNullOrUndefined = require(18);
 
@@ -1458,7 +1458,7 @@ function isPrimitive(obj) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_array/src/index.js */
+/* ../../../node_modules/is_array/src/index.js */
 
 var isNative = require(44),
     isLength = require(45),
@@ -1488,7 +1488,7 @@ module.exports = isArray;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_object_like/src/index.js */
+/* ../../../node_modules/is_object_like/src/index.js */
 
 var isNullOrUndefined = require(18);
 
@@ -1503,7 +1503,7 @@ function isObjectLike(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_number/src/index.js */
+/* ../../../node_modules/is_number/src/index.js */
 
 module.exports = isNumber;
 
@@ -1515,7 +1515,7 @@ function isNumber(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/has/src/index.js */
+/* ../../../node_modules/has/src/index.js */
 
 var isNative = require(44),
     getPrototypeOf = require(48),
@@ -1556,7 +1556,7 @@ if (isNative(nativeHasOwnProp)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/array-map/src/index.js */
+/* ../../../node_modules/array-map/src/index.js */
 
 module.exports = arrayMap;
 
@@ -1577,7 +1577,7 @@ function arrayMap(array, callback) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/extend/src/index.js */
+/* ../../../node_modules/extend/src/index.js */
 
 var keys = require(49);
 
@@ -1676,7 +1676,7 @@ function isUndefined(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_native/src/index.js */
+/* ../../../node_modules/is_native/src/index.js */
 
 var isFunction = require(15),
     isNullOrUndefined = require(18),
@@ -1726,7 +1726,7 @@ isHostObject = function isHostObject(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_length/src/index.js */
+/* ../../../node_modules/is_length/src/index.js */
 
 var isNumber = require(37);
 
@@ -1744,7 +1744,7 @@ function isLength(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/escape_regexp/src/index.js */
+/* ../../../node_modules/escape_regexp/src/index.js */
 
 var toString = require(47);
 
@@ -1768,7 +1768,7 @@ function escapeRegExp(string) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/to_string/src/index.js */
+/* ../../../node_modules/to_string/src/index.js */
 
 var isString = require(16),
     isNullOrUndefined = require(18);
@@ -1790,7 +1790,7 @@ function toString(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/get_prototype_of/src/index.js */
+/* ../../../node_modules/get_prototype_of/src/index.js */
 
 var isObject = require(17),
     isNative = require(44),
@@ -1831,7 +1831,7 @@ if (isNative(nativeGetPrototypeOf)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/keys/src/index.js */
+/* ../../../node_modules/keys/src/index.js */
 
 var has = require(38),
     isNative = require(44),
@@ -1873,7 +1873,7 @@ if (!isNative(nativeKeys)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/empty_function/src/index.js */
+/* ../../../node_modules/empty_function/src/index.js */
 
 module.exports = emptyFunction;
 
@@ -2743,7 +2743,7 @@ function mountEvents(id, props, eventManager, transaction) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/create_pool/src/index.js */
+/* ../../../node_modules/create_pool/src/index.js */
 
 var isFunction = require(15),
     isNumber = require(37),
@@ -2931,7 +2931,7 @@ function createReleaser(Constructor) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/queue/src/index.js */
+/* ../../../node_modules/queue/src/index.js */
 
 var createPool = require(56);
 
@@ -3326,7 +3326,7 @@ TextPatchPrototype.toJSON = function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/define_property/src/index.js */
+/* ../../../node_modules/define_property/src/index.js */
 
 var isObject = require(17),
     isFunction = require(15),
@@ -3386,7 +3386,7 @@ if (!isNative(nativeDefineProperty) || !(function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/key_mirror/src/index.js */
+/* ../../../node_modules/key_mirror/src/index.js */
 
 var keys = require(49),
     isArrayLike = require(68);
@@ -3430,7 +3430,7 @@ function keyMirrorObject(object) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_array_like/src/index.js */
+/* ../../../node_modules/key_mirror/node_modules/is_array_like/src/index.js */
 
 var isLength = require(45),
     isFunction = require(15),
@@ -3447,7 +3447,7 @@ function isArrayLike(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/process/browser.js */
+/* ../../../node_modules/process/browser.js */
 
 // shim for using process in browser
 
@@ -3544,7 +3544,7 @@ process.umask = function() { return 0; };
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/index_of/src/index.js */
+/* ../../../node_modules/index_of/src/index.js */
 
 var isEqual = require(75);
 
@@ -3820,7 +3820,7 @@ function keyIndex(children) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_equal/src/index.js */
+/* ../../../node_modules/is_equal/src/index.js */
 
 module.exports = isEqual;
 
@@ -3858,7 +3858,7 @@ function createNativeComponentForType(type) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/inherits/src/index.js */
+/* ../../../node_modules/inherits/src/index.js */
 
 var create = require(78),
     extend = require(40),
@@ -3910,7 +3910,7 @@ function defineStatic(name, value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/create/src/index.js */
+/* ../../../node_modules/create/src/index.js */
 
 var isNull = require(42),
     isNative = require(44),
@@ -3953,7 +3953,7 @@ module.exports = create;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/mixin/src/index.js */
+/* ../../../node_modules/mixin/src/index.js */
 
 var keys = require(49),
     isNullOrUndefined = require(18);

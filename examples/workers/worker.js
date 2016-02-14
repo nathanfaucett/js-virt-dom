@@ -195,50 +195,49 @@ function(require, exports, module, undefined, global) {
 
 var environment = require(98),
     emptyFunction = require(35),
-    time = require(177);
+    now = require(177);
 
 
 var window = environment.window,
-
-    nativeRequestAnimationFrame = (
-        window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.msRequestAnimationFrame
-    ),
-
-    nativeCancelAnimationFrame = (
-        window.cancelAnimationFrame ||
-        window.cancelRequestAnimationFrame ||
-
-        window.webkitCancelAnimationFrame ||
-        window.webkitCancelRequestAnimationFrame ||
-
-        window.mozCancelAnimationFrame ||
-        window.mozCancelRequestAnimationFrame ||
-
-        window.oCancelAnimationFrame ||
-        window.oCancelRequestAnimationFrame ||
-
-        window.msCancelAnimationFrame ||
-        window.msCancelRequestAnimationFrame
-    ),
-
-    requestAnimationFrame, lastTime, max;
+    requestAnimationFrame, lastTime;
 
 
-if (nativeRequestAnimationFrame) {
+window.requestAnimationFrame = (
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame
+);
+
+window.cancelRequestAnimationFrame = (
+    window.cancelAnimationFrame ||
+    window.cancelRequestAnimationFrame ||
+
+    window.webkitCancelAnimationFrame ||
+    window.webkitCancelRequestAnimationFrame ||
+
+    window.mozCancelAnimationFrame ||
+    window.mozCancelRequestAnimationFrame ||
+
+    window.oCancelAnimationFrame ||
+    window.oCancelRequestAnimationFrame ||
+
+    window.msCancelAnimationFrame ||
+    window.msCancelRequestAnimationFrame
+);
+
+
+if (window.requestAnimationFrame) {
     requestAnimationFrame = function requestAnimationFrame(callback, element) {
-        return nativeRequestAnimationFrame.call(window, callback, element);
+        return window.requestAnimationFrame(callback, element);
     };
 } else {
-    max = Math.max;
     lastTime = 0;
 
     requestAnimationFrame = function requestAnimationFrame(callback) {
-        var current = time.now(),
-            timeToCall = max(0, 16 - (current - lastTime)),
+        var current = now(),
+            timeToCall = Math.max(0, 16 - (current - lastTime)),
             id = global.setTimeout(
                 function runCallback() {
                     callback(current + timeToCall);
@@ -252,9 +251,9 @@ if (nativeRequestAnimationFrame) {
 }
 
 
-if (nativeCancelAnimationFrame && nativeRequestAnimationFrame) {
+if (window.cancelRequestAnimationFrame && window.requestAnimationFrame) {
     requestAnimationFrame.cancel = function(id) {
-        return nativeCancelAnimationFrame.call(window, id);
+        return window.cancelRequestAnimationFrame(id);
     };
 } else {
     requestAnimationFrame.cancel = function(id) {
@@ -919,7 +918,7 @@ owner.current = null;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_primitive/src/index.js */
+/* ../../../node_modules/is_primitive/src/index.js */
 
 var isNullOrUndefined = require(20);
 
@@ -935,7 +934,7 @@ function isPrimitive(obj) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_function/src/index.js */
+/* ../../../node_modules/is_function/src/index.js */
 
 var objectToString = Object.prototype.toString,
     isFunction;
@@ -961,7 +960,7 @@ module.exports = isFunction;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_array/src/index.js */
+/* ../../../node_modules/is_array/src/index.js */
 
 var isNative = require(28),
     isLength = require(29),
@@ -991,7 +990,7 @@ module.exports = isArray;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_string/src/index.js */
+/* ../../../node_modules/is_string/src/index.js */
 
 module.exports = isString;
 
@@ -1003,7 +1002,7 @@ function isString(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_object_like/src/index.js */
+/* ../../../node_modules/is_object_like/src/index.js */
 
 var isNullOrUndefined = require(20);
 
@@ -1018,7 +1017,7 @@ function isObjectLike(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_null_or_undefined/src/index.js */
+/* ../../../node_modules/is_null_or_undefined/src/index.js */
 
 var isNull = require(26),
     isUndefined = require(27);
@@ -1046,7 +1045,7 @@ function isNullOrUndefined(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_number/src/index.js */
+/* ../../../node_modules/is_number/src/index.js */
 
 module.exports = isNumber;
 
@@ -1058,7 +1057,7 @@ function isNumber(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/has/src/index.js */
+/* ../../../node_modules/has/src/index.js */
 
 var isNative = require(28),
     getPrototypeOf = require(33),
@@ -1099,7 +1098,7 @@ if (isNative(nativeHasOwnProp)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/array-map/src/index.js */
+/* ../../../node_modules/array-map/src/index.js */
 
 module.exports = arrayMap;
 
@@ -1120,7 +1119,7 @@ function arrayMap(array, callback) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/extend/src/index.js */
+/* ../../../node_modules/extend/src/index.js */
 
 var keys = require(34);
 
@@ -1195,7 +1194,7 @@ function toJSON(props, json) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_null/src/index.js */
+/* ../../../node_modules/is_null/src/index.js */
 
 module.exports = isNull;
 
@@ -1207,7 +1206,7 @@ function isNull(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_undefined/src/index.js */
+/* ../../../node_modules/is_undefined/src/index.js */
 
 module.exports = isUndefined;
 
@@ -1219,7 +1218,7 @@ function isUndefined(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_native/src/index.js */
+/* ../../../node_modules/is_native/src/index.js */
 
 var isFunction = require(16),
     isNullOrUndefined = require(20),
@@ -1269,7 +1268,7 @@ isHostObject = function isHostObject(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_length/src/index.js */
+/* ../../../node_modules/is_length/src/index.js */
 
 var isNumber = require(21);
 
@@ -1287,7 +1286,7 @@ function isLength(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_object/src/index.js */
+/* ../../../node_modules/is_object/src/index.js */
 
 var isNull = require(26);
 
@@ -1303,7 +1302,7 @@ function isObject(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/escape_regexp/src/index.js */
+/* ../../../node_modules/escape_regexp/src/index.js */
 
 var toString = require(32);
 
@@ -1327,7 +1326,7 @@ function escapeRegExp(string) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/to_string/src/index.js */
+/* ../../../node_modules/to_string/src/index.js */
 
 var isString = require(18),
     isNullOrUndefined = require(20);
@@ -1349,7 +1348,7 @@ function toString(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/get_prototype_of/src/index.js */
+/* ../../../node_modules/get_prototype_of/src/index.js */
 
 var isObject = require(30),
     isNative = require(28),
@@ -1390,7 +1389,7 @@ if (isNative(nativeGetPrototypeOf)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/keys/src/index.js */
+/* ../../../node_modules/keys/src/index.js */
 
 var has = require(22),
     isNative = require(28),
@@ -1432,7 +1431,7 @@ if (!isNative(nativeKeys)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/empty_function/src/index.js */
+/* ../../../node_modules/empty_function/src/index.js */
 
 module.exports = emptyFunction;
 
@@ -2302,7 +2301,7 @@ function mountEvents(id, props, eventManager, transaction) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/create_pool/src/index.js */
+/* ../../../node_modules/create_pool/src/index.js */
 
 var isFunction = require(16),
     isNumber = require(21),
@@ -2490,7 +2489,7 @@ function createReleaser(Constructor) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/queue/src/index.js */
+/* ../../../node_modules/queue/src/index.js */
 
 var createPool = require(41);
 
@@ -2885,7 +2884,7 @@ TextPatchPrototype.toJSON = function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/define_property/src/index.js */
+/* ../../../node_modules/define_property/src/index.js */
 
 var isObject = require(30),
     isFunction = require(16),
@@ -2945,7 +2944,7 @@ if (!isNative(nativeDefineProperty) || !(function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/key_mirror/src/index.js */
+/* ../../../node_modules/key_mirror/src/index.js */
 
 var keys = require(34),
     isArrayLike = require(53);
@@ -2989,7 +2988,7 @@ function keyMirrorObject(object) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_array_like/src/index.js */
+/* ../../../node_modules/key_mirror/node_modules/is_array_like/src/index.js */
 
 var isLength = require(29),
     isFunction = require(16),
@@ -3006,7 +3005,7 @@ function isArrayLike(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/process/browser.js */
+/* ../../../node_modules/process/browser.js */
 
 // shim for using process in browser
 
@@ -3103,7 +3102,7 @@ process.umask = function() { return 0; };
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/index_of/src/index.js */
+/* ../../../node_modules/index_of/src/index.js */
 
 var isEqual = require(60);
 
@@ -3379,7 +3378,7 @@ function keyIndex(children) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_equal/src/index.js */
+/* ../../../node_modules/is_equal/src/index.js */
 
 module.exports = isEqual;
 
@@ -3417,7 +3416,7 @@ function createNativeComponentForType(type) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/inherits/src/index.js */
+/* ../../../node_modules/inherits/src/index.js */
 
 var create = require(63),
     extend = require(24),
@@ -3469,7 +3468,7 @@ function defineStatic(name, value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/create/src/index.js */
+/* ../../../node_modules/create/src/index.js */
 
 var isNull = require(26),
     isNative = require(28),
@@ -3512,7 +3511,7 @@ module.exports = create;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/mixin/src/index.js */
+/* ../../../node_modules/mixin/src/index.js */
 
 var keys = require(34),
     isNullOrUndefined = require(20);
@@ -8848,57 +8847,39 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../node_modules/request_animation_frame/node_modules/time/src/index.js */
+/* ../node_modules/now/src/browser.js */
 
-var process = require(54);
-var environment = require(98);
-
-
-var time = exports,
-    dateNow, performance, HR_TIME, START_MS, now;
-
-
-dateNow = Date.now || function now() {
-    return (new Date()).getTime();
-};
+var Date_now = Date.now || function Date_now() {
+        return (new Date()).getTime();
+    },
+    START_TIME = Date_now(),
+    performance = global.performance || {};
 
 
-if (!environment.node) {
-    performance = environment.window.performance || {};
-
-    performance.now = (
-        performance.now ||
-        performance.webkitNow ||
-        performance.mozNow ||
-        performance.msNow ||
-        performance.oNow ||
-        function now() {
-            return dateNow() - START_MS;
-        }
-    );
-
-    now = function now() {
-        return performance.now();
-    };
-} else {
-    HR_TIME = process.hrtime();
-
-    now = function now() {
-        var hrtime = process.hrtime(HR_TIME),
-            ms = hrtime[0] * 1e3,
-            ns = hrtime[1] * 1e-6;
-
-        return ms + ns;
-    };
+function now() {
+    return performance.now();
 }
 
-START_MS = dateNow();
+performance.now = (
+    performance.now ||
+    performance.webkitNow ||
+    performance.mozNow ||
+    performance.msNow ||
+    performance.oNow ||
+    function now() {
+        return Date_now() - START_TIME;
+    }
+);
 
-time.now = now;
-
-time.stamp = function stamp() {
-    return START_MS + now();
+now.getStartTime = function getStartTime() {
+    return START_TIME;
 };
+
+
+START_TIME -= now();
+
+
+module.exports = now;
 
 
 }], null, void(0), (new Function("return this;"))()));
