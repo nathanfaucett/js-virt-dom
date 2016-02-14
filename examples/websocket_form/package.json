@@ -7,8 +7,10 @@
     "environment": "git://github.com/nathanfaucett/environment.git",
     "event_emitter": "git://github.com/nathanfaucett/event_emitter.git",
     "event_listener": "git://github.com/nathanfaucett/event_listener.git",
-    "map": "git://github.com/nathanfaucett/map.git",
+    "parallel": "git://github.com/nathanfaucett/parallel.git",
     "prop_types": "git://github.com/nathanfaucett/prop_types.git",
+    "socket.io": "^1.3.5",
+    "socket.io-client": "^1.3.5",
     "values": "git://github.com/nathanfaucett/values.git"
   }
 }

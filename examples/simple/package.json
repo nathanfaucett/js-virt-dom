@@ -5,8 +5,6 @@
   "author": "Nathan Faucett",
   "dependencies": {
     "environment": "nathanfaucett/environment",
-    "event_emitter": "nathanfaucett/event_emitter",
-    "event_listener": "nathanfaucett/event_listener",
-    "prop_types": "git://github.com/nathanfaucett/prop_types"
+    "event_listener": "nathanfaucett/event_listener"
   }
 }
