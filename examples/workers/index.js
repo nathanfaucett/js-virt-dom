@@ -121,6 +121,8 @@ var virt = require(5),
 
 
 var View = virt.View,
+
+    isView = View.isView,
     isPrimitiveView = View.isPrimitiveView,
 
     closedTags = {
@@ -185,7 +187,7 @@ function baseTagOptions(props) {
         if (key !== "dangerouslySetInnerHTML") {
             value = props[key];
 
-            if (!isNullOrUndefined(value) && !isFunction(value)) {
+            if (!isNullOrUndefined(value) && !isFunction(value) && !isView(value)) {
                 if (key === "className") {
                     key = "class";
                 }
