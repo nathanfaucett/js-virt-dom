@@ -1,4 +1,5 @@
 var virt = require("virt"),
+    extend = require("extend"),
     Messenger = require("messenger"),
     MessengerWorkerAdapter = require("messenger_worker_adapter"),
     nativeDOMComponents = require("../nativeDOM/components"),
@@ -30,7 +31,7 @@ function WorkerAdapter(root) {
     this.root = root;
     this.messenger = messenger;
 
-    eventManager.propNameToTopLevel = consts.propNameToTopLevel;
+    extend(eventManager.propNameToTopLevel, consts.propNameToTopLevel);
 
     messenger.on("virt.dom.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
@@ -39,7 +40,8 @@ function WorkerAdapter(root) {
             targetId = data.targetId,
             eventType = events[topLevelType],
             target = childHash[targetId],
-            event;
+            global = eventType.global,
+            event, i, il;
 
         if (target) {
             target = target.component;
@@ -49,6 +51,16 @@ function WorkerAdapter(root) {
 
         viewport.currentScrollLeft = data.currentScrollLeft;
         viewport.currentScrollTop = data.currentScrollTop;
+
+        if (global) {
+            i = -1;
+            il = global.length - 1;
+            event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
+            event.currentTarget = event.componentTarget = event.currentComponentTarget = target;
+            while (i++ < il) {
+                global[i](event);
+            }
+        }
 
         traverseAncestors(targetId, function(currentTargetId) {
             if (eventType[currentTargetId]) {
@@ -68,10 +80,6 @@ function WorkerAdapter(root) {
 
         callback();
     });
-
-    this.handle = function(transaction, callback) {
-        messenger.emit("virt.dom.handleTransaction", transaction, callback);
-    };
 
     registerNativeComponents(root, nativeDOMComponents);
 }

@@ -1,4 +1,5 @@
 var virt = require("virt"),
+    extend = require("extend"),
     Messenger = require("messenger"),
     MessengerWebSocketAdapter = require("messenger_websocket_adapter"),
     nativeDOMComponents = require("../nativeDOM/components"),
@@ -15,7 +16,9 @@ module.exports = WebSocketAdapter;
 
 function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
     var messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage)),
+
         eventManager = root.eventManager,
+
         viewport = {
             currentScrollLeft: 0,
             currentScrollTop: 0
@@ -25,12 +28,13 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
             document: global,
             viewport: viewport
         },
+
         events = eventManager.events;
 
     this.root = root;
     this.messenger = messenger;
 
-    eventManager.propNameToTopLevel = consts.propNameToTopLevel;
+    extend(eventManager.propNameToTopLevel, consts.propNameToTopLevel);
 
     messenger.on("virt.dom.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
@@ -39,7 +43,8 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
             targetId = data.targetId,
             eventType = events[topLevelType],
             target = childHash[targetId],
-            event;
+            global = eventType.global,
+            event, i, il;
 
         if (target) {
             target = target.component;
@@ -49,6 +54,16 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 
         viewport.currentScrollLeft = data.currentScrollLeft;
         viewport.currentScrollTop = data.currentScrollTop;
+
+        if (global) {
+            i = -1;
+            il = global.length - 1;
+            event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
+            event.currentTarget = event.componentTarget = event.currentComponentTarget = target;
+            while (i++ < il) {
+                global[i](event);
+            }
+        }
 
         traverseAncestors(targetId, function(currentTargetId) {
             if (eventType[currentTargetId]) {
@@ -68,10 +83,6 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 
         callback();
     });
-
-    this.handle = function(transaction, callback) {
-        messenger.emit("virt.dom.handleTransaction", transaction, callback);
-    };
 
     registerNativeComponents(root, nativeDOMComponents);
 }

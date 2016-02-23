@@ -5,6 +5,7 @@ var has = require("has"),
     getWindowHeight = require("./getters/getWindowHeight"),
     getEventTarget = require("./getters/getEventTarget"),
     getNodeAttributeId = require("../utils/getNodeAttributeId"),
+    nativeEventToJSON = require("../utils/nativeEventToJSON"),
     isEventSupported = require("./isEventSupported");
 
 
@@ -16,7 +17,7 @@ var topLevelTypes = consts.topLevelTypes,
 module.exports = EventHandler;
 
 
-function EventHandler(document, window) {
+function EventHandler(messenger, document, window, isClient) {
     var _this = this,
         documentElement = document.documentElement ? document.documentElement : document.body,
         viewport = {
@@ -28,8 +29,8 @@ function EventHandler(document, window) {
     this.documentElement = documentElement;
     this.window = window;
     this.viewport = viewport;
-    this.handleDispatch = null;
-    this.handleResize = null;
+    this.messenger = messenger;
+    this.isClient = !!isClient;
 
     this.__isListening = {};
     this.__listening = {};
@@ -42,7 +43,7 @@ function EventHandler(document, window) {
     eventListener.on(window, "scroll resize orientationchange", onViewport);
 
     function onResize() {
-        _this.handleResize(_this.getDimensions());
+        messenger.emit("virt.resize", _this.getDimensions());
     }
     this.__onResize = onResize;
     eventListener.on(window, "resize orientationchange", onResize);
@@ -117,7 +118,7 @@ EventHandlerPrototype.listenTo = function(id, topLevelType) {
             isListening[topLevelTypes.topFocus] = true;
             isListening[topLevelTypes.topBlur] = true;
         } else {
-            this.trapBubbledEvent(topLevelType, topLevelToEvent[topLevelType], this.document);
+            this.trapBubbledEvent(topLevelType, topLevelToEvent[topLevelType], document);
         }
 
         isListening[topLevelType] = true;
@@ -169,5 +170,19 @@ EventHandlerPrototype.trapCapturedEvent = function(topLevelType, type, element) 
 };
 
 EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
-    this.handleDispatch(topLevelType, nativeEvent, getNodeAttributeId(getEventTarget(nativeEvent, this.window)));
+    var isClient = this.isClient,
+        viewport = this.viewport,
+        targetId = getNodeAttributeId(getEventTarget(nativeEvent, this.window));
+
+    if (!isClient && targetId) {
+        nativeEvent.preventDefault();
+    }
+
+    this.messenger.emit("virt.dom.handleEventDispatch", {
+        currentScrollLeft: viewport.currentScrollLeft,
+        currentScrollTop: viewport.currentScrollTop,
+        topLevelType: topLevelType,
+        nativeEvent: isClient ? nativeEvent : nativeEventToJSON(nativeEvent),
+        targetId: targetId
+    });
 };

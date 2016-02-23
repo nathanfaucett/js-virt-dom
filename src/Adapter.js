@@ -1,4 +1,5 @@
 var virt = require("virt"),
+    extend = require("extend"),
     Messenger = require("messenger"),
     createMessengerAdapter = require("messenger_adapter"),
     eventHandlersById = require("./eventHandlersById"),
@@ -23,14 +24,17 @@ module.exports = Adapter;
 
 function Adapter(root, containerDOMNode) {
     var socket = createMessengerAdapter(),
+
         messengerClient = new Messenger(socket.client),
         messengerServer = new Messenger(socket.server),
+
+        propNameToTopLevel = consts.propNameToTopLevel,
 
         document = containerDOMNode.ownerDocument,
         window = getWindow(document),
         eventManager = root.eventManager,
         events = eventManager.events,
-        eventHandler = new EventHandler(document, window);
+        eventHandler = new EventHandler(messengerClient, document, window, true);
 
     eventHandlersById[root.id] = eventHandler;
 
@@ -45,40 +49,39 @@ function Adapter(root, containerDOMNode) {
 
     this.eventHandler = eventHandler;
 
-    this.handle = function(transaction, callback) {
-        messengerServer.emit("virt.dom.handleTransaction", transaction, callback);
-    };
-
-    messengerClient.on("virt.dom.handleTransaction", function onHandleTransaction(transaction, callback) {
+    messengerClient.on("virt.handleTransaction", function onHandleTransaction(transaction, callback) {
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
         applyPatches(transaction.removes, containerDOMNode, document);
         callback();
     });
 
-    eventManager.propNameToTopLevel = consts.propNameToTopLevel;
+    extend(eventManager.propNameToTopLevel, propNameToTopLevel);
 
-    eventHandler.handleDispatch = function handleDispatch(topLevelType, nativeEvent, targetId) {
-        messengerServer.emit("virt.dom.handleEventDispatch", {
-            topLevelType: topLevelType,
-            nativeEvent: nativeEvent,
-            targetId: targetId
-        });
-    };
-
-    messengerClient.on("virt.dom.handleEventDispatch", function onHandleEventDispatch(data, callback) {
+    messengerServer.on("virt.dom.handleEventDispatch", function onHandleEventDispatch(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
             targetId = data.targetId,
             eventType = events[topLevelType],
             target = childHash[targetId],
-            event;
+            global = eventType.global,
+            event, i, il;
 
         if (target) {
             target = target.component;
         } else {
             target = null;
+        }
+
+        if (global) {
+            i = -1;
+            il = global.length - 1;
+            event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
+            event.currentTarget = event.componentTarget = event.currentComponentTarget = target;
+            while (i++ < il) {
+                global[i](event);
+            }
         }
 
         traverseAncestors(targetId, function traverseAncestor(currentTargetId) {
@@ -101,9 +104,13 @@ function Adapter(root, containerDOMNode) {
         callback();
     });
 
-    eventHandler.handleResize = function handleDispatch(data) {
-        messengerClient.emit("virt.resize", data);
-    };
+    messengerClient.on("virt.onGlobalEvent", function onHandle(topLevelType, callback) {
+        eventHandler.listenTo("global", topLevelType);
+        callback();
+    });
+    messengerClient.on("virt.offGlobalEvent", function onHandle(topLevelType, callback) {
+        callback();
+    });
 
     messengerClient.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
         callback(undefined, eventHandler.getDimensions());

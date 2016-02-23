@@ -7,7 +7,6 @@ var Messenger = require("messenger"),
     getRootNodeId = require("../utils/getRootNodeId"),
     registerNativeComponentHandlers = require("../utils/registerNativeComponentHandlers"),
     getWindow = require("../utils/getWindow"),
-    nativeEventToJSON = require("../utils/nativeEventToJSON"),
     EventHandler = require("../events/EventHandler"),
     applyEvents = require("../applyEvents"),
     applyPatches = require("../applyPatches");
@@ -20,14 +19,13 @@ function createWorkerRender(url, containerDOMNode) {
     var document = containerDOMNode.ownerDocument,
         window = getWindow(document),
 
-        eventHandler = new EventHandler(document, window),
-        viewport = eventHandler.viewport,
-
         messenger = new Messenger(new MessengerWorkerAdapter(url)),
+
+        eventHandler = new EventHandler(messenger, document, window, false),
 
         rootId = null;
 
-    messenger.on("virt.dom.handleTransaction", function handleTransaction(transaction, callback) {
+    messenger.on("virt.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -41,26 +39,16 @@ function createWorkerRender(url, containerDOMNode) {
         callback();
     });
 
-    eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
-        if (targetId) {
-            nativeEvent.preventDefault();
-        }
-
-        messenger.emit("virt.dom.handleEventDispatch", {
-            currentScrollLeft: viewport.currentScrollLeft,
-            currentScrollTop: viewport.currentScrollTop,
-            topLevelType: topLevelType,
-            nativeEvent: nativeEventToJSON(nativeEvent),
-            targetId: targetId
-        });
-    };
-
-    eventHandler.handleResize = function handleDispatch(data) {
-        messenger.emit("virt.resize", data);
-    };
-
     messenger.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
         callback(undefined, eventHandler.getDimensions());
+    });
+
+    messenger.on("virt.onGlobalEvent", function onHandle(topLevelType, callback) {
+        eventHandler.listenTo("global", topLevelType);
+        callback();
+    });
+    messenger.on("virt.offGlobalEvent", function onHandle(topLevelType, callback) {
+        callback();
     });
 
     registerNativeComponentHandlers(messenger, nativeDOMHandlers);

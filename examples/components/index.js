@@ -1303,6 +1303,7 @@ function(require, exports, module, undefined, global) {
 
 var isFunction = require(8),
     isNull = require(10),
+    isUndefined = require(15),
     emptyFunction = require(40),
     Transaction = require(41),
     diffProps = require(42),
@@ -1343,7 +1344,7 @@ RootPrototype.appendNode = function(node) {
     var id = node.id,
         childHash = this.childHash;
 
-    if (childHash[id] === undefined) {
+    if (isUndefined(childHash[id])) {
         node.root = this;
         childHash[id] = node;
     } else {
@@ -1355,7 +1356,7 @@ RootPrototype.removeNode = function(node) {
     var id = node.id,
         childHash = this.childHash;
 
-    if (childHash[id] !== undefined) {
+    if (!isUndefined(childHash[id])) {
         node.root = null;
         delete childHash[id];
     } else {
@@ -1373,7 +1374,7 @@ RootPrototype.__processTransaction = function() {
         this.__currentTransaction = transaction = transactions[0];
         callback = transactionCallbacks[0];
 
-        this.adapter.handle(transaction, function onHandle() {
+        this.adapter.messenger.emit("virt.handleTransaction", transaction, function onHandleTransaction() {
             transactions.splice(0, 1);
             transactionCallbacks.splice(0, 1);
 
@@ -1467,7 +1468,7 @@ function(require, exports, module, undefined, global) {
 
 var inherits = require(66),
     extend = require(32),
-    componentState = require(60);
+    componentState = require(61);
 
 
 var ComponentPrototype;
@@ -1539,6 +1540,24 @@ ComponentPrototype.onMessage = function(name, callback) {
 
 ComponentPrototype.offMessage = function(name, callback) {
     this.__node.root.adapter.messenger.off(name, callback);
+};
+
+ComponentPrototype.onGlobalEvent = function(name, listener, callback) {
+    var root = this.__node.root,
+        eventManager = root.eventManager,
+        topLevelType = eventManager.propNameToTopLevel[name];
+
+    eventManager.globalOn(topLevelType, listener);
+    this.emitMessage("virt.onGlobalEvent", topLevelType, callback);
+};
+
+ComponentPrototype.offGlobalEvent = function(name, listener, callback) {
+    var root = this.__node.root,
+        eventManager = root.eventManager,
+        topLevelType = eventManager.propNameToTopLevel[name];
+
+    eventManager.globalOff(topLevelType, callback);
+    this.emitMessage("virt.offGlobalEvent", topLevelType, callback);
 };
 
 ComponentPrototype.getChildContext = function() {};
@@ -1683,7 +1702,7 @@ owner.current = null;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/is_primitive/src/index.js */
+/* ../../../node_modules/virt/node_modules/is_primitive/src/index.js */
 
 var isNullOrUndefined = require(13);
 
@@ -1699,7 +1718,7 @@ function isPrimitive(obj) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/is_array/src/index.js */
+/* ../../../node_modules/virt/node_modules/is_array/src/index.js */
 
 var isNative = require(34),
     isLength = require(35),
@@ -1729,7 +1748,7 @@ module.exports = isArray;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/is_object_like/src/index.js */
+/* ../../../node_modules/virt/node_modules/is_object_like/src/index.js */
 
 var isNullOrUndefined = require(13);
 
@@ -1744,7 +1763,7 @@ function isObjectLike(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/has/src/index.js */
+/* ../../../node_modules/virt/node_modules/has/src/index.js */
 
 var isNative = require(34),
     getPrototypeOf = require(38),
@@ -1785,7 +1804,7 @@ if (isNative(nativeHasOwnProp)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/array-map/src/index.js */
+/* ../../../node_modules/virt/node_modules/array-map/src/index.js */
 
 module.exports = arrayMap;
 
@@ -1806,7 +1825,7 @@ function arrayMap(array, callback) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/extend/src/index.js */
+/* ../../../node_modules/virt/node_modules/extend/src/index.js */
 
 var keys = require(39);
 
@@ -1881,7 +1900,7 @@ function toJSON(props, json) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/is_native/src/index.js */
+/* ../../../node_modules/virt/node_modules/is_native/src/index.js */
 
 var isFunction = require(8),
     isNullOrUndefined = require(13),
@@ -1931,7 +1950,7 @@ isHostObject = function isHostObject(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/is_length/src/index.js */
+/* ../../../node_modules/virt/node_modules/is_length/src/index.js */
 
 var isNumber = require(14);
 
@@ -1949,7 +1968,7 @@ function isLength(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/escape_regexp/src/index.js */
+/* ../../../node_modules/virt/node_modules/escape_regexp/src/index.js */
 
 var toString = require(37);
 
@@ -1973,7 +1992,7 @@ function escapeRegExp(string) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/to_string/src/index.js */
+/* ../../../node_modules/virt/node_modules/to_string/src/index.js */
 
 var isString = require(12),
     isNullOrUndefined = require(13);
@@ -1995,7 +2014,7 @@ function toString(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/get_prototype_of/src/index.js */
+/* ../../../node_modules/virt/node_modules/get_prototype_of/src/index.js */
 
 var isObject = require(7),
     isNative = require(34),
@@ -2036,7 +2055,7 @@ if (isNative(nativeGetPrototypeOf)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/keys/src/index.js */
+/* ../../../node_modules/virt/node_modules/keys/src/index.js */
 
 var has = require(30),
     isNative = require(34),
@@ -2078,7 +2097,7 @@ if (!isNative(nativeKeys)) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/empty_function/src/index.js */
+/* ../../../node_modules/virt/node_modules/empty_function/src/index.js */
 
 module.exports = emptyFunction;
 
@@ -2361,6 +2380,10 @@ function shouldUpdate(previous, next) {
 function(require, exports, module, undefined, global) {
 /* ../../../node_modules/virt/src/EventManager.js */
 
+var indexOf = require(59),
+    isUndefined = require(15);
+
+
 var EventManagerPrototype;
 
 
@@ -2371,7 +2394,6 @@ function EventManager() {
     this.propNameToTopLevel = {};
     this.events = {};
 }
-
 EventManagerPrototype = EventManager.prototype;
 
 EventManagerPrototype.on = function(id, topLevelType, listener, transaction) {
@@ -2381,26 +2403,54 @@ EventManagerPrototype.on = function(id, topLevelType, listener, transaction) {
     event[id] = listener;
     transaction.event(id, topLevelType);
 };
-
 EventManagerPrototype.off = function(id, topLevelType, transaction) {
     var events = this.events,
         event = events[topLevelType];
 
-    if (event[id] !== undefined) {
+    if (!isUndefined(event[id])) {
         delete event[id];
         transaction.removeEvent(id, topLevelType);
     }
 };
-
 EventManagerPrototype.allOff = function(id, transaction) {
     var events = this.events,
         event, topLevelType;
 
     for (topLevelType in events) {
-        if ((event = events[topLevelType])[id] !== undefined) {
+        if (!isUndefined((event = events[topLevelType])[id])) {
             delete event[id];
             transaction.removeEvent(id, topLevelType);
         }
+    }
+};
+
+EventManagerPrototype.globalOn = function(topLevelType, listener) {
+    var events = this.events,
+        event = events[topLevelType] || (events[topLevelType] = {}),
+        global = event.global || (event.global = []),
+        index = indexOf(global, listener);
+
+    if (index === -1) {
+        global[global.length] = listener;
+    }
+};
+EventManagerPrototype.globalOff = function(topLevelType, listener) {
+    var events = this.events,
+        event = events[topLevelType] || (events[topLevelType] = {}),
+        global = event.global || (event.global = []),
+        index = indexOf(global, listener);
+
+    if (index !== -1) {
+        global.splice(index, 1);
+    }
+};
+EventManagerPrototype.globalAllOff = function(id) {
+    var events = this.events,
+        event = events[topLevelType] || (events[topLevelType] = {}),
+        global = event.global
+
+    if (global) {
+        global.length = 0;
     }
 };
 
@@ -2421,11 +2471,11 @@ var has = require(30),
     owner = require(26),
     context = require(25),
     shouldUpdate = require(43),
-    componentState = require(60),
-    getComponentClassForType = require(61),
+    componentState = require(61),
+    getComponentClassForType = require(62),
     View = require(16),
     getChildKey = require(20),
-    emptyObject = require(62),
+    emptyObject = require(63),
     diffChildren;
 
 
@@ -2436,7 +2486,7 @@ var NodePrototype,
 module.exports = Node;
 
 
-diffChildren = require(63);
+diffChildren = require(64);
 
 
 function Node(parentId, id, currentView) {
@@ -2948,7 +2998,7 @@ function mountEvents(id, props, eventManager, transaction) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/create_pool/src/index.js */
+/* ../../../node_modules/virt/node_modules/create_pool/src/index.js */
 
 var isFunction = require(8),
     isNumber = require(14),
@@ -3136,7 +3186,7 @@ function createReleaser(Constructor) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/queue/src/index.js */
+/* ../../../node_modules/virt/node_modules/queue/src/index.js */
 
 var createPool = require(46);
 
@@ -3531,7 +3581,7 @@ TextPatchPrototype.toJSON = function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/define_property/src/index.js */
+/* ../../../node_modules/virt/node_modules/define_property/src/index.js */
 
 var isObject = require(7),
     isFunction = require(8),
@@ -3591,7 +3641,7 @@ if (!isNative(nativeDefineProperty) || !(function() {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/key_mirror/src/index.js */
+/* ../../../node_modules/virt/node_modules/key_mirror/src/index.js */
 
 var keys = require(39),
     isArrayLike = require(58);
@@ -3635,7 +3685,7 @@ function keyMirrorObject(object) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/key_mirror/node_modules/is_array_like/src/index.js */
+/* ../../../node_modules/virt/node_modules/is_array_like/src/index.js */
 
 var isLength = require(35),
     isFunction = require(8),
@@ -3652,9 +3702,9 @@ function isArrayLike(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/index_of/src/index.js */
+/* ../../../node_modules/virt/node_modules/index_of/src/index.js */
 
-var isEqual = require(64);
+var isEqual = require(60);
 
 
 module.exports = indexOf;
@@ -3671,6 +3721,18 @@ function indexOf(array, value, fromIndex) {
     }
 
     return -1;
+}
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/virt/node_modules/is_equal/src/index.js */
+
+module.exports = isEqual;
+
+
+function isEqual(a, b) {
+    return !(a !== b && !(a !== a && b !== b));
 }
 
 
@@ -3928,18 +3990,6 @@ function keyIndex(children) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/is_equal/src/index.js */
-
-module.exports = isEqual;
-
-
-function isEqual(a, b) {
-    return !(a !== b && !(a !== a && b !== b));
-}
-
-
-},
-function(require, exports, module, undefined, global) {
 /* ../../../node_modules/virt/src/utils/createNativeComponentForType.js */
 
 var View = require(16),
@@ -3966,7 +4016,7 @@ function createNativeComponentForType(type) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/inherits/src/index.js */
+/* ../../../node_modules/virt/node_modules/inherits/src/index.js */
 
 var create = require(67),
     extend = require(32),
@@ -4018,7 +4068,7 @@ function defineStatic(name, value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/create/src/index.js */
+/* ../../../node_modules/virt/node_modules/create/src/index.js */
 
 var isNull = require(10),
     isNative = require(34),
@@ -4061,7 +4111,7 @@ module.exports = create;
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/mixin/src/index.js */
+/* ../../../node_modules/virt/node_modules/mixin/src/index.js */
 
 var keys = require(39),
     isNullOrUndefined = require(13);
@@ -4510,7 +4560,6 @@ var Messenger = require(118),
     getRootNodeId = require(117),
     registerNativeComponentHandlers = require(122),
     getWindow = require(120),
-    nativeEventToJSON = require(145),
     EventHandler = require(123),
     applyEvents = require(125),
     applyPatches = require(126);
@@ -4523,14 +4572,13 @@ function createWorkerRender(url, containerDOMNode) {
     var document = containerDOMNode.ownerDocument,
         window = getWindow(document),
 
-        eventHandler = new EventHandler(document, window),
-        viewport = eventHandler.viewport,
-
         messenger = new Messenger(new MessengerWorkerAdapter(url)),
+
+        eventHandler = new EventHandler(messenger, document, window, false),
 
         rootId = null;
 
-    messenger.on("virt.dom.handleTransaction", function handleTransaction(transaction, callback) {
+    messenger.on("virt.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -4544,26 +4592,16 @@ function createWorkerRender(url, containerDOMNode) {
         callback();
     });
 
-    eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
-        if (targetId) {
-            nativeEvent.preventDefault();
-        }
-
-        messenger.emit("virt.dom.handleEventDispatch", {
-            currentScrollLeft: viewport.currentScrollLeft,
-            currentScrollTop: viewport.currentScrollTop,
-            topLevelType: topLevelType,
-            nativeEvent: nativeEventToJSON(nativeEvent),
-            targetId: targetId
-        });
-    };
-
-    eventHandler.handleResize = function handleDispatch(data) {
-        messenger.emit("virt.resize", data);
-    };
-
     messenger.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
         callback(undefined, eventHandler.getDimensions());
+    });
+
+    messenger.on("virt.onGlobalEvent", function onHandle(topLevelType, callback) {
+        eventHandler.listenTo("global", topLevelType);
+        callback();
+    });
+    messenger.on("virt.offGlobalEvent", function onHandle(topLevelType, callback) {
+        callback();
     });
 
     registerNativeComponentHandlers(messenger, nativeDOMHandlers);
@@ -4619,7 +4657,6 @@ var Messenger = require(118),
     nativeDOMHandlers = require(75),
     registerNativeComponentHandlers = require(122),
     getWindow = require(120),
-    nativeEventToJSON = require(145),
     EventHandler = require(123),
     applyEvents = require(125),
     applyPatches = require(126);
@@ -4632,14 +4669,13 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
     var document = containerDOMNode.ownerDocument,
         window = getWindow(document),
 
-        eventHandler = new EventHandler(document, window),
-        viewport = eventHandler.viewport,
-
         messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage)),
+
+        eventHandler = new EventHandler(messenger, document, window, false),
 
         rootId = null;
 
-    messenger.on("virt.dom.handleTransaction", function handleTransaction(transaction, callback) {
+    messenger.on("virt.handleTransaction", function handleTransaction(transaction, callback) {
 
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
@@ -4653,26 +4689,16 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
         callback();
     });
 
-    eventHandler.handleDispatch = function(topLevelType, nativeEvent, targetId) {
-        if (targetId) {
-            nativeEvent.preventDefault();
-        }
-
-        messenger.emit("virt.dom.handleEventDispatch", {
-            currentScrollLeft: viewport.currentScrollLeft,
-            currentScrollTop: viewport.currentScrollTop,
-            topLevelType: topLevelType,
-            nativeEvent: nativeEventToJSON(nativeEvent),
-            targetId: targetId
-        });
-    };
-
-    eventHandler.handleResize = function handleDispatch(data) {
-        messenger.emit("virt.resize", data);
-    };
-
     messenger.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
         callback(undefined, eventHandler.getDimensions());
+    });
+
+    messenger.on("virt.onGlobalEvent", function onHandle(topLevelType, callback) {
+        eventHandler.listenTo("global", topLevelType);
+        callback();
+    });
+    messenger.on("virt.offGlobalEvent", function onHandle(topLevelType, callback) {
+        callback();
     });
 
     registerNativeComponentHandlers(messenger, nativeDOMHandlers);
@@ -6021,6 +6047,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/Adapter.js */
 
 var virt = require(3),
+    extend = require(32),
     Messenger = require(118),
     createMessengerAdapter = require(119),
     eventHandlersById = require(114),
@@ -6045,14 +6072,17 @@ module.exports = Adapter;
 
 function Adapter(root, containerDOMNode) {
     var socket = createMessengerAdapter(),
+
         messengerClient = new Messenger(socket.client),
         messengerServer = new Messenger(socket.server),
+
+        propNameToTopLevel = consts.propNameToTopLevel,
 
         document = containerDOMNode.ownerDocument,
         window = getWindow(document),
         eventManager = root.eventManager,
         events = eventManager.events,
-        eventHandler = new EventHandler(document, window);
+        eventHandler = new EventHandler(messengerClient, document, window, true);
 
     eventHandlersById[root.id] = eventHandler;
 
@@ -6067,40 +6097,39 @@ function Adapter(root, containerDOMNode) {
 
     this.eventHandler = eventHandler;
 
-    this.handle = function(transaction, callback) {
-        messengerServer.emit("virt.dom.handleTransaction", transaction, callback);
-    };
-
-    messengerClient.on("virt.dom.handleTransaction", function onHandleTransaction(transaction, callback) {
+    messengerClient.on("virt.handleTransaction", function onHandleTransaction(transaction, callback) {
         applyPatches(transaction.patches, containerDOMNode, document);
         applyEvents(transaction.events, eventHandler);
         applyPatches(transaction.removes, containerDOMNode, document);
         callback();
     });
 
-    eventManager.propNameToTopLevel = consts.propNameToTopLevel;
+    extend(eventManager.propNameToTopLevel, propNameToTopLevel);
 
-    eventHandler.handleDispatch = function handleDispatch(topLevelType, nativeEvent, targetId) {
-        messengerServer.emit("virt.dom.handleEventDispatch", {
-            topLevelType: topLevelType,
-            nativeEvent: nativeEvent,
-            targetId: targetId
-        });
-    };
-
-    messengerClient.on("virt.dom.handleEventDispatch", function onHandleEventDispatch(data, callback) {
+    messengerServer.on("virt.dom.handleEventDispatch", function onHandleEventDispatch(data, callback) {
         var childHash = root.childHash,
             topLevelType = data.topLevelType,
             nativeEvent = data.nativeEvent,
             targetId = data.targetId,
             eventType = events[topLevelType],
             target = childHash[targetId],
-            event;
+            global = eventType.global,
+            event, i, il;
 
         if (target) {
             target = target.component;
         } else {
             target = null;
+        }
+
+        if (global) {
+            i = -1;
+            il = global.length - 1;
+            event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
+            event.currentTarget = event.componentTarget = event.currentComponentTarget = target;
+            while (i++ < il) {
+                global[i](event);
+            }
         }
 
         traverseAncestors(targetId, function traverseAncestor(currentTargetId) {
@@ -6123,9 +6152,13 @@ function Adapter(root, containerDOMNode) {
         callback();
     });
 
-    eventHandler.handleResize = function handleDispatch(data) {
-        messengerClient.emit("virt.resize", data);
-    };
+    messengerClient.on("virt.onGlobalEvent", function onHandle(topLevelType, callback) {
+        eventHandler.listenTo("global", topLevelType);
+        callback();
+    });
+    messengerClient.on("virt.offGlobalEvent", function onHandle(topLevelType, callback) {
+        callback();
+    });
 
     messengerClient.on("virt.getDeviceDimensions", function getDeviceDimensions(data, callback) {
         callback(undefined, eventHandler.getDimensions());
@@ -6418,7 +6451,8 @@ var has = require(30),
     getWindowHeight = require(128),
     getEventTarget = require(129),
     getNodeAttributeId = require(130),
-    isEventSupported = require(131);
+    nativeEventToJSON = require(131),
+    isEventSupported = require(132);
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -6429,7 +6463,7 @@ var topLevelTypes = consts.topLevelTypes,
 module.exports = EventHandler;
 
 
-function EventHandler(document, window) {
+function EventHandler(messenger, document, window, isClient) {
     var _this = this,
         documentElement = document.documentElement ? document.documentElement : document.body,
         viewport = {
@@ -6441,8 +6475,8 @@ function EventHandler(document, window) {
     this.documentElement = documentElement;
     this.window = window;
     this.viewport = viewport;
-    this.handleDispatch = null;
-    this.handleResize = null;
+    this.messenger = messenger;
+    this.isClient = !!isClient;
 
     this.__isListening = {};
     this.__listening = {};
@@ -6455,7 +6489,7 @@ function EventHandler(document, window) {
     eventListener.on(window, "scroll resize orientationchange", onViewport);
 
     function onResize() {
-        _this.handleResize(_this.getDimensions());
+        messenger.emit("virt.resize", _this.getDimensions());
     }
     this.__onResize = onResize;
     eventListener.on(window, "resize orientationchange", onResize);
@@ -6530,7 +6564,7 @@ EventHandlerPrototype.listenTo = function(id, topLevelType) {
             isListening[topLevelTypes.topFocus] = true;
             isListening[topLevelTypes.topBlur] = true;
         } else {
-            this.trapBubbledEvent(topLevelType, topLevelToEvent[topLevelType], this.document);
+            this.trapBubbledEvent(topLevelType, topLevelToEvent[topLevelType], document);
         }
 
         isListening[topLevelType] = true;
@@ -6582,7 +6616,21 @@ EventHandlerPrototype.trapCapturedEvent = function(topLevelType, type, element) 
 };
 
 EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
-    this.handleDispatch(topLevelType, nativeEvent, getNodeAttributeId(getEventTarget(nativeEvent, this.window)));
+    var isClient = this.isClient,
+        viewport = this.viewport,
+        targetId = getNodeAttributeId(getEventTarget(nativeEvent, this.window));
+
+    if (!isClient && targetId) {
+        nativeEvent.preventDefault();
+    }
+
+    this.messenger.emit("virt.dom.handleEventDispatch", {
+        currentScrollLeft: viewport.currentScrollLeft,
+        currentScrollTop: viewport.currentScrollTop,
+        topLevelType: topLevelType,
+        nativeEvent: isClient ? nativeEvent : nativeEventToJSON(nativeEvent),
+        targetId: targetId
+    });
 };
 
 
@@ -6590,17 +6638,17 @@ EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/eventClassMap.js */
 
-var SyntheticClipboardEvent = require(133),
-    SyntheticCompositionEvent = require(134),
-    SyntheticDragEvent = require(135),
-    SyntheticEvent = require(136),
-    SyntheticFocusEvent = require(137),
-    SyntheticInputEvent = require(138),
-    SyntheticKeyboardEvent = require(139),
-    SyntheticMouseEvent = require(140),
-    SyntheticTouchEvent = require(141),
-    SyntheticUIEvent = require(142),
-    SyntheticWheelEvent = require(143);
+var SyntheticClipboardEvent = require(135),
+    SyntheticCompositionEvent = require(136),
+    SyntheticDragEvent = require(137),
+    SyntheticEvent = require(138),
+    SyntheticFocusEvent = require(139),
+    SyntheticInputEvent = require(140),
+    SyntheticKeyboardEvent = require(141),
+    SyntheticMouseEvent = require(142),
+    SyntheticTouchEvent = require(143),
+    SyntheticUIEvent = require(144),
+    SyntheticWheelEvent = require(145);
 
 
 module.exports = {
@@ -6789,12 +6837,41 @@ function getNodeAttributeId(node) {
 
 },
 function(require, exports, module, undefined, global) {
+/* ../../../src/utils/nativeEventToJSON.js */
+
+var indexOf = require(59),
+    isNode = require(11),
+    isFunction = require(8),
+    ignoreNativeEventProp = require(133);
+
+
+module.exports = nativeEventToJSON;
+
+
+function nativeEventToJSON(nativeEvent) {
+    var json = {},
+        key, value;
+
+    for (key in nativeEvent) {
+        value = nativeEvent[key];
+
+        if (!(isFunction(value) || isNode(value) || indexOf(ignoreNativeEventProp, key) !== -1)) {
+            json[key] = value;
+        }
+    }
+
+    return json;
+}
+
+
+},
+function(require, exports, module, undefined, global) {
 /* ../../../src/events/isEventSupported.js */
 
 var isFunction = require(8),
     isNullOrUndefined = require(13),
     has = require(30),
-    supports = require(132),
+    supports = require(134),
     environment = require(1);
 
 
@@ -6836,6 +6913,19 @@ function isEventSupported(eventNameSuffix, capture) {
 
 },
 function(require, exports, module, undefined, global) {
+/* ../../../src/utils/ignoreNativeEventProp.js */
+
+module.exports = [
+    "view", "target", "currentTarget", "path", "srcElement",
+    "cancelBubble", "stopPropagation", "stopImmediatePropagation", "preventDefault", "initEvent",
+    "NONE", "CAPTURING_PHASE", "AT_TARGET", "BUBBLING_PHASE", "MOUSEDOWN", "MOUSEUP",
+    "MOUSEOVER", "MOUSEOUT", "MOUSEMOVE", "MOUSEDRAG", "CLICK", "DBLCLICK", "KEYDOWN",
+    "KEYUP", "KEYPRESS", "DRAGDROP", "FOCUS", "BLUR", "SELECT", "CHANGE"
+];
+
+
+},
+function(require, exports, module, undefined, global) {
 /* ../../../node_modules/supports/src/index.js */
 
 var environment = require(1);
@@ -6858,8 +6948,8 @@ supports.touch = supports.dom && "ontouchstart" in environment.window;
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticClipboardEvent.js */
 
-var getClipboardEvent = require(144),
-    SyntheticEvent = require(136);
+var getClipboardEvent = require(146),
+    SyntheticEvent = require(138);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -6900,7 +6990,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticCompositionEvent.js */
 
 var getCompositionEvent = require(148),
-    SyntheticEvent = require(136);
+    SyntheticEvent = require(138);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -6941,7 +7031,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticDragEvent.js */
 
 var getDragEvent = require(149),
-    SyntheticMouseEvent = require(140);
+    SyntheticMouseEvent = require(142);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -6983,8 +7073,8 @@ function(require, exports, module, undefined, global) {
 
 var inherits = require(66),
     createPool = require(46),
-    nativeEventToJSON = require(145),
-    getEvent = require(146);
+    nativeEventToJSON = require(131),
+    getEvent = require(147);
 
 
 var SyntheticEventPrototype;
@@ -7083,7 +7173,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticFocusEvent.js */
 
 var getFocusEvent = require(155),
-    SyntheticUIEvent = require(142);
+    SyntheticUIEvent = require(144);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -7124,7 +7214,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticInputEvent.js */
 
 var getInputEvent = require(156),
-    SyntheticEvent = require(136);
+    SyntheticEvent = require(138);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -7165,7 +7255,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticKeyboardEvent.js */
 
 var getKeyboardEvent = require(157),
-    SyntheticUIEvent = require(142);
+    SyntheticUIEvent = require(144);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -7228,7 +7318,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticMouseEvent.js */
 
 var getMouseEvent = require(150),
-    SyntheticUIEvent = require(142);
+    SyntheticUIEvent = require(144);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -7295,7 +7385,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticTouchEvent.js */
 
 var getTouchEvent = require(160),
-    SyntheticUIEvent = require(142),
+    SyntheticUIEvent = require(144),
     SyntheticTouch = require(161);
 
 
@@ -7378,7 +7468,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticUIEvent.js */
 
 var getUIEvent = require(154),
-    SyntheticEvent = require(136);
+    SyntheticEvent = require(138);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -7421,7 +7511,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticWheelEvent.js */
 
 var getWheelEvent = require(163),
-    SyntheticMouseEvent = require(140);
+    SyntheticMouseEvent = require(142);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -7481,35 +7571,6 @@ function getClipboardData(nativeEvent, window) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/nativeEventToJSON.js */
-
-var indexOf = require(59),
-    isNode = require(11),
-    isFunction = require(8),
-    ignoreNativeEventProp = require(147);
-
-
-module.exports = nativeEventToJSON;
-
-
-function nativeEventToJSON(nativeEvent) {
-    var json = {},
-        key, value;
-
-    for (key in nativeEvent) {
-        value = nativeEvent[key];
-
-        if (!(isFunction(value) || isNode(value) || indexOf(ignoreNativeEventProp, key) !== -1)) {
-            json[key] = value;
-        }
-    }
-
-    return json;
-}
-
-
-},
-function(require, exports, module, undefined, global) {
 /* ../../../src/events/getters/getEvent.js */
 
 var getEventTarget = require(129);
@@ -7533,19 +7594,6 @@ function getEvent(obj, nativeEvent, eventHandler) {
     obj.propagationStopped = false;
     obj.isTrusted = nativeEvent.isTrusted;
 }
-
-
-},
-function(require, exports, module, undefined, global) {
-/* ../../../src/utils/ignoreNativeEventProp.js */
-
-module.exports = [
-    "view", "target", "currentTarget", "path", "srcElement",
-    "cancelBubble", "stopPropagation", "stopImmediatePropagation", "preventDefault", "initEvent",
-    "NONE", "CAPTURING_PHASE", "AT_TARGET", "BUBBLING_PHASE", "MOUSEDOWN", "MOUSEUP",
-    "MOUSEOVER", "MOUSEOUT", "MOUSEMOVE", "MOUSEDRAG", "CLICK", "DBLCLICK", "KEYDOWN",
-    "KEYUP", "KEYPRESS", "DRAGDROP", "FOCUS", "BLUR", "SELECT", "CHANGE"
-];
 
 
 },
@@ -7916,7 +7964,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticTouch.js */
 
 var getTouch = require(162),
-    nativeEventToJSON = require(145),
+    nativeEventToJSON = require(131),
     createPool = require(46);
 
 
@@ -8574,6 +8622,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/worker/WorkerAdapter.js */
 
 var virt = require(3),
+    extend = require(32),
     Messenger = require(118),
     MessengerWorkerAdapter = require(173),
     nativeDOMComponents = require(74),
@@ -8605,7 +8654,7 @@ function WorkerAdapter(root) {
     this.root = root;
     this.messenger = messenger;
 
-    eventManager.propNameToTopLevel = consts.propNameToTopLevel;
+    extend(eventManager.propNameToTopLevel, consts.propNameToTopLevel);
 
     messenger.on("virt.dom.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
@@ -8614,7 +8663,8 @@ function WorkerAdapter(root) {
             targetId = data.targetId,
             eventType = events[topLevelType],
             target = childHash[targetId],
-            event;
+            global = eventType.global,
+            event, i, il;
 
         if (target) {
             target = target.component;
@@ -8624,6 +8674,16 @@ function WorkerAdapter(root) {
 
         viewport.currentScrollLeft = data.currentScrollLeft;
         viewport.currentScrollTop = data.currentScrollTop;
+
+        if (global) {
+            i = -1;
+            il = global.length - 1;
+            event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
+            event.currentTarget = event.componentTarget = event.currentComponentTarget = target;
+            while (i++ < il) {
+                global[i](event);
+            }
+        }
 
         traverseAncestors(targetId, function(currentTargetId) {
             if (eventType[currentTargetId]) {
@@ -8643,10 +8703,6 @@ function WorkerAdapter(root) {
 
         callback();
     });
-
-    this.handle = function(transaction, callback) {
-        messenger.emit("virt.dom.handleTransaction", transaction, callback);
-    };
 
     registerNativeComponents(root, nativeDOMComponents);
 }
@@ -8694,6 +8750,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/websocket/WebSocketAdapter.js */
 
 var virt = require(3),
+    extend = require(32),
     Messenger = require(118),
     MessengerWebSocketAdapter = require(175),
     nativeDOMComponents = require(74),
@@ -8710,7 +8767,9 @@ module.exports = WebSocketAdapter;
 
 function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
     var messenger = new Messenger(new MessengerWebSocketAdapter(socket, attachMessage, sendMessage)),
+
         eventManager = root.eventManager,
+
         viewport = {
             currentScrollLeft: 0,
             currentScrollTop: 0
@@ -8720,12 +8779,13 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
             document: global,
             viewport: viewport
         },
+
         events = eventManager.events;
 
     this.root = root;
     this.messenger = messenger;
 
-    eventManager.propNameToTopLevel = consts.propNameToTopLevel;
+    extend(eventManager.propNameToTopLevel, consts.propNameToTopLevel);
 
     messenger.on("virt.dom.handleEventDispatch", function(data, callback) {
         var childHash = root.childHash,
@@ -8734,7 +8794,8 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
             targetId = data.targetId,
             eventType = events[topLevelType],
             target = childHash[targetId],
-            event;
+            global = eventType.global,
+            event, i, il;
 
         if (target) {
             target = target.component;
@@ -8744,6 +8805,16 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 
         viewport.currentScrollLeft = data.currentScrollLeft;
         viewport.currentScrollTop = data.currentScrollTop;
+
+        if (global) {
+            i = -1;
+            il = global.length - 1;
+            event = event || eventClassMap[topLevelType].getPooled(nativeEvent, eventHandler);
+            event.currentTarget = event.componentTarget = event.currentComponentTarget = target;
+            while (i++ < il) {
+                global[i](event);
+            }
+        }
 
         traverseAncestors(targetId, function(currentTargetId) {
             if (eventType[currentTargetId]) {
@@ -8763,10 +8834,6 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 
         callback();
     });
-
-    this.handle = function(transaction, callback) {
-        messenger.emit("virt.dom.handleTransaction", transaction, callback);
-    };
 
     registerNativeComponents(root, nativeDOMComponents);
 }
