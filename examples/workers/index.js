@@ -2215,10 +2215,10 @@ EventManagerPrototype.globalOff = function(topLevelType, listener) {
         global.splice(index, 1);
     }
 };
-EventManagerPrototype.globalAllOff = function(id) {
+EventManagerPrototype.globalAllOff = function() {
     var events = this.events,
         event = events[topLevelType] || (events[topLevelType] = {}),
-        global = event.global
+        global = event.global;
 
     if (global) {
         global.length = 0;
