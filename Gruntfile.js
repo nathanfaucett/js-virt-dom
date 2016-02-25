@@ -5,8 +5,28 @@ module.exports = function(grunt) {
             files: [
                 "Gruntfile.js",
                 "src/**/*.js",
-                "test/**/*.js"
+                "test/**/*.js",
+                "dist/virt-dom.js"
             ]
+        },
+        envify: {
+            options: {
+                env: {
+                    NODE_ENV: "production"
+                }
+            },
+            index: {
+                files: {
+                    "dist/virt-dom.min.js": ["dist/virt-dom.js"]
+                }
+            }
+        },
+        uglify: {
+            index: {
+                files: {
+                    "dist/virt-dom.min.js": ["dist/virt-dom.min.js"]
+                }
+            }
         },
         jshint: {
             options: {
@@ -28,5 +48,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks("grunt-jsbeautifier");
     grunt.loadNpmTasks("grunt-contrib-jshint");
+    grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks("grunt-envify");
     grunt.registerTask("default", ["jsbeautifier", "jshint"]);
 };

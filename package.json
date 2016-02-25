@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "test-browser-local": "zuul --local 8080 --ui tape -- ./test",
+    "virt-dom": "comn -f ./src/index.js -o ./dist/virt-dom.js -e virtDOM && grunt envify && grunt uglify",
     "input_events": "comn -f ./examples/input_events/src/index.js -o ./examples/input_events/index.js",
     "simple": "comn -f ./examples/simple/src/index.js -o ./examples/simple/index.js",
     "replace": "comn -f ./examples/replace/src/index.js -o ./examples/replace/index.js",
@@ -30,6 +31,8 @@
     "comn": "git://github.com/nathanfaucett/comn.git",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.3",
+    "grunt-env": "^0.4.4",
+    "grunt-envify": "0.0.3",
     "grunt-jsbeautifier": "^0.2.10",
     "tape": "^4.2.2",
     "utf-8-validate": "^1.2.1",
