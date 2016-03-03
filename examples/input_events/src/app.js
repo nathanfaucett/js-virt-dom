@@ -17,6 +17,12 @@ function App(props, children, context) {
 virt.Component.extend(App, "App");
 AppPrototype = App.prototype;
 
+AppPrototype.componentDidMount = function() {
+    this.onGlobalEvent("onTouchTap", function onTouchTap(e) {
+        console.log(e);
+    });
+};
+
 AppPrototype.render = function() {
     var _this = this;
     return (
@@ -67,11 +73,13 @@ AppPrototype.render = function() {
             virt.createView("input", {
                 name: "yesOrNo",
                 value: "yes",
+                checked: true,
                 type: "radio"
             }),
             virt.createView("input", {
                 name: "yesOrNo",
                 value: "no",
+                checked: true,
                 type: "radio"
             }),
 

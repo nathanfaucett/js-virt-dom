@@ -6,7 +6,8 @@ var has = require("has"),
     getEventTarget = require("./getters/getEventTarget"),
     getNodeAttributeId = require("../utils/getNodeAttributeId"),
     nativeEventToJSON = require("../utils/nativeEventToJSON"),
-    isEventSupported = require("./isEventSupported");
+    isEventSupported = require("./isEventSupported"),
+    TapPlugin = require("./plugins/TapPlugin");
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -32,6 +33,9 @@ function EventHandler(messenger, document, window, isClient) {
     this.messenger = messenger;
     this.isClient = !!isClient;
 
+    this.__pluginListening = {};
+    this.__pluginHash = {};
+    this.__plugins = [];
     this.__isListening = {};
     this.__listening = {};
 
@@ -47,6 +51,8 @@ function EventHandler(messenger, document, window, isClient) {
     }
     this.__onResize = onResize;
     eventListener.on(window, "resize orientationchange", onResize);
+
+    this.addPlugin(new TapPlugin(this));
 }
 EventHandlerPrototype = EventHandler.prototype;
 
@@ -62,6 +68,48 @@ EventHandlerPrototype.getDimensions = function() {
         width: getWindowWidth(window, documentElement, document),
         height: getWindowHeight(window, documentElement, document)
     };
+};
+
+EventHandlerPrototype.addPlugin = function(plugin) {
+    var plugins = this.__plugins,
+        pluginHash = this.__pluginHash,
+        events = plugin.events,
+        i = -1,
+        il = events.length - 1;
+
+    while (i++ < il) {
+        pluginHash[events[i]] = plugin;
+    }
+
+    plugins[plugins.length] = plugin;
+};
+
+EventHandlerPrototype.pluginListenTo = function(topLevelType) {
+    var plugin = this.__pluginHash[topLevelType],
+        pluginListening = this.__pluginListening,
+        dependencies, events, i, il;
+
+    if (plugin && !pluginListening[topLevelType]) {
+        dependencies = plugin.dependencies;
+        i = -1;
+        il = dependencies.length - 1;
+
+        while (i++ < il) {
+            this.nativeListenTo(dependencies[i]);
+        }
+
+        events = plugin.events;
+        i = -1;
+        il = events.length - 1;
+
+        while (i++ < il) {
+            pluginListening[events[i]] = plugin;
+        }
+
+        return true;
+    } else {
+        return false;
+    }
 };
 
 EventHandlerPrototype.clear = function() {
@@ -84,6 +132,12 @@ EventHandlerPrototype.clear = function() {
 };
 
 EventHandlerPrototype.listenTo = function(id, topLevelType) {
+    if (!this.pluginListenTo(topLevelType)) {
+        this.nativeListenTo(topLevelType);
+    }
+};
+
+EventHandlerPrototype.nativeListenTo = function(topLevelType) {
     var document = this.document,
         window = this.window,
         isListening = this.__isListening;
@@ -171,16 +225,21 @@ EventHandlerPrototype.trapCapturedEvent = function(topLevelType, type, element) 
 
 EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
     var isClient = this.isClient,
-        viewport = this.viewport,
-        targetId = getNodeAttributeId(getEventTarget(nativeEvent, this.window));
+        targetId = getNodeAttributeId(getEventTarget(nativeEvent, this.window)),
+        plugins = this.__plugins,
+        i = -1,
+        il = plugins.length - 1;
 
     if (!isClient && targetId) {
         nativeEvent.preventDefault();
     }
 
+    while (i++ < il) {
+        plugins[i].handle(topLevelType, nativeEvent, targetId, this.viewport);
+    }
+
     this.messenger.emit("virt.dom.handleEventDispatch", {
-        currentScrollLeft: viewport.currentScrollLeft,
-        currentScrollTop: viewport.currentScrollTop,
+        viewport: this.viewport,
         topLevelType: topLevelType,
         nativeEvent: isClient ? nativeEvent : nativeEventToJSON(nativeEvent),
         targetId: targetId

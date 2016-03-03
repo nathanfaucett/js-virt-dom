@@ -69,6 +69,7 @@
     "messenger_adapter": "git://github.com/nathanfaucett/messenger_adapter.git",
     "messenger_websocket_adapter": "git://github.com/nathanfaucett/messenger_websocket_adapter.git",
     "messenger_worker_adapter": "git://github.com/nathanfaucett/messenger_worker_adapter.git",
+    "now": "git://github.com/nathanfaucett/now.git",
     "supports": "git://github.com/nathanfaucett/supports.git",
     "virt": "git://github.com/nathanfaucett/virt.git"
   }

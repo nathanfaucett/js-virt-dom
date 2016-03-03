@@ -45,10 +45,10 @@ TodoFormPrototype.__onSubmit = function(e) {
                 text: value
             });
 
-            inputName.setValue("");
-
-            _this.setState({
-                name: ""
+            inputName.setValue("", function() {
+                _this.setState({
+                    name: ""
+                });
             });
         }
     });
@@ -58,7 +58,7 @@ TodoFormPrototype.__onInput = function() {
     var _this = this;
 
     this.refs.name.getValue(function(error, value) {
-        if (!error && value) {
+        if (!error) {
             _this.setState({
                 name: value
             });
