@@ -21,7 +21,7 @@ imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
         node.src = data.src;
         callback();
     } else {
-        callback(new Error("events(data, callback): No DOM node found with id " + data.id));
+        callback(new Error("mount: No DOM node found with id " + data.id));
     }
 };
 
@@ -42,6 +42,6 @@ imageHandlers["virt.dom.Image.setSrc"] = function(data, callback) {
 
         callback();
     } else {
-        callback(new Error("events(data, callback): No DOM node found with id " + data.id));
+        callback(new Error("setSrc: No DOM node found with id " + data.id));
     }
 };

@@ -13,24 +13,22 @@ sharedInputHandlers.getValue = function(data, callback) {
     if (node) {
         callback(undefined, node.value);
     } else {
-        callback(new Error("getValue(callback): No DOM node found with id " + data.id));
+        callback(new Error("getValue: No DOM node found with id " + data.id));
     }
 };
 
 sharedInputHandlers.setValue = function(data, callback) {
     var node = findDOMNode(data.id),
-        caret, value;
+        value;
 
     if (node) {
         value = data.value || "";
         if (value !== node.value) {
-            caret = domCaret.get(node);
             node.value = value;
-            domCaret.set(node, caret.start, caret.end);
         }
         callback();
     } else {
-        callback(new Error("setValue(data, callback): No DOM node found with id " + data.id));
+        callback(new Error("setValue: No DOM node found with id " + data.id));
     }
 };
 
@@ -40,7 +38,7 @@ sharedInputHandlers.getSelection = function(data, callback) {
     if (node) {
         callback(undefined, domCaret.get(node));
     } else {
-        callback(new Error("getSelection(callback): No DOM node found with id " + data.id));
+        callback(new Error("getSelection: No DOM node found with id " + data.id));
     }
 };
 
@@ -51,7 +49,7 @@ sharedInputHandlers.setSelection = function(data, callback) {
         domCaret.set(node, data.start, data.end);
         callback();
     } else {
-        callback(new Error("setSelection(data, callback): No DOM node found with id " + data.id));
+        callback(new Error("setSelection: No DOM node found with id " + data.id));
     }
 };
 
@@ -62,7 +60,7 @@ sharedInputHandlers.focus = function(data, callback) {
         focusNode(node);
         callback();
     } else {
-        callback(new Error("focus(callback): No DOM node found with id " + data.id));
+        callback(new Error("focus: No DOM node found with id " + data.id));
     }
 };
 
@@ -73,6 +71,6 @@ sharedInputHandlers.blur = function(data, callback) {
         blurNode(node);
         callback();
     } else {
-        callback(new Error("blur(callback): No DOM node found with id " + data.id));
+        callback(new Error("blur: No DOM node found with id " + data.id));
     }
 };

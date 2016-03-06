@@ -250,15 +250,13 @@ function(require, exports, module, undefined, global) {
 var extend = require(40);
 
 
-var handlers = exports;
-
-
 extend(
-    handlers,
+    exports,
     require(89),
     require(90),
     require(91),
-    require(92)
+    require(92),
+    require(93)
 );
 
 
@@ -301,9 +299,9 @@ function(require, exports, module, undefined, global) {
 var virt = require(5),
     isNull = require(42),
     isUndefined = require(43),
-    Adapter = require(114),
-    rootsById = require(115),
-    getRootNodeId = require(116);
+    Adapter = require(122),
+    rootsById = require(123),
+    getRootNodeId = require(124);
 
 
 var Root = virt.Root;
@@ -335,9 +333,9 @@ function render(nextView, containerDOMNode, callback) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/unmount.js */
 
-var rootsById = require(115),
-    getRootNodeInContainer = require(180),
-    getNodeId = require(179);
+var rootsById = require(123),
+    getRootNodeInContainer = require(186),
+    getNodeId = require(185);
 
 
 module.exports = unmount;
@@ -360,7 +358,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/utils/findDOMNode.js */
 
 var isString = require(16),
-    getNodeById = require(102);
+    getNodeById = require(103);
 
 
 module.exports = findDOMNode;
@@ -385,7 +383,7 @@ function(require, exports, module, undefined, global) {
 
 var virt = require(5),
     isString = require(16),
-    rootsById = require(115);
+    rootsById = require(123);
 
 
 var getRootIdFromId = virt.getRootIdFromId;
@@ -409,7 +407,7 @@ function(require, exports, module, undefined, global) {
 
 var virt = require(5),
     isString = require(16),
-    eventHandlersById = require(113);
+    eventHandlersById = require(121);
 
 
 var getRootIdFromId = virt.getRootIdFromId;
@@ -431,18 +429,18 @@ function findDOMNode(value) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/worker/createWorkerRender.js */
 
-var Messenger = require(117),
+var Messenger = require(125),
     isNull = require(42),
-    MessengerWorkerAdapter = require(181),
-    eventHandlersById = require(113),
+    MessengerWorkerAdapter = require(187),
+    eventHandlersById = require(121),
     nativeDOMHandlers = require(4),
-    eventHandlersById = require(113),
-    getRootNodeId = require(116),
-    registerNativeComponentHandlers = require(121),
-    getWindow = require(119),
-    EventHandler = require(122),
-    applyEvents = require(125),
-    applyPatches = require(126);
+    eventHandlersById = require(121),
+    getRootNodeId = require(124),
+    registerNativeComponentHandlers = require(129),
+    getWindow = require(127),
+    EventHandler = require(130),
+    applyEvents = require(133),
+    applyPatches = require(134);
 
 
 module.exports = createWorkerRender;
@@ -496,8 +494,8 @@ function(require, exports, module, undefined, global) {
 
 var virt = require(5),
     isNull = require(42),
-    rootsById = require(115),
-    WorkerAdapter = require(182);
+    rootsById = require(123),
+    WorkerAdapter = require(188);
 
 
 var root = null;
@@ -529,17 +527,17 @@ render.unmount = function() {
 function(require, exports, module, undefined, global) {
 /* ../../../src/websocket/createWebSocketRender.js */
 
-var Messenger = require(117),
+var Messenger = require(125),
     isNull = require(42),
-    MessengerWebSocketAdapter = require(183),
-    eventHandlersById = require(113),
-    getRootNodeId = require(116),
+    MessengerWebSocketAdapter = require(189),
+    eventHandlersById = require(121),
+    getRootNodeId = require(124),
     nativeDOMHandlers = require(4),
-    registerNativeComponentHandlers = require(121),
-    getWindow = require(119),
-    EventHandler = require(122),
-    applyEvents = require(125),
-    applyPatches = require(126);
+    registerNativeComponentHandlers = require(129),
+    getWindow = require(127),
+    EventHandler = require(130),
+    applyEvents = require(133),
+    applyPatches = require(134);
 
 
 module.exports = createWebSocketRender;
@@ -592,8 +590,8 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/websocket/renderWebSocket.js */
 
 var virt = require(5),
-    rootsById = require(115),
-    WebSocketAdapter = require(184);
+    rootsById = require(123),
+    WebSocketAdapter = require(190);
 
 
 module.exports = render;
@@ -1674,7 +1672,7 @@ function isUndefined(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/virt/node_modules/is_native/src/index.js */
+/* ../../../node_modules/virt/node_modules/is_array/node_modules/is_native/src/index.js */
 
 var isFunction = require(15),
     isNullOrUndefined = require(18),
@@ -2378,7 +2376,7 @@ NodePrototype.__mountChildren = function(renderedView, transaction) {
 
     this.renderedChildren = renderedChildren;
 
-    renderedView.children = arrayMap(renderedView.children, function(child, index) {
+    renderedView.children = arrayMap(renderedView.children, function renderChild(child, index) {
         var node, id;
 
         if (isPrimitiveView(child)) {
@@ -4724,9 +4722,97 @@ TextAreaPrototype.render = function() {
 
 },
 function(require, exports, module, undefined, global) {
+/* ../../../src/nativeDOM/nodeHandlers.js */
+
+var domDimensions = require(94),
+    findDOMNode = require(8);
+
+
+var nodeHandlers = exports;
+
+
+nodeHandlers["virt.getViewTop"] = function getWidth(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, domDimensions.top(node));
+    } else {
+        callback(new Error("getViewTop: No DOM node found with id " + data.id));
+    }
+};
+nodeHandlers["virt.getViewRight"] = function getWidth(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, domDimensions.right(node));
+    } else {
+        callback(new Error("getViewRight: No DOM node found with id " + data.id));
+    }
+};
+nodeHandlers["virt.getViewBottom"] = function getWidth(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, domDimensions.bottom(node));
+    } else {
+        callback(new Error("getViewBottom: No DOM node found with id " + data.id));
+    }
+};
+nodeHandlers["virt.getViewLeft"] = function getWidth(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, domDimensions.left(node));
+    } else {
+        callback(new Error("getViewLeft: No DOM node found with id " + data.id));
+    }
+};
+
+nodeHandlers["virt.getViewWidth"] = function getWidth(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, domDimensions.width(node));
+    } else {
+        callback(new Error("getViewWidth: No DOM node found with id " + data.id));
+    }
+};
+nodeHandlers["virt.getViewHeight"] = function getWidth(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, domDimensions.height(node));
+    } else {
+        callback(new Error("getViewHeight: No DOM node found with id " + data.id));
+    }
+};
+
+nodeHandlers["virt.getViewDimensions"] = function getWidth(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, domDimensions(node));
+    } else {
+        callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
+    }
+};
+
+nodeHandlers["virt.getViewProperty"] = function getWidth(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, node[data.property]);
+    } else {
+        callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
+    }
+};
+
+
+},
+function(require, exports, module, undefined, global) {
 /* ../../../src/nativeDOM/buttonHandlers.js */
 
-var sharedHandlers = require(93);
+var sharedHandlers = require(105);
 
 
 var buttonHandlers = exports;
@@ -4740,7 +4826,7 @@ buttonHandlers["virt.dom.Button.blur"] = sharedHandlers.blur;
 function(require, exports, module, undefined, global) {
 /* ../../../src/nativeDOM/imageHandlers.js */
 
-var consts = require(104),
+var consts = require(112),
     findEventHandler = require(10),
     findDOMNode = require(8);
 
@@ -4763,7 +4849,7 @@ imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
         node.src = data.src;
         callback();
     } else {
-        callback(new Error("events(data, callback): No DOM node found with id " + data.id));
+        callback(new Error("mount: No DOM node found with id " + data.id));
     }
 };
 
@@ -4784,7 +4870,7 @@ imageHandlers["virt.dom.Image.setSrc"] = function(data, callback) {
 
         callback();
     } else {
-        callback(new Error("events(data, callback): No DOM node found with id " + data.id));
+        callback(new Error("setSrc: No DOM node found with id " + data.id));
     }
 };
 
@@ -4794,7 +4880,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/nativeDOM/inputHandlers.js */
 
 var findDOMNode = require(8),
-    sharedHandlers = require(93);
+    sharedHandlers = require(105);
 
 
 var inputHandlers = exports;
@@ -4819,7 +4905,7 @@ inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
         }
         callback();
     } else {
-        callback(new Error("setChecked(value, callback): No DOM node found with id " + data.id));
+        callback(new Error("setChecked: No DOM node found with id " + data.id));
     }
 };
 
@@ -4828,7 +4914,7 @@ inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/nativeDOM/textareaHandlers.js */
 
-var sharedHandlers = require(93);
+var sharedHandlers = require(105);
 
 
 var textareaHandlers = exports;
@@ -4844,11 +4930,366 @@ textareaHandlers["virt.dom.TextArea.blur"] = sharedHandlers.blur;
 
 },
 function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/src/index.js */
+
+var getCurrentStyle = require(95),
+    isElement = require(96);
+
+
+module.exports = domDimensions;
+
+
+function domDimensions(node) {
+    var dimensions = new Dimensions(),
+        clientRect;
+        
+    if (isElement(node)) {
+        clientRect = node.getBoundingClientRect();
+
+        dimensions.top = clientRect.top;
+        dimensions.right = clientRect.left + node.offsetWidth;
+        dimensions.bottom = clientRect.top + node.offsetHeight;
+        dimensions.left = clientRect.left;
+        dimensions.width = dimensions.right - dimensions.left;
+        dimensions.height = dimensions.bottom - dimensions.top;
+
+        return dimensions;
+    } else {
+        return dimensions;
+    }
+}
+
+function Dimensions() {
+    this.top = 0;
+    this.right = 0;
+    this.bottom = 0;
+    this.left = 0;
+    this.width = 0;
+    this.height = 0;
+}
+
+domDimensions.top = function(node) {
+    if (isElement(node)) {
+        return node.getBoundingClientRect().top;
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.right = function(node) {
+    if (isElement(node)) {
+        return domDimensions.left(node) + node.offsetWidth;
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.bottom = function(node) {
+    if (isElement(node)) {
+        return domDimensions.top(node) + node.offsetHeight;
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.left = function(node) {
+    if (isElement(node)) {
+        return node.getBoundingClientRect().left;
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.width = function(node) {
+    if (isElement(node)) {
+        return domDimensions.right(node) - domDimensions.left(node);
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.height = function(node) {
+    if (isElement(node)) {
+        return domDimensions.bottom(node) - domDimensions.top(node);
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.marginTop = function(node) {
+    if (isElement(node)) {
+        return parseInt(getCurrentStyle(node, "marginTop"), 10);
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.marginRight = function(node) {
+    if (isElement(node)) {
+        return parseInt(getCurrentStyle(node, "marginRight"), 10);
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.marginBottom = function(node) {
+    if (isElement(node)) {
+        return parseInt(getCurrentStyle(node, "marginRight"), 10);
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.marginLeft = function(node) {
+    if (isElement(node)) {
+        return parseInt(getCurrentStyle(node, "marginLeft"), 10);
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.outerWidth = function(node) {
+    if (isElement(node)) {
+        return domDimensions.width(node) + domDimensions.marginLeft(node) + domDimensions.marginRight(node);
+    } else {
+        return 0;
+    }
+};
+
+domDimensions.outerHeight = function(node) {
+    if (isElement(node)) {
+        return domDimensions.height(node) + domDimensions.marginTop(node) + domDimensions.marginBottom(node);
+    } else {
+        return 0;
+    }
+};
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/node_modules/get_current_style/src/index.js */
+
+var supports = require(97),
+    environment = require(98),
+    isElement = require(96),
+    isString = require(16),
+    camelize = require(99);
+
+
+var baseGetCurrentStyles;
+
+
+module.exports = getCurrentStyle;
+
+
+function getCurrentStyle(node, style) {
+    if (isElement(node)) {
+        if (isString(style)) {
+            return baseGetCurrentStyles(node)[camelize(style)] || "";
+        } else {
+            return baseGetCurrentStyles(node);
+        }
+    } else {
+        if (isString(style)) {
+            return "";
+        } else {
+            return null;
+        }
+    }
+}
+
+if (supports.dom && environment.document.defaultView) {
+    baseGetCurrentStyles = function(node) {
+        return node.ownerDocument.defaultView.getComputedStyle(node, "");
+    };
+} else {
+    baseGetCurrentStyles = function(node) {
+        if (node.currentStyle) {
+            return node.currentStyle;
+        } else {
+            return node.style;
+        }
+    };
+}
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/node_modules/is_element/src/index.js */
+
+var isNode = require(100);
+
+
+module.exports = isElement;
+
+
+function isElement(value) {
+    return isNode(value) && value.nodeType === 1;
+}
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/node_modules/supports/src/index.js */
+
+var environment = require(98);
+
+
+var supports = module.exports;
+
+
+supports.dom = !!(typeof(window) !== "undefined" && window.document && window.document.createElement);
+supports.workers = typeof(Worker) !== "undefined";
+
+supports.eventListeners = supports.dom && !!environment.window.addEventListener;
+supports.attachEvents = supports.dom && !!environment.window.attachEvent;
+
+supports.viewport = supports.dom && !!environment.window.screen;
+supports.touch = supports.dom && "ontouchstart" in environment.window;
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/node_modules/environment/src/index.js */
+
+var environment = exports,
+
+    hasWindow = typeof(window) !== "undefined",
+    userAgent = hasWindow ? window.navigator.userAgent : "";
+
+
+environment.worker = typeof(importScripts) !== "undefined";
+
+environment.browser = environment.worker || !!(
+    hasWindow &&
+    typeof(navigator) !== "undefined" &&
+    window.document
+);
+
+environment.node = !environment.worker && !environment.browser;
+
+environment.mobile = environment.browser && /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+
+environment.window = (
+    hasWindow ? window :
+    typeof(global) !== "undefined" ? global :
+    typeof(self) !== "undefined" ? self : {}
+);
+
+environment.pixelRatio = environment.window.devicePixelRatio || 1;
+
+environment.document = typeof(document) !== "undefined" ? document : {};
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/node_modules/camelize/src/index.js */
+
+var reInflect = require(101),
+    capitalizeString = require(102);
+
+
+module.exports = camelize;
+
+
+function camelize(string, lowFirstLetter) {
+    var parts, part, i, il;
+
+    lowFirstLetter = lowFirstLetter !== false;
+    parts = string.match(reInflect);
+    i = lowFirstLetter ? 0 : -1;
+    il = parts.length - 1;
+
+    while (i++ < il) {
+        parts[i] = capitalizeString(parts[i]);
+    }
+
+    if (lowFirstLetter && (part = parts[0])) {
+        parts[0] = part.charAt(0).toLowerCase() + part.slice(1);
+    }
+
+    return parts.join("");
+}
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/node_modules/is_node/src/index.js */
+
+var isString = require(16),
+    isNullOrUndefined = require(18),
+    isNumber = require(37),
+    isFunction = require(15);
+
+
+var isNode;
+
+
+if (typeof(Node) !== "undefined" && isFunction(Node)) {
+    isNode = function isNode(value) {
+        return value instanceof Node;
+    };
+} else {
+    isNode = function isNode(value) {
+        return (!isNullOrUndefined(value) &&
+            isNumber(value.nodeType) &&
+            isString(value.nodeName)
+        );
+    };
+}
+
+
+module.exports = isNode;
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/node_modules/re_inflect/src/index.js */
+
+module.exports = /[^A-Z-_ ]+|[A-Z][^A-Z-_ ]+|[^a-z-_ ]+/g;
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../node_modules/dom_dimensions/node_modules/capitalize_string/src/index.js */
+
+module.exports = capitalizeString;
+
+
+function capitalizeString(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../src/utils/getNodeById.js */
+
+var nodeCache = require(104);
+
+
+module.exports = getNodeById;
+
+
+function getNodeById(id) {
+    return nodeCache[id];
+}
+
+
+},
+function(require, exports, module, undefined, global) {
+/* ../../../src/utils/nodeCache.js */
+
+
+
+
+},
+function(require, exports, module, undefined, global) {
 /* ../../../src/nativeDOM/sharedHandlers.js */
 
-var domCaret = require(94),
-    blurNode = require(95),
-    focusNode = require(96),
+var domCaret = require(106),
+    blurNode = require(107),
+    focusNode = require(108),
     findDOMNode = require(8);
 
 
@@ -4861,24 +5302,22 @@ sharedInputHandlers.getValue = function(data, callback) {
     if (node) {
         callback(undefined, node.value);
     } else {
-        callback(new Error("getValue(callback): No DOM node found with id " + data.id));
+        callback(new Error("getValue: No DOM node found with id " + data.id));
     }
 };
 
 sharedInputHandlers.setValue = function(data, callback) {
     var node = findDOMNode(data.id),
-        caret, value;
+        value;
 
     if (node) {
         value = data.value || "";
         if (value !== node.value) {
-            caret = domCaret.get(node);
             node.value = value;
-            domCaret.set(node, caret.start, caret.end);
         }
         callback();
     } else {
-        callback(new Error("setValue(data, callback): No DOM node found with id " + data.id));
+        callback(new Error("setValue: No DOM node found with id " + data.id));
     }
 };
 
@@ -4888,7 +5327,7 @@ sharedInputHandlers.getSelection = function(data, callback) {
     if (node) {
         callback(undefined, domCaret.get(node));
     } else {
-        callback(new Error("getSelection(callback): No DOM node found with id " + data.id));
+        callback(new Error("getSelection: No DOM node found with id " + data.id));
     }
 };
 
@@ -4899,7 +5338,7 @@ sharedInputHandlers.setSelection = function(data, callback) {
         domCaret.set(node, data.start, data.end);
         callback();
     } else {
-        callback(new Error("setSelection(data, callback): No DOM node found with id " + data.id));
+        callback(new Error("setSelection: No DOM node found with id " + data.id));
     }
 };
 
@@ -4910,7 +5349,7 @@ sharedInputHandlers.focus = function(data, callback) {
         focusNode(node);
         callback();
     } else {
-        callback(new Error("focus(callback): No DOM node found with id " + data.id));
+        callback(new Error("focus: No DOM node found with id " + data.id));
     }
 };
 
@@ -4921,7 +5360,7 @@ sharedInputHandlers.blur = function(data, callback) {
         blurNode(node);
         callback();
     } else {
-        callback(new Error("blur(callback): No DOM node found with id " + data.id));
+        callback(new Error("blur: No DOM node found with id " + data.id));
     }
 };
 
@@ -4930,11 +5369,11 @@ sharedInputHandlers.blur = function(data, callback) {
 function(require, exports, module, undefined, global) {
 /* ../../../node_modules/dom_caret/src/index.js */
 
-var environment = require(97),
-    focusNode = require(96),
-    blurNode = require(95),
-    getActiveElement = require(98),
-    isTextInputElement = require(99);
+var environment = require(98),
+    focusNode = require(108),
+    blurNode = require(107),
+    getActiveElement = require(109),
+    isTextInputElement = require(110);
 
 
 var domCaret = exports,
@@ -5052,43 +5491,10 @@ function focusNode(node) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/environment/src/index.js */
-
-var environment = exports,
-
-    hasWindow = typeof(window) !== "undefined",
-    userAgent = hasWindow ? window.navigator.userAgent : "";
-
-
-environment.worker = typeof(importScripts) !== "undefined";
-
-environment.browser = environment.worker || !!(
-    hasWindow &&
-    typeof(navigator) !== "undefined" &&
-    window.document
-);
-
-environment.node = !environment.worker && !environment.browser;
-
-environment.mobile = environment.browser && /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-
-environment.window = (
-    hasWindow ? window :
-    typeof(global) !== "undefined" ? global :
-    typeof(self) !== "undefined" ? self : {}
-);
-
-environment.pixelRatio = environment.window.devicePixelRatio || 1;
-
-environment.document = typeof(document) !== "undefined" ? document : {};
-
-
-},
-function(require, exports, module, undefined, global) {
 /* ../../../node_modules/get_active_element/src/index.js */
 
-var isDocument = require(101),
-    environment = require(97);
+var isDocument = require(111),
+    environment = require(98);
 
 
 var document = environment.document;
@@ -5134,36 +5540,6 @@ function isTextInputElement(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/is_node/src/index.js */
-
-var isString = require(16),
-    isNullOrUndefined = require(18),
-    isNumber = require(37),
-    isFunction = require(15);
-
-
-var isNode;
-
-
-if (typeof(Node) !== "undefined" && isFunction(Node)) {
-    isNode = function isNode(value) {
-        return value instanceof Node;
-    };
-} else {
-    isNode = function isNode(value) {
-        return (!isNullOrUndefined(value) &&
-            isNumber(value.nodeType) &&
-            isString(value.nodeName)
-        );
-    };
-}
-
-
-module.exports = isNode;
-
-
-},
-function(require, exports, module, undefined, global) {
 /* ../../../node_modules/is_document/src/index.js */
 
 var isNode = require(100);
@@ -5179,35 +5555,13 @@ function isDocument(value) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/getNodeById.js */
-
-var nodeCache = require(103);
-
-
-module.exports = getNodeById;
-
-
-function getNodeById(id) {
-    return nodeCache[id];
-}
-
-
-},
-function(require, exports, module, undefined, global) {
-/* ../../../src/utils/nodeCache.js */
-
-
-
-
-},
-function(require, exports, module, undefined, global) {
 /* ../../../src/events/consts.js */
 
-var map = require(105),
-    forEach = require(106),
+var map = require(113),
+    forEach = require(114),
     keyMirror = require(67),
-    removeTop = require(107),
-    replaceTopWithOn = require(108);
+    removeTop = require(115),
+    replaceTopWithOn = require(116);
 
 
 var consts = exports,
@@ -5314,9 +5668,9 @@ function(require, exports, module, undefined, global) {
 
 var isArrayLike = require(68),
     isNullOrUndefined = require(18),
-    fastBindThis = require(109),
+    fastBindThis = require(117),
     arrayMap = require(39),
-    objectMap = require(110);
+    objectMap = require(118);
 
 
 module.exports = map;
@@ -5336,9 +5690,9 @@ function(require, exports, module, undefined, global) {
 
 var isArrayLike = require(68),
     isNullOrUndefined = require(18),
-    fastBindThis = require(109),
-    arrayForEach = require(111),
-    objectForEach = require(112);
+    fastBindThis = require(117),
+    arrayForEach = require(119),
+    objectForEach = require(120);
 
 
 module.exports = forEach;
@@ -5504,20 +5858,20 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/Adapter.js */
 
 var extend = require(40),
-    Messenger = require(117),
-    createMessengerAdapter = require(118),
-    eventHandlersById = require(113),
-    getWindow = require(119),
+    Messenger = require(125),
+    createMessengerAdapter = require(126),
+    eventHandlersById = require(121),
+    getWindow = require(127),
     nativeDOMComponents = require(3),
     nativeDOMHandlers = require(4),
-    registerNativeComponents = require(120),
-    registerNativeComponentHandlers = require(121),
-    consts = require(104),
-    EventHandler = require(122),
-    eventClassMap = require(123),
-    handleEventDispatch = require(124),
-    applyEvents = require(125),
-    applyPatches = require(126);
+    registerNativeComponents = require(128),
+    registerNativeComponentHandlers = require(129),
+    consts = require(112),
+    EventHandler = require(130),
+    eventClassMap = require(131),
+    handleEventDispatch = require(132),
+    applyEvents = require(133),
+    applyPatches = require(134);
 
 
 module.exports = Adapter;
@@ -5602,8 +5956,8 @@ function(require, exports, module, undefined, global) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/utils/getRootNodeId.js */
 
-var getRootNodeInContainer = require(180),
-    getNodeId = require(179);
+var getRootNodeInContainer = require(186),
+    getNodeId = require(185);
 
 
 module.exports = getRootNodeId;
@@ -5867,15 +6221,15 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/EventHandler.js */
 
 var has = require(38),
-    eventListener = require(127),
-    consts = require(104),
-    getWindowWidth = require(128),
-    getWindowHeight = require(129),
-    getEventTarget = require(130),
-    getNodeAttributeId = require(131),
-    nativeEventToJSON = require(132),
-    isEventSupported = require(133),
-    TapPlugin = require(134);
+    eventListener = require(135),
+    consts = require(112),
+    getWindowWidth = require(136),
+    getWindowHeight = require(137),
+    getEventTarget = require(138),
+    getNodeAttributeId = require(139),
+    nativeEventToJSON = require(140),
+    isEventSupported = require(141),
+    TapPlugin = require(142);
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -6119,19 +6473,19 @@ EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/eventClassMap.js */
 
-var SyntheticAnimationEvent = require(143),
-    SyntheticTransitionEvent = require(144),
-    SyntheticClipboardEvent = require(145),
-    SyntheticCompositionEvent = require(146),
-    SyntheticDragEvent = require(147),
-    SyntheticEvent = require(141),
-    SyntheticFocusEvent = require(148),
-    SyntheticInputEvent = require(149),
-    SyntheticKeyboardEvent = require(150),
-    SyntheticMouseEvent = require(151),
-    SyntheticTouchEvent = require(152),
-    SyntheticUIEvent = require(139),
-    SyntheticWheelEvent = require(153);
+var SyntheticAnimationEvent = require(150),
+    SyntheticTransitionEvent = require(151),
+    SyntheticClipboardEvent = require(152),
+    SyntheticCompositionEvent = require(153),
+    SyntheticDragEvent = require(154),
+    SyntheticEvent = require(148),
+    SyntheticFocusEvent = require(155),
+    SyntheticInputEvent = require(156),
+    SyntheticKeyboardEvent = require(157),
+    SyntheticMouseEvent = require(158),
+    SyntheticTouchEvent = require(159),
+    SyntheticUIEvent = require(146),
+    SyntheticWheelEvent = require(160);
 
 
 module.exports = {
@@ -6243,7 +6597,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/handleEventDispatch.js */
 
 var virt = require(5),
-    getNodeById = require(102);
+    getNodeById = require(103);
 
 
 var traverseAncestors = virt.traverseAncestors;
@@ -6325,8 +6679,8 @@ function applyEvents(events, eventHandler) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/applyPatches.js */
 
-var getNodeById = require(102),
-    applyPatch = require(172);
+var getNodeById = require(103),
+    applyPatch = require(179);
 
 
 module.exports = applyPatches;
@@ -6359,8 +6713,8 @@ function(require, exports, module, undefined, global) {
 var process = require(71);
 var isObject = require(17),
     isFunction = require(15),
-    environment = require(97),
-    eventTable = require(135);
+    environment = require(98),
+    eventTable = require(143);
 
 
 var eventListener = module.exports,
@@ -6560,7 +6914,7 @@ function(require, exports, module, undefined, global) {
 var indexOf = require(69),
     isNode = require(100),
     isFunction = require(15),
-    ignoreNativeEventProp = require(136);
+    ignoreNativeEventProp = require(144);
 
 
 module.exports = nativeEventToJSON;
@@ -6589,8 +6943,8 @@ function(require, exports, module, undefined, global) {
 var isFunction = require(15),
     isNullOrUndefined = require(18),
     has = require(38),
-    supports = require(137),
-    environment = require(97);
+    supports = require(97),
+    environment = require(98);
 
 
 var document = environment.document,
@@ -6633,10 +6987,10 @@ function isEventSupported(eventNameSuffix, capture) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/plugins/TapPlugin.js */
 
-var now = require(138),
+var now = require(145),
     indexOf = require(69),
-    SyntheticUIEvent = require(139),
-    consts = require(104);
+    SyntheticUIEvent = require(146),
+    consts = require(112);
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -6693,10 +7047,7 @@ TapPluginPrototype.dependencies = [
 ].concat(touchEvents);
 
 TapPluginPrototype.handle = function(topLevelType, nativeEvent, targetId) {
-    var eventHandler = this.eventHandler,
-        viewport = eventHandler.viewport,
-        event = null,
-        startCoords, distance;
+    var startCoords, eventHandler, viewport, event;
 
     if (!isStartish(topLevelType) && !isEndish(topLevelType)) {
         return null;
@@ -6705,15 +7056,19 @@ TapPluginPrototype.handle = function(topLevelType, nativeEvent, targetId) {
             this.usedTouch = true;
             this.usedTouchTime = now();
         } else {
-            if (this.usedTouch && (now() - this.usedTouchTime < TOUCH_DELAY)) {
+            if (this.usedTouch && (now() - this.usedTouchTime < this.TOUCH_DELAY)) {
                 return null;
             }
         }
 
         startCoords = this.startCoords;
-        distance = getDistance(startCoords, nativeEvent, viewport);
+        eventHandler = this.eventHandler;
+        viewport = eventHandler.viewport;
 
-        if (isEndish(topLevelType) && distance < this.tapMoveThreshold) {
+        if (
+            isEndish(topLevelType) &&
+            getDistance(startCoords, nativeEvent, viewport) < this.tapMoveThreshold
+        ) {
             event = SyntheticUIEvent.getPooled(nativeEvent, eventHandler);
         }
 
@@ -6793,7 +7148,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../node_modules/event_listener/src/event_table.js */
 
 var isNode = require(100),
-    environment = require(97);
+    environment = require(98);
 
 
 var window = environment.window,
@@ -7214,26 +7569,6 @@ module.exports = [
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/supports/src/index.js */
-
-var environment = require(97);
-
-
-var supports = module.exports;
-
-
-supports.dom = !!(typeof(window) !== "undefined" && window.document && window.document.createElement);
-supports.workers = typeof(Worker) !== "undefined";
-
-supports.eventListeners = supports.dom && !!environment.window.addEventListener;
-supports.attachEvents = supports.dom && !!environment.window.attachEvent;
-
-supports.viewport = supports.dom && !!environment.window.screen;
-supports.touch = supports.dom && "ontouchstart" in environment.window;
-
-
-},
-function(require, exports, module, undefined, global) {
 /* ../../../node_modules/now/src/browser.js */
 
 var Date_now = Date.now || function Date_now() {
@@ -7273,8 +7608,8 @@ module.exports = now;
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticUIEvent.js */
 
-var getUIEvent = require(140),
-    SyntheticEvent = require(141);
+var getUIEvent = require(147),
+    SyntheticEvent = require(148);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -7316,8 +7651,8 @@ SyntheticUIEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/getters/getUIEvent.js */
 
-var getWindow = require(119),
-    getEventTarget = require(130);
+var getWindow = require(127),
+    getEventTarget = require(138);
 
 
 module.exports = getUIEvent;
@@ -7357,8 +7692,8 @@ function(require, exports, module, undefined, global) {
 
 var inherits = require(77),
     createPool = require(56),
-    nativeEventToJSON = require(132),
-    getEvent = require(142);
+    nativeEventToJSON = require(140),
+    getEvent = require(149);
 
 
 var SyntheticEventPrototype;
@@ -7456,7 +7791,7 @@ SyntheticEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/getters/getEvent.js */
 
-var getEventTarget = require(130);
+var getEventTarget = require(138);
 
 
 module.exports = getEvent;
@@ -7483,8 +7818,8 @@ function getEvent(obj, nativeEvent, eventHandler) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticAnimationEvent.js */
 
-var getAnimationEvent = require(154),
-    SyntheticEvent = require(141);
+var getAnimationEvent = require(161),
+    SyntheticEvent = require(148);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -7527,8 +7862,8 @@ SyntheticAnimationEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticTransitionEvent.js */
 
-var getTransitionEvent = require(155),
-    SyntheticEvent = require(141);
+var getTransitionEvent = require(162),
+    SyntheticEvent = require(148);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -7571,8 +7906,8 @@ SyntheticTransitionEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticClipboardEvent.js */
 
-var getClipboardEvent = require(156),
-    SyntheticEvent = require(141);
+var getClipboardEvent = require(163),
+    SyntheticEvent = require(148);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -7612,8 +7947,8 @@ SyntheticClipboardEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticCompositionEvent.js */
 
-var getCompositionEvent = require(157),
-    SyntheticEvent = require(141);
+var getCompositionEvent = require(164),
+    SyntheticEvent = require(148);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -7653,8 +7988,8 @@ SyntheticCompositionEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticDragEvent.js */
 
-var getDragEvent = require(158),
-    SyntheticMouseEvent = require(151);
+var getDragEvent = require(165),
+    SyntheticMouseEvent = require(158);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -7694,8 +8029,8 @@ SyntheticDragEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticFocusEvent.js */
 
-var getFocusEvent = require(163),
-    SyntheticUIEvent = require(139);
+var getFocusEvent = require(170),
+    SyntheticUIEvent = require(146);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -7735,8 +8070,8 @@ SyntheticFocusEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticInputEvent.js */
 
-var getInputEvent = require(164),
-    SyntheticEvent = require(141);
+var getInputEvent = require(171),
+    SyntheticEvent = require(148);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -7776,8 +8111,8 @@ SyntheticInputEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticKeyboardEvent.js */
 
-var getKeyboardEvent = require(165),
-    SyntheticUIEvent = require(139);
+var getKeyboardEvent = require(172),
+    SyntheticUIEvent = require(146);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -7796,7 +8131,7 @@ function SynthetiKeyboardEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SynthetiKeyboardEvent);
 SynthetiKeyboardEventPrototype = SynthetiKeyboardEvent.prototype;
 
-SynthetiKeyboardEventPrototype.getModifierState = require(160);
+SynthetiKeyboardEventPrototype.getModifierState = require(167);
 
 SynthetiKeyboardEventPrototype.destructor = function() {
 
@@ -7839,8 +8174,8 @@ SynthetiKeyboardEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticMouseEvent.js */
 
-var getMouseEvent = require(159),
-    SyntheticUIEvent = require(139);
+var getMouseEvent = require(166),
+    SyntheticUIEvent = require(146);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -7859,7 +8194,7 @@ function SyntheticMouseEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticMouseEvent);
 SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype;
 
-SyntheticMouseEventPrototype.getModifierState = require(160);
+SyntheticMouseEventPrototype.getModifierState = require(167);
 
 SyntheticMouseEventPrototype.destructor = function() {
 
@@ -7906,9 +8241,9 @@ SyntheticMouseEventPrototype.toJSON = function(json) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticTouchEvent.js */
 
-var getTouchEvent = require(168),
-    SyntheticUIEvent = require(139),
-    SyntheticTouch = require(169);
+var getTouchEvent = require(175),
+    SyntheticUIEvent = require(146),
+    SyntheticTouch = require(176);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -7931,7 +8266,7 @@ function SyntheticTouchEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticTouchEvent);
 SyntheticTouchEventPrototype = SyntheticTouchEvent.prototype;
 
-SyntheticTouchEventPrototype.getModifierState = require(160);
+SyntheticTouchEventPrototype.getModifierState = require(167);
 
 SyntheticTouchEventPrototype.destructor = function() {
 
@@ -7989,8 +8324,8 @@ function destroyTouches(touches) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticWheelEvent.js */
 
-var getWheelEvent = require(171),
-    SyntheticMouseEvent = require(151);
+var getWheelEvent = require(178),
+    SyntheticMouseEvent = require(158);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -8104,8 +8439,8 @@ function getDragEvent(obj, nativeEvent) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/getters/getMouseEvent.js */
 
-var getPageX = require(161),
-    getPageY = require(162);
+var getPageX = require(168),
+    getPageY = require(169);
 
 
 module.exports = getMouseEvent;
@@ -8224,8 +8559,8 @@ function getInputEvent(obj, nativeEvent) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/getters/getKeyboardEvent.js */
 
-var getEventKey = require(166),
-    getEventCharCode = require(167);
+var getEventKey = require(173),
+    getEventCharCode = require(174);
 
 
 module.exports = getKeyboardEvent;
@@ -8266,9 +8601,9 @@ function getWhich(nativeEvent) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getEventKey.js */
+/* ../../../node_modules/get_event_key/src/index.js */
 
-var getEventCharCode = require(167);
+var getEventCharCode = require(174);
 
 
 var normalizeKey, translateToKey;
@@ -8358,7 +8693,7 @@ function getEventKey(nativeEvent) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getEventCharCode.js */
+/* ../../../node_modules/get_event_char_code/src/index.js */
 
 module.exports = getEventCharCode;
 
@@ -8404,8 +8739,8 @@ function getTouchEvent(obj, nativeEvent) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/events/syntheticEvents/SyntheticTouch.js */
 
-var getTouch = require(170),
-    nativeEventToJSON = require(132),
+var getTouch = require(177),
+    nativeEventToJSON = require(140),
     createPool = require(56);
 
 
@@ -8579,15 +8914,15 @@ var virt = require(5),
     isNull = require(42),
     isUndefined = require(43),
     isNullOrUndefined = require(18),
-    createDOMElement = require(173),
+    createDOMElement = require(180),
     renderMarkup = require(20),
     renderString = require(2),
     renderChildrenString = require(22),
-    addDOMNodes = require(174),
-    removeDOMNode = require(175),
-    removeDOMNodes = require(176),
-    getNodeById = require(102),
-    applyProperties = require(177);
+    addDOMNodes = require(181),
+    removeDOMNode = require(182),
+    removeDOMNodes = require(183),
+    getNodeById = require(103),
+    applyProperties = require(184);
 
 
 var consts = virt.consts;
@@ -8735,9 +9070,9 @@ var virt = require(5),
     isString = require(16),
 
     DOM_ID_NAME = require(21),
-    nodeCache = require(103),
+    nodeCache = require(104),
 
-    applyProperties = require(177);
+    applyProperties = require(184);
 
 
 var View = virt.View,
@@ -8771,8 +9106,8 @@ function createDOMElement(view, id, document) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/utils/addDOMNodes.js */
 
-var isElement = require(178),
-    getNodeId = require(179);
+var isElement = require(96),
+    getNodeId = require(185);
 
 
 module.exports = addDOMNodes;
@@ -8799,15 +9134,15 @@ function addDOMNode(node) {
 function(require, exports, module, undefined, global) {
 /* ../../../src/utils/removeDOMNode.js */
 
-var isElement = require(178),
-    nodeCache = require(103),
-    getNodeAttributeId = require(131);
+var isElement = require(96),
+    nodeCache = require(104),
+    getNodeAttributeId = require(139);
 
 
 module.exports = removeDOMNode;
 
 
-var removeDOMNodes = require(176);
+var removeDOMNodes = require(183);
 
 
 function removeDOMNode(node) {
@@ -8825,7 +9160,7 @@ function(require, exports, module, undefined, global) {
 module.exports = removeDOMNodes;
 
 
-var removeDOMNode = require(175);
+var removeDOMNode = require(182);
 
 
 function removeDOMNodes(nodes) {
@@ -8951,26 +9286,11 @@ function applyObject(node, previous, propKey, propValues) {
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/is_element/src/index.js */
-
-var isNode = require(100);
-
-
-module.exports = isElement;
-
-
-function isElement(value) {
-    return isNode(value) && value.nodeType === 1;
-}
-
-
-},
-function(require, exports, module, undefined, global) {
 /* ../../../src/utils/getNodeId.js */
 
 var has = require(38),
-    nodeCache = require(103),
-    getNodeAttributeId = require(131);
+    nodeCache = require(104),
+    getNodeAttributeId = require(139);
 
 
 module.exports = getNodeId;
@@ -9027,7 +9347,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../node_modules/messenger_worker_adapter/src/index.js */
 
 var isString = require(16),
-    environment = require(97);
+    environment = require(98);
 
 
 var MessengerWorkerAdapterPrototype,
@@ -9063,13 +9383,13 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/worker/WorkerAdapter.js */
 
 var extend = require(40),
-    Messenger = require(117),
-    MessengerWorkerAdapter = require(181),
-    handleEventDispatch = require(124),
+    Messenger = require(125),
+    MessengerWorkerAdapter = require(187),
+    handleEventDispatch = require(132),
     nativeDOMComponents = require(3),
-    registerNativeComponents = require(120),
-    consts = require(104),
-    eventClassMap = require(123);
+    registerNativeComponents = require(128),
+    consts = require(112),
+    eventClassMap = require(131);
 
 
 module.exports = WorkerAdapter;
@@ -9158,13 +9478,13 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/websocket/WebSocketAdapter.js */
 
 var extend = require(40),
-    Messenger = require(117),
-    MessengerWebSocketAdapter = require(183),
-    handleEventDispatch = require(124),
+    Messenger = require(125),
+    MessengerWebSocketAdapter = require(189),
+    handleEventDispatch = require(132),
     nativeDOMComponents = require(3),
-    registerNativeComponents = require(120),
-    consts = require(104),
-    eventClassMap = require(123);
+    registerNativeComponents = require(128),
+    consts = require(112),
+    eventClassMap = require(131);
 
 
 module.exports = WebSocketAdapter;

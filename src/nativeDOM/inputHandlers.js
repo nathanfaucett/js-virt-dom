@@ -24,6 +24,6 @@ inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
         }
         callback();
     } else {
-        callback(new Error("setChecked(value, callback): No DOM node found with id " + data.id));
+        callback(new Error("setChecked: No DOM node found with id " + data.id));
     }
 };

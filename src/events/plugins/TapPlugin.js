@@ -58,10 +58,7 @@ TapPluginPrototype.dependencies = [
 ].concat(touchEvents);
 
 TapPluginPrototype.handle = function(topLevelType, nativeEvent, targetId) {
-    var eventHandler = this.eventHandler,
-        viewport = eventHandler.viewport,
-        event = null,
-        startCoords, distance;
+    var startCoords, eventHandler, viewport, event;
 
     if (!isStartish(topLevelType) && !isEndish(topLevelType)) {
         return null;
@@ -70,15 +67,19 @@ TapPluginPrototype.handle = function(topLevelType, nativeEvent, targetId) {
             this.usedTouch = true;
             this.usedTouchTime = now();
         } else {
-            if (this.usedTouch && (now() - this.usedTouchTime < TOUCH_DELAY)) {
+            if (this.usedTouch && (now() - this.usedTouchTime < this.TOUCH_DELAY)) {
                 return null;
             }
         }
 
         startCoords = this.startCoords;
-        distance = getDistance(startCoords, nativeEvent, viewport);
+        eventHandler = this.eventHandler;
+        viewport = eventHandler.viewport;
 
-        if (isEndish(topLevelType) && distance < this.tapMoveThreshold) {
+        if (
+            isEndish(topLevelType) &&
+            getDistance(startCoords, nativeEvent, viewport) < this.tapMoveThreshold
+        ) {
             event = SyntheticUIEvent.getPooled(nativeEvent, eventHandler);
         }
 

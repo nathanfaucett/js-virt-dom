@@ -1,11 +1,9 @@
 var extend = require("extend");
 
 
-var handlers = exports;
-
-
 extend(
-    handlers,
+    exports,
+    require("./nodeHandlers"),
     require("./buttonHandlers"),
     require("./imageHandlers"),
     require("./inputHandlers"),
