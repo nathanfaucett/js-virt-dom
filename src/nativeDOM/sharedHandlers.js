@@ -19,12 +19,21 @@ sharedInputHandlers.getValue = function(data, callback) {
 
 sharedInputHandlers.setValue = function(data, callback) {
     var node = findDOMNode(data.id),
-        value;
+        origValue, value, caret;
 
     if (node) {
+        origValue = node.value;
         value = data.value || "";
-        if (value !== node.value) {
+        caret = domCaret.get(node);
+
+        if (value !== origValue) {
             node.value = value;
+
+            if (caret.start === origValue.length) {
+                domCaret.set(node, caret.start + 1, caret.end + 1);
+            } else {
+                domCaret.set(node, caret.start, caret.end);
+            }
         }
         callback();
     } else {
