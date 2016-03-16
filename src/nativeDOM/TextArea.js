@@ -31,8 +31,8 @@ function TextArea(props, children, context) {
     this.getValue = function(callback) {
         return _this.__getValue(callback);
     };
-    this.setValue = function(value, callback) {
-        return _this.__setValue(value, callback);
+    this.setValue = function(value, focus, callback) {
+        return _this.__setValue(value, focus, callback);
     };
     this.getSelection = function(callback) {
         return _this.__getSelection(callback);
@@ -88,7 +88,14 @@ TextAreaPrototype.__getValue = function(callback) {
     }, callback);
 };
 
-TextAreaPrototype.__setValue = function(value, callback) {
+TextAreaPrototype.__setValue = function(value, focus, callback) {
+    if (isFunction(focus)) {
+        callback = focus;
+        focus = void(0);
+    }
+    if (focus === true) {
+        throw "";
+    }
     this.emitMessage("virt.dom.TextArea.setValue", {
         id: this.getInternalId(),
         value: value

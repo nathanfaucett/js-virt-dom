@@ -35,8 +35,8 @@ function Input(props, children, context) {
     this.getValue = function(callback) {
         return _this.__getValue(callback);
     };
-    this.setValue = function(value, callback) {
-        return _this.__setValue(value, callback);
+    this.setValue = function(value, focus, callback) {
+        return _this.__setValue(value, focus, callback);
     };
     this.getSelection = function(callback) {
         return _this.__getSelection(callback);
@@ -143,7 +143,11 @@ InputPrototype.__getValue = function(callback) {
     }, callback);
 };
 
-InputPrototype.__setValue = function(value, callback) {
+InputPrototype.__setValue = function(value, focus, callback) {
+    if (isFunction(focus)) {
+        callback = focus;
+        focus = void(0);
+    }
     this.emitMessage("virt.dom.Input.setValue", {
         id: this.getInternalId(),
         value: value

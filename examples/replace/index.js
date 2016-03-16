@@ -5068,8 +5068,8 @@ function Input(props, children, context) {
     this.getValue = function(callback) {
         return _this.__getValue(callback);
     };
-    this.setValue = function(value, callback) {
-        return _this.__setValue(value, callback);
+    this.setValue = function(value, focus, callback) {
+        return _this.__setValue(value, focus, callback);
     };
     this.getSelection = function(callback) {
         return _this.__getSelection(callback);
@@ -5176,7 +5176,11 @@ InputPrototype.__getValue = function(callback) {
     }, callback);
 };
 
-InputPrototype.__setValue = function(value, callback) {
+InputPrototype.__setValue = function(value, focus, callback) {
+    if (isFunction(focus)) {
+        callback = focus;
+        focus = void(0);
+    }
     this.emitMessage("virt.dom.Input.setValue", {
         id: this.getInternalId(),
         value: value
@@ -5291,8 +5295,8 @@ function TextArea(props, children, context) {
     this.getValue = function(callback) {
         return _this.__getValue(callback);
     };
-    this.setValue = function(value, callback) {
-        return _this.__setValue(value, callback);
+    this.setValue = function(value, focus, callback) {
+        return _this.__setValue(value, focus, callback);
     };
     this.getSelection = function(callback) {
         return _this.__getSelection(callback);
@@ -5348,7 +5352,14 @@ TextAreaPrototype.__getValue = function(callback) {
     }, callback);
 };
 
-TextAreaPrototype.__setValue = function(value, callback) {
+TextAreaPrototype.__setValue = function(value, focus, callback) {
+    if (isFunction(focus)) {
+        callback = focus;
+        focus = void(0);
+    }
+    if (focus === true) {
+        throw "";
+    }
     this.emitMessage("virt.dom.TextArea.setValue", {
         id: this.getInternalId(),
         value: value
@@ -5940,19 +5951,19 @@ sharedInputHandlers.getValue = function(data, callback) {
 
 sharedInputHandlers.setValue = function(data, callback) {
     var node = findDOMNode(data.id),
-        origValue, value, caret;
+        origValue, value, focus, caret;
 
     if (node) {
         origValue = node.value;
         value = data.value || "";
-        caret = domCaret.get(node);
+        focus = data.focus !== false;
 
         if (value !== origValue) {
+            if (focus) {
+                caret = domCaret.get(node);
+            }
             node.value = value;
-
-            if (caret.start === origValue.length) {
-                domCaret.set(node, caret.start + 1, caret.end + 1);
-            } else {
+            if (focus && caret.start !== origValue.length) {
                 domCaret.set(node, caret.start, caret.end);
             }
         }
@@ -6053,7 +6064,7 @@ domCaret.set = function(node, start, end) {
     if (isTextInputElement(node)) {
         activeElement = getActiveElement();
         isFocused = activeElement === node;
-        
+
         if (!isFocused) {
             focusNode(node);
         }
@@ -6078,10 +6089,10 @@ if (!!window.getSelection) {
     getNodeCaretPosition = function getNodeCaretPosition(node) {
         var range = document.selection.createRange(),
             position;
-            
+
         range.moveStart("character", -node.value.length);
         position = range.text.length;
-        
+
         return {
             start: position,
             end: position
