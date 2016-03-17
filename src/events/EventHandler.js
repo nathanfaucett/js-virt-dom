@@ -95,7 +95,7 @@ EventHandlerPrototype.pluginListenTo = function(topLevelType) {
         il = dependencies.length - 1;
 
         while (i++ < il) {
-            this.nativeListenTo(dependencies[i]);
+            this.listenTo(null, dependencies[i]);
         }
 
         events = plugin.events;

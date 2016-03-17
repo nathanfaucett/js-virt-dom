@@ -57,7 +57,7 @@ TapPluginPrototype.dependencies = [
     topLevelTypes.topMouseUp
 ].concat(touchEvents);
 
-TapPluginPrototype.handle = function(topLevelType, nativeEvent, targetId) {
+TapPluginPrototype.handle = function(topLevelType, nativeEvent /* , targetId */ ) {
     var startCoords, eventHandler, viewport, event;
 
     if (!isStartish(topLevelType) && !isEndish(topLevelType)) {
@@ -92,12 +92,7 @@ TapPluginPrototype.handle = function(topLevelType, nativeEvent, targetId) {
         }
 
         if (event) {
-            eventHandler.messenger.emit("virt.dom.handleEventDispatch", {
-                viewport: viewport,
-                topLevelType: topLevelTypes.topTouchTap,
-                nativeEvent: event,
-                targetId: targetId
-            });
+            eventHandler.dispatchEvent(topLevelTypes.topTouchTap, event);
         }
     }
 };

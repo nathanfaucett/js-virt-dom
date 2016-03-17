@@ -37,7 +37,7 @@ module.exports = {
     topCopy: SyntheticClipboardEvent,
     topCut: SyntheticClipboardEvent,
 
-    topDoubleClick: SyntheticMouseEvent,
+    topDblClick: SyntheticMouseEvent,
 
     topDrag: SyntheticDragEvent,
     topDragEnd: SyntheticDragEvent,

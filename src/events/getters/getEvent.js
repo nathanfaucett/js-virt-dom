@@ -17,5 +17,6 @@ function getEvent(obj, nativeEvent, eventHandler) {
         nativeEvent.defaultPrevented != null ? nativeEvent.defaultPrevented : nativeEvent.returnValue === false
     );
     obj.propagationStopped = false;
+    obj.returnValue = nativeEvent.returnValue;
     obj.isTrusted = nativeEvent.isTrusted;
 }

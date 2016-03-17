@@ -39,6 +39,7 @@ SyntheticEventPrototype.destructor = function() {
     this.timeStamp = null;
     this.defaultPrevented = null;
     this.propagationStopped = null;
+    this.returnValue = null;
     this.isTrusted = null;
 };
 

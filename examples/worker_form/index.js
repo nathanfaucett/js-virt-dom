@@ -2154,7 +2154,7 @@ module.exports = traverseAncestors;
 
 
 function traverseAncestors(id, callback) {
-    traversePath("", id, callback, true, false);
+    traversePath(id, "", callback, false, true);
 }
 
 
@@ -2169,7 +2169,7 @@ module.exports = traverseDescendant;
 
 
 function traverseDescendant(id, callback) {
-    traversePath(id, "", callback, false, true);
+    traversePath("", id, callback, true, false);
 }
 
 
@@ -2185,8 +2185,8 @@ module.exports = traverseTwoPhase;
 
 function traverseTwoPhase(id, callback) {
     if (id) {
-        traversePath("", id, callback, true, false);
         traversePath(id, "", callback, false, true);
+        traversePath("", id, callback, true, false);
     }
 }
 
@@ -6222,7 +6222,7 @@ var consts = exports,
         "topContextMenu",
         "topCopy",
         "topCut",
-        "topDoubleClick",
+        "topDblClick",
         "topDrag",
         "topDragEnd",
         "topDragEnter",
@@ -6954,7 +6954,7 @@ EventHandlerPrototype.pluginListenTo = function(topLevelType) {
         il = dependencies.length - 1;
 
         while (i++ < il) {
-            this.nativeListenTo(dependencies[i]);
+            this.listenTo(null, dependencies[i]);
         }
 
         events = plugin.events;
@@ -7149,7 +7149,7 @@ module.exports = {
     topCopy: SyntheticClipboardEvent,
     topCut: SyntheticClipboardEvent,
 
-    topDoubleClick: SyntheticMouseEvent,
+    topDblClick: SyntheticMouseEvent,
 
     topDrag: SyntheticDragEvent,
     topDragEnd: SyntheticDragEvent,
@@ -7234,6 +7234,7 @@ function(require, exports, module, undefined, global) {
 /* ../../../src/events/handleEventDispatch.js */
 
 var virt = require(17),
+    isNullOrUndefined = require(11),
     getNodeById = require(105);
 
 
@@ -7246,7 +7247,7 @@ module.exports = handleEventDispatch;
 function handleEventDispatch(childHash, events, topLevelType, targetId, event) {
     var target = childHash[targetId],
         eventType = events[topLevelType],
-        global, i, il;
+        global, ret, i, il;
 
     if (eventType) {
         global = eventType.global;
@@ -7256,22 +7257,28 @@ function handleEventDispatch(childHash, events, topLevelType, targetId, event) {
         } else {
             target = null;
         }
+
         if (global) {
             i = -1;
             il = global.length - 1;
             event.currentTarget = event.componentTarget = event.currentComponentTarget = target;
-            while (i++ < il) {
-                global[i](event);
+            while (i++ < il && ret !== false) {
+                ret = global[i](event);
+                if (!isNullOrUndefined(ret)) {
+                    ret = event.returnValue;
+                }
             }
         }
 
         traverseAncestors(targetId, function traverseAncestor(currentTargetId) {
+            var ret;
+
             if (eventType[currentTargetId]) {
                 event.currentTarget = getNodeById(currentTargetId);
                 event.componentTarget = target;
                 event.currentComponentTarget = childHash[currentTargetId].component;
-                eventType[currentTargetId](event);
-                return event.returnValue;
+                ret = eventType[currentTargetId](event);
+                return !isNullOrUndefined(ret) ? ret : event.returnValue;
             } else {
                 return true;
             }
@@ -7534,7 +7541,7 @@ TapPluginPrototype.dependencies = [
     topLevelTypes.topMouseUp
 ].concat(touchEvents);
 
-TapPluginPrototype.handle = function(topLevelType, nativeEvent, targetId) {
+TapPluginPrototype.handle = function(topLevelType, nativeEvent /* , targetId */ ) {
     var startCoords, eventHandler, viewport, event;
 
     if (!isStartish(topLevelType) && !isEndish(topLevelType)) {
@@ -7569,12 +7576,7 @@ TapPluginPrototype.handle = function(topLevelType, nativeEvent, targetId) {
         }
 
         if (event) {
-            eventHandler.messenger.emit("virt.dom.handleEventDispatch", {
-                viewport: viewport,
-                topLevelType: topLevelTypes.topTouchTap,
-                nativeEvent: event,
-                targetId: targetId
-            });
+            eventHandler.dispatchEvent(topLevelTypes.topTouchTap, event);
         }
     }
 };
@@ -7808,6 +7810,7 @@ SyntheticEventPrototype.destructor = function() {
     this.timeStamp = null;
     this.defaultPrevented = null;
     this.propagationStopped = null;
+    this.returnValue = null;
     this.isTrusted = null;
 };
 
@@ -7887,6 +7890,7 @@ function getEvent(obj, nativeEvent, eventHandler) {
         nativeEvent.defaultPrevented != null ? nativeEvent.defaultPrevented : nativeEvent.returnValue === false
     );
     obj.propagationStopped = false;
+    obj.returnValue = nativeEvent.returnValue;
     obj.isTrusted = nativeEvent.isTrusted;
 }
 
