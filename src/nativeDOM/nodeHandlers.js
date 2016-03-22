@@ -5,7 +5,7 @@ var domDimensions = require("dom_dimensions"),
 var nodeHandlers = exports;
 
 
-nodeHandlers["virt.getViewTop"] = function getWidth(data, callback) {
+nodeHandlers["virt.getViewTop"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
@@ -14,7 +14,7 @@ nodeHandlers["virt.getViewTop"] = function getWidth(data, callback) {
         callback(new Error("getViewTop: No DOM node found with id " + data.id));
     }
 };
-nodeHandlers["virt.getViewRight"] = function getWidth(data, callback) {
+nodeHandlers["virt.getViewRight"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
@@ -23,7 +23,7 @@ nodeHandlers["virt.getViewRight"] = function getWidth(data, callback) {
         callback(new Error("getViewRight: No DOM node found with id " + data.id));
     }
 };
-nodeHandlers["virt.getViewBottom"] = function getWidth(data, callback) {
+nodeHandlers["virt.getViewBottom"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
@@ -32,7 +32,7 @@ nodeHandlers["virt.getViewBottom"] = function getWidth(data, callback) {
         callback(new Error("getViewBottom: No DOM node found with id " + data.id));
     }
 };
-nodeHandlers["virt.getViewLeft"] = function getWidth(data, callback) {
+nodeHandlers["virt.getViewLeft"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
@@ -42,7 +42,7 @@ nodeHandlers["virt.getViewLeft"] = function getWidth(data, callback) {
     }
 };
 
-nodeHandlers["virt.getViewWidth"] = function getWidth(data, callback) {
+nodeHandlers["virt.getViewWidth"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
@@ -51,7 +51,7 @@ nodeHandlers["virt.getViewWidth"] = function getWidth(data, callback) {
         callback(new Error("getViewWidth: No DOM node found with id " + data.id));
     }
 };
-nodeHandlers["virt.getViewHeight"] = function getWidth(data, callback) {
+nodeHandlers["virt.getViewHeight"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
@@ -61,7 +61,7 @@ nodeHandlers["virt.getViewHeight"] = function getWidth(data, callback) {
     }
 };
 
-nodeHandlers["virt.getViewDimensions"] = function getWidth(data, callback) {
+nodeHandlers["virt.getViewDimensions"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
@@ -71,11 +71,22 @@ nodeHandlers["virt.getViewDimensions"] = function getWidth(data, callback) {
     }
 };
 
-nodeHandlers["virt.getViewProperty"] = function getWidth(data, callback) {
+nodeHandlers["virt.getViewProperty"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
         callback(undefined, node[data.property]);
+    } else {
+        callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
+    }
+};
+
+nodeHandlers["virt.setViewProperty"] = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        node[data.property] = data.value;
+        callback(undefined);
     } else {
         callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
     }

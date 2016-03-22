@@ -1,4 +1,5 @@
-var getEventTarget = require("./getEventTarget");
+var getEventTarget = require("./getEventTarget"),
+    getPath = require("./getPath");
 
 
 module.exports = getEvent;
@@ -11,6 +12,7 @@ function getEvent(obj, nativeEvent, eventHandler) {
     obj.currentTarget = nativeEvent.currentTarget;
     obj.eventPhase = nativeEvent.eventPhase;
     obj.bubbles = nativeEvent.bubbles;
+    obj.path = getPath(obj, eventHandler.window);
     obj.cancelable = nativeEvent.cancelable;
     obj.timeStamp = nativeEvent.timeStamp;
     obj.defaultPrevented = (

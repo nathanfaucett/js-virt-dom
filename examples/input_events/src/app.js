@@ -19,6 +19,7 @@ AppPrototype = App.prototype;
 
 AppPrototype.componentDidMount = function() {
     this.onGlobalEvent("onTouchTap", function onTouchTap(e) {
+        e.persist();
         console.log(e);
     });
 };
@@ -42,16 +43,19 @@ AppPrototype.render = function() {
                 ref: "input",
                 value: this.state.inputValue,
                 onClick: function(e) {
+                    e.persist();
                     e.currentComponentTarget.getSelection(function(error, data) {
                         console.log(data);
                     });
                 },
                 onKeyDown: function(e) {
+                    e.persist();
                     e.currentComponentTarget.getSelection(function(error, data) {
                         console.log(data);
                     });
                 },
                 onChange: function(e) {
+                    e.persist();
                     _this.setState({
                         inputValue: e.target.value
                     });

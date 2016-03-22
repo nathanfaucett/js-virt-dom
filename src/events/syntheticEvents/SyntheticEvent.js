@@ -11,7 +11,10 @@ module.exports = SyntheticEvent;
 
 
 function SyntheticEvent(nativeEvent, eventHandler) {
+
     getEvent(this, nativeEvent, eventHandler);
+
+    this.isPersistent = false;
 }
 createPool(SyntheticEvent);
 SyntheticEventPrototype = SyntheticEvent.prototype;
@@ -34,6 +37,7 @@ SyntheticEventPrototype.destructor = function() {
     this.componentTarget = null;
     this.currentComponentTarget = null;
     this.eventPhase = null;
+    this.path = null;
     this.bubbles = null;
     this.cancelable = null;
     this.timeStamp = null;
@@ -41,6 +45,7 @@ SyntheticEventPrototype.destructor = function() {
     this.propagationStopped = null;
     this.returnValue = null;
     this.isTrusted = null;
+    this.isPersistent = null;
 };
 
 SyntheticEventPrototype.destroy = function() {
