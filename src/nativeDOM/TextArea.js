@@ -93,9 +93,6 @@ TextAreaPrototype.__setValue = function(value, focus, callback) {
         callback = focus;
         focus = void(0);
     }
-    if (focus === true) {
-        throw "";
-    }
     this.emitMessage("virt.dom.TextArea.setValue", {
         id: this.getInternalId(),
         value: value

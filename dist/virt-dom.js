@@ -2539,11 +2539,10 @@
             }
 
             transaction.queue.enqueue(function onUpdate() {
-                component.__mountState = componentState.UPDATED;
+                component.__mountState = componentState.MOUNTED;
                 if (component.componentDidUpdate) {
                     component.componentDidUpdate(prevProps, prevChildren, prevState, prevContext);
                 }
-                component.__mountState = componentState.MOUNTED;
             });
         };
 
@@ -3629,7 +3628,6 @@
             "MOUNTING",
             "MOUNTED",
             "UPDATING",
-            "UPDATED",
             "UNMOUNTING",
             "UNMOUNTED"
         ]);
@@ -4656,9 +4654,6 @@
             if (isFunction(focus)) {
                 callback = focus;
                 focus = void(0);
-            }
-            if (focus === true) {
-                throw "";
             }
             this.emitMessage("virt.dom.TextArea.setValue", {
                 id: this.getInternalId(),
