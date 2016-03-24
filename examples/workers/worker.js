@@ -4619,6 +4619,7 @@ InputPrototype.__setValue = function(value, focus, callback) {
     }
     this.emitMessage("virt.dom.Input.setValue", {
         id: this.getInternalId(),
+        focus: focus,
         value: value
     }, callback);
 };
@@ -4795,6 +4796,7 @@ TextAreaPrototype.__setValue = function(value, focus, callback) {
     }
     this.emitMessage("virt.dom.TextArea.setValue", {
         id: this.getInternalId(),
+        focus: focus,
         value: value
     }, callback);
 };
@@ -4945,12 +4947,31 @@ nodeHandlers["virt.getViewProperty"] = function(data, callback) {
         callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
     }
 };
-
 nodeHandlers["virt.setViewProperty"] = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
         node[data.property] = data.value;
+        callback(undefined);
+    } else {
+        callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
+    }
+};
+
+nodeHandlers["virt.getViewStyleProperty"] = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        callback(undefined, node.style[data.property]);
+    } else {
+        callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
+    }
+};
+nodeHandlers["virt.setViewStyleProperty"] = function(data, callback) {
+    var node = findDOMNode(data.id);
+
+    if (node) {
+        node.style[data.property] = data.value;
         callback(undefined);
     } else {
         callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
@@ -5458,7 +5479,7 @@ sharedInputHandlers.getValue = function(data, callback) {
 
 sharedInputHandlers.setValue = function(data, callback) {
     var node = findDOMNode(data.id),
-        origValue, value, focus, caret;
+        origValue, value, focus, caret, end, origLength;
 
     if (node) {
         origValue = node.value;
@@ -5470,8 +5491,13 @@ sharedInputHandlers.setValue = function(data, callback) {
                 caret = domCaret.get(node);
             }
             node.value = value;
-            if (focus && caret.start !== origValue.length) {
-                domCaret.set(node, caret.start, caret.end);
+            if (focus) {
+                origLength = origValue.length;
+                end = caret.end;
+
+                if (end < origLength) {
+                    domCaret.set(node, caret.start, caret.end);
+                }
             }
         }
         callback();
@@ -7937,6 +7963,7 @@ SyntheticEventPrototype.destructor = function() {
     this.returnValue = null;
     this.isTrusted = null;
     this.isPersistent = null;
+    this.value = null;
 };
 
 SyntheticEventPrototype.destroy = function() {

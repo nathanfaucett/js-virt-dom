@@ -150,6 +150,7 @@ InputPrototype.__setValue = function(value, focus, callback) {
     }
     this.emitMessage("virt.dom.Input.setValue", {
         id: this.getInternalId(),
+        focus: focus,
         value: value
     }, callback);
 };

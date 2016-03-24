@@ -46,6 +46,7 @@ SyntheticEventPrototype.destructor = function() {
     this.returnValue = null;
     this.isTrusted = null;
     this.isPersistent = null;
+    this.value = null;
 };
 
 SyntheticEventPrototype.destroy = function() {
