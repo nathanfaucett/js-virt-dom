@@ -142,8 +142,8 @@ virt.consts = require(7);
 virt.getChildKey = require(8);
 virt.getRootIdFromId = require(9);
 
-virt.isAncestorIdOf = require(10),
-    virt.traverseAncestors = require(11);
+virt.isAncestorIdOf = require(10);
+virt.traverseAncestors = require(11);
 virt.traverseDescendants = require(12);
 virt.traverseTwoPhase = require(13);
 
@@ -8861,7 +8861,7 @@ function getKeyCode(nativeEvent) {
 function getWhich(nativeEvent) {
     var type = nativeEvent.type;
 
-    return type === "keypress" ? getEventCharCode(event) : (
+    return type === "keypress" ? getEventCharCode(nativeEvent) : (
         type === "keydown" || type === "keyup" ? nativeEvent.keyCode : 0
     );
 }
