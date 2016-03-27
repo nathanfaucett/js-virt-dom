@@ -124,7 +124,7 @@ function Input_uncheckSiblings(input, siblings) {
             (props = sibling.props) &&
             props.type === "radio"
         ) {
-            props.checked = !props.checked;
+            props.checked = false;
             sibling.__setChecked(props.checked);
         }
     }

@@ -19,7 +19,9 @@ inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
     if (node) {
         if (data.checked) {
             node.setAttribute("checked", true);
+            node.checked = true;
         } else {
+            node.checked = false;
             node.removeAttribute("checked");
         }
         callback();

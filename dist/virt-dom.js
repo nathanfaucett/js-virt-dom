@@ -4455,7 +4455,7 @@
                     (props = sibling.props) &&
                     props.type === "radio"
                 ) {
-                    props.checked = !props.checked;
+                    props.checked = false;
                     sibling.__setChecked(props.checked);
                 }
             }
@@ -4933,7 +4933,9 @@
             if (node) {
                 if (data.checked) {
                     node.setAttribute("checked", true);
+                    node.checked = true;
                 } else {
+                    node.checked = false;
                     node.removeAttribute("checked");
                 }
                 callback();
