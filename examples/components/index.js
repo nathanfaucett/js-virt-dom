@@ -5158,20 +5158,28 @@ InputPrototype.__setChecked = function(checked, callback) {
 
 InputPrototype.__getValue = function(callback) {
     this.emitMessage("virt.dom.Input.getValue", {
-        id: this.getInternalId()
+        id: this.getInternalId(),
+        type: this.props.type
     }, callback);
 };
 
 InputPrototype.__setValue = function(value, focus, callback) {
+    var type = this.props.type;
+
     if (isFunction(focus)) {
         callback = focus;
         focus = void(0);
     }
-    this.emitMessage("virt.dom.Input.setValue", {
-        id: this.getInternalId(),
-        focus: focus,
-        value: value
-    }, callback);
+
+    if (type === "radio" || type === "checkbox") {
+        this.__setChecked(value, callback);
+    } else {
+        this.emitMessage("virt.dom.Input.setValue", {
+            id: this.getInternalId(),
+            focus: focus,
+            value: value
+        }, callback);
+    }
 };
 
 InputPrototype.__getSelection = function(callback) {
@@ -5960,7 +5968,11 @@ sharedInputHandlers.getValue = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
-        callback(undefined, node.value);
+        if (data.type === "radio" || data.type === "checkbox") {
+            callback(undefined, node.checked);
+        } else {
+            callback(undefined, node.value);
+        }
     } else {
         callback(new Error("getValue: No DOM node found with id " + data.id));
     }
@@ -7077,7 +7089,11 @@ EventHandlerPrototype.nativeListenTo = function(topLevelType) {
         isListening = this.__isListening;
 
     if (!isListening[topLevelType]) {
-        if (topLevelType === topLevelTypes.topWheel) {
+        if (topLevelType === topLevelTypes.topResize) {
+            this.trapBubbledEvent(topLevelTypes.topResize, "resize", window);
+        } else if (topLevelType === topLevelTypes.topOrientationChange) {
+            this.trapBubbledEvent(topLevelTypes.topOrientationChange, "orientationchange", window);
+        } else if (topLevelType === topLevelTypes.topWheel) {
             if (isEventSupported("wheel")) {
                 this.trapBubbledEvent(topLevelTypes.topWheel, "wheel", document);
             } else if (isEventSupported("mousewheel")) {

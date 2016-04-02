@@ -143,7 +143,11 @@ EventHandlerPrototype.nativeListenTo = function(topLevelType) {
         isListening = this.__isListening;
 
     if (!isListening[topLevelType]) {
-        if (topLevelType === topLevelTypes.topWheel) {
+        if (topLevelType === topLevelTypes.topResize) {
+            this.trapBubbledEvent(topLevelTypes.topResize, "resize", window);
+        } else if (topLevelType === topLevelTypes.topOrientationChange) {
+            this.trapBubbledEvent(topLevelTypes.topOrientationChange, "orientationchange", window);
+        } else if (topLevelType === topLevelTypes.topWheel) {
             if (isEventSupported("wheel")) {
                 this.trapBubbledEvent(topLevelTypes.topWheel, "wheel", document);
             } else if (isEventSupported("mousewheel")) {

@@ -11,7 +11,11 @@ sharedInputHandlers.getValue = function(data, callback) {
     var node = findDOMNode(data.id);
 
     if (node) {
-        callback(undefined, node.value);
+        if (data.type === "radio" || data.type === "checkbox") {
+            callback(undefined, node.checked);
+        } else {
+            callback(undefined, node.value);
+        }
     } else {
         callback(new Error("getValue: No DOM node found with id " + data.id));
     }

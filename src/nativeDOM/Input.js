@@ -139,20 +139,28 @@ InputPrototype.__setChecked = function(checked, callback) {
 
 InputPrototype.__getValue = function(callback) {
     this.emitMessage("virt.dom.Input.getValue", {
-        id: this.getInternalId()
+        id: this.getInternalId(),
+        type: this.props.type
     }, callback);
 };
 
 InputPrototype.__setValue = function(value, focus, callback) {
+    var type = this.props.type;
+
     if (isFunction(focus)) {
         callback = focus;
         focus = void(0);
     }
-    this.emitMessage("virt.dom.Input.setValue", {
-        id: this.getInternalId(),
-        focus: focus,
-        value: value
-    }, callback);
+
+    if (type === "radio" || type === "checkbox") {
+        this.__setChecked(value, callback);
+    } else {
+        this.emitMessage("virt.dom.Input.setValue", {
+            id: this.getInternalId(),
+            focus: focus,
+            value: value
+        }, callback);
+    }
 };
 
 InputPrototype.__getSelection = function(callback) {
