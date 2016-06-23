@@ -1,7 +1,9 @@
 virt DOM
 =======
 
-virt adapter for the DOM. [examples](http://nathanfaucett.github.io/virt-dom/)
+virt DOM is an adapter for the virt library, virt was created after reading React's source code. the main difference is virt emits views as JSON that an adapter like virt-dom uses to render to some view system, in this case the DOM.
+
+[Examples](http://nathanfaucett.github.io/virt-dom/)
 
 ```javascript
 var virt = require("virt"),
