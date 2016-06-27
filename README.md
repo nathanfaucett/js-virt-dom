@@ -47,7 +47,8 @@ Returns the Messenger created to communicate over the web socket to the view sid
 #### renderWebSocket(view: View, socket: WebSocket[, attachMessage: Function][, sendMessage: Function] [, callback: Function])
 Creates a diff from the view and the last view, then sends it over the messenager api to the client created with virtDOM.createWebSocketRender. Used on the server side.
 
-[Examples](http://nathanfaucett.github.io/virt-dom/)
+### Examples
+Some technical examples can be found [here](http://nathanfaucett.github.io/virt-dom/)
 
 ###Usage
 
