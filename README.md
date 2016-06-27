@@ -1,7 +1,7 @@
 virt DOM
 =======
 
-virt DOM is an adapter for the [virt](https://github.com/nathanfaucett/virt) library, virt was created after reading React's source code. the main difference is [virt](https://github.com/nathanfaucett/virt) emits changes as JSON that an adapter like virt-dom uses to render to some view system, in this case the DOM.
+virt DOM is an render adapter for the [virt](https://github.com/nathanfaucett/virt) library, virt was created after reading facebook's [React](https://github.com/facebook/react) source code. The main difference is [virt](https://github.com/nathanfaucett/virt) creates changes as JSON that an adapter like virt-dom uses to render to some view system, in this case the DOM.
 
 ## Install using NPM
 
@@ -51,6 +51,8 @@ Creates a diff from the view and the last view, then sends it over the messenage
 Some technical examples can be found [here](http://nathanfaucett.github.io/virt-dom/)
 
 ###Usage
+
+The best way to use virt is to create custom components that inherit from the virt.Component class.
 
 ```javascript
 var virt = require("virt"),
