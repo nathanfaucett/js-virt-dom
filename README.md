@@ -48,6 +48,7 @@ Returns the Messenger created to communicate over the web socket to the view sid
 Creates a diff from the view and the last view, then sends it over the messenager api to the client created with virtDOM.createWebSocketRender. Used on the server side.
 
 ### Examples
+Full site example here [http://bomontfii.com](http://bomontfii.com)
 Some technical examples can be found [here](http://nathanfaucett.github.io/virt-dom/)
 
 ###Usage
