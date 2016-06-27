@@ -12,10 +12,10 @@ $ npm install git://github.com/nathanfaucett/virt-dom --save
 ## API
 
 #### addNativeComponent(type: String, constructor: Function)
-Adds new native component to virt-dom. Used by virt-dom to implement native elements like img, div, etc... needs to be called before rendering.
+Adds a new native component to virt-dom. Used by virt-dom to implement native elements like img, button, etc... needs to be called before rendering.
 
 #### addNativeHandler(type: String, fn: Function)
-Adds new native handler component to virt-dom. Used by virt-dom to implement native messages accross the messenger api.
+Adds a new native handler component to virt-dom. Used by virt-dom to implement native messages accross the messenger api.
 
 #### render(view: View, containerDOMNode: DOMElement, [, callback: Function])
 Renders the view to the dom element and calls the callback when it is done.
