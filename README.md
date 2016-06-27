@@ -3,6 +3,12 @@ virt DOM
 
 virt DOM is an adapter for the [virt](https://github.com/nathanfaucett/virt) library, virt was created after reading React's source code. the main difference is [virt](https://github.com/nathanfaucett/virt) emits changes as JSON that an adapter like virt-dom uses to render to some view system, in this case the DOM.
 
+## Install using NPM
+
+```bash
+$ npm install git://github.com/nathanfaucett/virt-dom --save
+```
+
 ## API
 
 #### addNativeComponent(type: String, constructor: Function)
@@ -41,9 +47,9 @@ Returns the Messenger created to communicate over the web socket to the view sid
 #### renderWebSocket(view: View, socket: WebSocket[, attachMessage: Function][, sendMessage: Function] [, callback: Function])
 Creates a diff from the view and the last view, then sends it over the messenager api to the client created with virtDOM.createWebSocketRender. Used on the server side.
 
-
-
 [Examples](http://nathanfaucett.github.io/virt-dom/)
+
+###Usage
 
 ```javascript
 var virt = require("virt"),
