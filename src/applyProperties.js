@@ -1,9 +1,9 @@
-var isString = require("is_string"),
-    isObject = require("is_object"),
-    isFunction = require("is_function"),
-    isUndefined = require("is_undefined"),
-    isNullOrUndefined = require("is_null_or_undefined"),
-    getPrototypeOf = require("get_prototype_of");
+var isString = require("@nathanfaucett/is_string"),
+    isObject = require("@nathanfaucett/is_object"),
+    isFunction = require("@nathanfaucett/is_function"),
+    isUndefined = require("@nathanfaucett/is_undefined"),
+    isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined"),
+    getPrototypeOf = require("@nathanfaucett/get_prototype_of");
 
 
 module.exports = applyProperties;

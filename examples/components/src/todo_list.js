@@ -1,6 +1,6 @@
-var virt = require("virt"),
+var virt = require("@nathanfaucett/virt"),
     virtDOM = require("../../../src/index"),
-    map = require("map"),
+    arrayMap = require("@nathanfaucett/array-map"),
     dispatcher = require("./dispatcher"),
     TodoStore = require("./todo_store"),
     TodoItem = require("./todo_item");
@@ -62,7 +62,7 @@ TodoListPrototype.render = function() {
         virt.createView("ul", {
                 className: "todo-list"
             },
-            map(this.state.list, function(item) {
+            arrayMap(this.state.list, function(item) {
                 return virt.createView(TodoItem, {
                     key: item.id,
                     id: item.id,

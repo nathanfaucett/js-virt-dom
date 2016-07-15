@@ -1,4 +1,4 @@
-var isString = require("is_string"),
+var isString = require("@nathanfaucett/is_string"),
     getNodeById = require("./getNodeById");
 
 

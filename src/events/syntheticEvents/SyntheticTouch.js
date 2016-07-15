@@ -1,6 +1,6 @@
 var getTouch = require("../getters/getTouch"),
     nativeEventToJSON = require("../../utils/nativeEventToJSON"),
-    createPool = require("create_pool");
+    createPool = require("@nathanfaucett/create_pool");
 
 
 var SyntheticTouchPrototype;

@@ -1,4 +1,4 @@
-var virt = require("virt"),
+var virt = require("@nathanfaucett/virt"),
     TodoList = require("./todo_list"),
     TodoForm = require("./todo_form");
 

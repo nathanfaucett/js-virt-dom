@@ -1,4 +1,4 @@
-var virt = require("virt"),
+var virt = require("@nathanfaucett/virt"),
     rootsById = require("../rootsById"),
     WebSocketAdapter = require("./WebSocketAdapter");
 

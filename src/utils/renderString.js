@@ -1,9 +1,9 @@
-var virt = require("virt"),
+var virt = require("@nathanfaucett/virt"),
 
-    isFunction = require("is_function"),
-    isString = require("is_string"),
-    isObject = require("is_object"),
-    isNullOrUndefined = require("is_null_or_undefined"),
+    isFunction = require("@nathanfaucett/is_function"),
+    isString = require("@nathanfaucett/is_string"),
+    isObject = require("@nathanfaucett/is_object"),
+    isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined"),
 
     hyphenateStyleName = require("./hyphenateStyleName"),
     renderMarkup = require("./renderMarkup"),

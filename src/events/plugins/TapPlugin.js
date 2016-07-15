@@ -1,5 +1,5 @@
-var now = require("now"),
-    indexOf = require("index_of"),
+var now = require("@nathanfaucett/now"),
+    indexOf = require("@nathanfaucett/index_of"),
     SyntheticUIEvent = require("../syntheticEvents/SyntheticUIEvent"),
     consts = require("../consts");
 

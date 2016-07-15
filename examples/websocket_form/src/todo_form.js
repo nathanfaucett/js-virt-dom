@@ -1,6 +1,6 @@
-var virt = require("virt"),
-    parallel = require("parallel"),
-    eventListener = require("event_listener"),
+var virt = require("@nathanfaucett/virt"),
+    parallel = require("@nathanfaucett/parallel"),
+    eventListener = require("@nathanfaucett/event_listener"),
     dispatcher = require("./dispatcher"),
     TodoStore = require("./todo_store");
 

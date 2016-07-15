@@ -1,5 +1,5 @@
-var getEventKey = require("get_event_key"),
-    getEventCharCode = require("get_event_char_code");
+var getEventKey = require("@nathanfaucett/get_event_key"),
+    getEventCharCode = require("@nathanfaucett/get_event_char_code");
 
 
 module.exports = getKeyboardEvent;

@@ -1,6 +1,6 @@
-var virt = require("virt"),
+var virt = require("@nathanfaucett/virt"),
     virtDOM = require("../../../src/index"),
-    requestAnimationFrame = require("request_animation_frame");
+    requestAnimationFrame = require("@nathanfaucett/request_animation_frame");
 
 
 function renderSpan(content) {

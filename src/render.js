@@ -1,6 +1,6 @@
-var virt = require("virt"),
-    isNull = require("is_null"),
-    isUndefined = require("is_undefined"),
+var virt = require("@nathanfaucett/virt"),
+    isNull = require("@nathanfaucett/is_null"),
+    isUndefined = require("@nathanfaucett/is_undefined"),
     Adapter = require("./Adapter"),
     rootsById = require("./rootsById"),
     getRootNodeId = require("./utils/getRootNodeId");

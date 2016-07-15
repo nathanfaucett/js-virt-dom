@@ -1,6 +1,6 @@
-var indexOf = require("index_of"),
-    isNode = require("is_node"),
-    isFunction = require("is_function"),
+var indexOf = require("@nathanfaucett/index_of"),
+    isNode = require("@nathanfaucett/is_node"),
+    isFunction = require("@nathanfaucett/is_function"),
     ignoreNativeEventProp = require("./ignoreNativeEventProp");
 
 

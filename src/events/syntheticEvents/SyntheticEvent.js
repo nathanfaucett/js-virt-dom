@@ -1,5 +1,5 @@
-var inherits = require("inherits"),
-    createPool = require("create_pool"),
+var inherits = require("@nathanfaucett/inherits"),
+    createPool = require("@nathanfaucett/create_pool"),
     nativeEventToJSON = require("../../utils/nativeEventToJSON"),
     getEvent = require("../getters/getEvent");
 

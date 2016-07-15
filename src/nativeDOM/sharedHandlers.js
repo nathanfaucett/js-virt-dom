@@ -1,6 +1,6 @@
-var domCaret = require("dom_caret"),
-    blurNode = require("blur_node"),
-    focusNode = require("focus_node"),
+var domCaret = require("@nathanfaucett/dom_caret"),
+    blurNode = require("@nathanfaucett/blur_node"),
+    focusNode = require("@nathanfaucett/focus_node"),
     findDOMNode = require("../utils/findDOMNode");
 
 

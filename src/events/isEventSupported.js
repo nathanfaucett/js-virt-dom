@@ -1,8 +1,8 @@
-var isFunction = require("is_function"),
-    isNullOrUndefined = require("is_null_or_undefined"),
-    has = require("has"),
-    supports = require("supports"),
-    environment = require("environment");
+var isFunction = require("@nathanfaucett/is_function"),
+    isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined"),
+    has = require("@nathanfaucett/has"),
+    supports = require("@nathanfaucett/supports"),
+    environment = require("@nathanfaucett/environment");
 
 
 var document = environment.document,

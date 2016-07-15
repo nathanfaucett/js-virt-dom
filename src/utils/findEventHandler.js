@@ -1,5 +1,5 @@
-var virt = require("virt"),
-    isString = require("is_string"),
+var virt = require("@nathanfaucett/virt"),
+    isString = require("@nathanfaucett/is_string"),
     eventHandlersById = require("../eventHandlersById");
 
 

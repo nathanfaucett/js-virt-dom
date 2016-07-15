@@ -1,4 +1,4 @@
-var has = require("has"),
+var has = require("@nathanfaucett/has"),
     nodeCache = require("./nodeCache"),
     getNodeAttributeId = require("./getNodeAttributeId");
 

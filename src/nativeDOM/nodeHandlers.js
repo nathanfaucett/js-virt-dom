@@ -1,4 +1,4 @@
-var domDimensions = require("dom_dimensions"),
+var domDimensions = require("@nathanfaucett/dom_dimensions"),
     findDOMNode = require("../utils/findDOMNode");
 
 

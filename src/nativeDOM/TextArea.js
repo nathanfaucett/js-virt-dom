@@ -1,6 +1,6 @@
-var virt = require("virt"),
-    has = require("has"),
-    isFunction = require("is_function");
+var virt = require("@nathanfaucett/virt"),
+    has = require("@nathanfaucett/has"),
+    isFunction = require("@nathanfaucett/is_function");
 
 
 var View = virt.View,

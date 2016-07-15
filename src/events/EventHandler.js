@@ -1,5 +1,5 @@
-var has = require("has"),
-    eventListener = require("event_listener"),
+var has = require("@nathanfaucett/has"),
+    eventListener = require("@nathanfaucett/event_listener"),
     consts = require("./consts"),
     getWindowWidth = require("./getters/getWindowWidth"),
     getWindowHeight = require("./getters/getWindowHeight"),

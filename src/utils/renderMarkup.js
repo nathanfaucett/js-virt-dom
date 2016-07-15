@@ -1,4 +1,4 @@
-var escapeTextContent = require("escape_text_content");
+var escapeTextContent = require("@nathanfaucett/escape_text_content");
 
 
 module.exports = renderMarkup;

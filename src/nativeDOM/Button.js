@@ -1,6 +1,6 @@
-var virt = require("virt"),
-    indexOf = require("index_of"),
-    has = require("has");
+var virt = require("@nathanfaucett/virt"),
+    indexOf = require("@nathanfaucett/index_of"),
+    has = require("@nathanfaucett/has");
 
 
 var View = virt.View,

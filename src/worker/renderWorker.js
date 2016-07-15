@@ -1,5 +1,5 @@
-var virt = require("virt"),
-    isNull = require("is_null"),
+var virt = require("@nathanfaucett/virt"),
+    isNull = require("@nathanfaucett/is_null"),
     rootsById = require("../rootsById"),
     WorkerAdapter = require("./WorkerAdapter");
 

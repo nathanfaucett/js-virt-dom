@@ -1,6 +1,6 @@
-var map = require("map"),
-    forEach = require("for_each"),
-    keyMirror = require("key_mirror"),
+var arrayMap = require("@nathanfaucett/array-map"),
+    arrayForEach = require("@nathanfaucett/array-for_each"),
+    keyMirror = require("@nathanfaucett/key_mirror"),
     removeTop = require("./removeTop"),
     replaceTopWithOn = require("./replaceTopWithOn");
 
@@ -92,12 +92,12 @@ consts.phases = keyMirror([
 
 consts.topLevelTypes = keyMirror(eventTypes);
 
-consts.propNames = map(eventTypes, replaceTopWithOn);
+consts.propNames = arrayMap(eventTypes, replaceTopWithOn);
 
-forEach(eventTypes, function(string) {
+arrayForEach(eventTypes, function(string) {
     propNameToTopLevel[replaceTopWithOn(string)] = string;
 });
 
-forEach(eventTypes, function(string) {
+arrayForEach(eventTypes, function(string) {
     topLevelToEvent[string] = removeTop(string).toLowerCase();
 });

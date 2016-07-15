@@ -1,4 +1,4 @@
-var virt = require("virt");
+var virt = require("@nathanfaucett/virt");
 
 
 var getChildKey = virt.getChildKey;

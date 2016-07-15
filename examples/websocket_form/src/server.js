@@ -1,4 +1,4 @@
-var virt = require("virt"),
+var virt = require("@nathanfaucett/virt"),
     virtDOM = require("../../../src/index"),
     socket_io = require("socket.io"),
     App = require("./app");
@@ -21,4 +21,4 @@ io.on("connection", function(socket) {
 });
 
 
-io.listen(8888);
+io.listen(9999);

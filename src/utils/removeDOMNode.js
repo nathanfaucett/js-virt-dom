@@ -1,4 +1,4 @@
-var isElement = require("is_element"),
+var isElement = require("@nathanfaucett/is_element"),
     nodeCache = require("./nodeCache"),
     getNodeAttributeId = require("./getNodeAttributeId");
 

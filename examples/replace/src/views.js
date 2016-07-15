@@ -1,4 +1,4 @@
-var virt = require("virt"),
+var virt = require("@nathanfaucett/virt"),
     LayoutOne = require("./layout_one"),
     LayoutTwo = require("./layout_two");
 

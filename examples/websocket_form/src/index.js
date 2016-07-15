@@ -1,11 +1,11 @@
-var environment = require("environment"),
-    eventListener = require("event_listener"),
+var environment = require("@nathanfaucett/environment"),
+    eventListener = require("@nathanfaucett/event_listener"),
     io = require("socket.io-client"),
     virtDOM = require("../../../src/index");
 
 
 eventListener.on(environment.window, "load", function() {
-    var socket = io("localhost:8888"),
+    var socket = io("localhost:9999"),
         id;
 
     socket.on("connect", function onConnect() {

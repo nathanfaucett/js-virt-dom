@@ -6,7 +6,7 @@ var renderString = require("./utils/renderString"),
 var virtDOM = exports;
 
 
-virtDOM.virt = require("virt");
+virtDOM.virt = require("@nathanfaucett/virt");
 
 virtDOM.addNativeComponent = function(type, constructor) {
     nativeDOMComponents[type] = constructor;

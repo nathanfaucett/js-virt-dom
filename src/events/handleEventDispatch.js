@@ -1,5 +1,5 @@
-var virt = require("virt"),
-    isNullOrUndefined = require("is_null_or_undefined"),
+var virt = require("@nathanfaucett/virt"),
+    isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined"),
     getNodeById = require("../utils/getNodeById");
 
 

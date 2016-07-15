@@ -1,5 +1,5 @@
-var isArray = require("is_array"),
-    isDocument = require("is_document"),
+var isArray = require("@nathanfaucett/is_array"),
+    isDocument = require("@nathanfaucett/is_document"),
     getEventTarget = require("./getEventTarget");
 
 

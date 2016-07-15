@@ -1,6 +1,6 @@
-var virt = require("virt"),
-    has = require("has"),
-    emptyFunction = require("empty_function");
+var virt = require("@nathanfaucett/virt"),
+    has = require("@nathanfaucett/has"),
+    emptyFunction = require("@nathanfaucett/empty_function");
 
 
 var View = virt.View,

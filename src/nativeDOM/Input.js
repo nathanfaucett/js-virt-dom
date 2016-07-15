@@ -1,7 +1,7 @@
-var virt = require("virt"),
-    has = require("has"),
-    isFunction = require("is_function"),
-    isNullOrUndefined = require("is_null_or_undefined");
+var virt = require("@nathanfaucett/virt"),
+    has = require("@nathanfaucett/has"),
+    isFunction = require("@nathanfaucett/is_function"),
+    isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined");
 
 
 var View = virt.View,
