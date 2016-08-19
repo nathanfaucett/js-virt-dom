@@ -60,39 +60,33 @@ TapPluginPrototype.dependencies = [
 TapPluginPrototype.handle = function(topLevelType, nativeEvent /* , targetId */ ) {
     var startCoords, eventHandler, viewport, event;
 
-    if (!isStartish(topLevelType) && !isEndish(topLevelType)) {
-        return null;
-    } else {
+    if (isStartish(topLevelType) || isEndish(topLevelType)) {
         if (indexOf(touchEvents, topLevelType) !== -1) {
             this.usedTouch = true;
             this.usedTouchTime = now();
-        } else {
-            if (this.usedTouch && (now() - this.usedTouchTime < this.TOUCH_DELAY)) {
-                return null;
+        } else if (!this.usedTouch || ((now() - this.usedTouchTime) >= this.TOUCH_DELAY)) {
+            startCoords = this.startCoords;
+            eventHandler = this.eventHandler;
+            viewport = eventHandler.viewport;
+
+            if (
+                isEndish(topLevelType) &&
+                getDistance(startCoords, nativeEvent, viewport) < this.tapMoveThreshold
+            ) {
+                event = SyntheticUIEvent.getPooled(nativeEvent, eventHandler);
             }
-        }
 
-        startCoords = this.startCoords;
-        eventHandler = this.eventHandler;
-        viewport = eventHandler.viewport;
+            if (isStartish(topLevelType)) {
+                startCoords.x = getAxisCoordOfEvent(xaxis, nativeEvent, viewport);
+                startCoords.y = getAxisCoordOfEvent(yaxis, nativeEvent, viewport);
+            } else if (isEndish(topLevelType)) {
+                startCoords.x = 0;
+                startCoords.y = 0;
+            }
 
-        if (
-            isEndish(topLevelType) &&
-            getDistance(startCoords, nativeEvent, viewport) < this.tapMoveThreshold
-        ) {
-            event = SyntheticUIEvent.getPooled(nativeEvent, eventHandler);
-        }
-
-        if (isStartish(topLevelType)) {
-            startCoords.x = getAxisCoordOfEvent(xaxis, nativeEvent, viewport);
-            startCoords.y = getAxisCoordOfEvent(yaxis, nativeEvent, viewport);
-        } else if (isEndish(topLevelType)) {
-            startCoords.x = 0;
-            startCoords.y = 0;
-        }
-
-        if (event) {
-            eventHandler.dispatchEvent(topLevelTypes.topTouchTap, event);
+            if (event) {
+                eventHandler.dispatchEvent(topLevelTypes.topTouchTap, event);
+            }
         }
     }
 };

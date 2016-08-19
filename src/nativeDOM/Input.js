@@ -27,7 +27,7 @@ function Input(props, children, context) {
         return _this.__onInput(e);
     };
     this.onChange = function(e) {
-        return _this.__onChange(e, false);
+        return _this.__onChange(e);
     };
     this.setChecked = function(checked, callback) {
         return _this.__setChecked(checked, callback);
@@ -82,10 +82,10 @@ InputPrototype.componentDidUpdate = function(previousProps) {
 };
 
 InputPrototype.__onInput = function(e) {
-    this.__onChange(e, true);
+    this.__onChange(e);
 };
 
-InputPrototype.__onChange = function(e, fromInput) {
+InputPrototype.__onChange = function(e) {
     var props = this.props,
         type = props.type,
         isRadio = type === "radio";
@@ -100,7 +100,7 @@ InputPrototype.__onChange = function(e, fromInput) {
         }
     }
 
-    if (fromInput && props.onInput) {
+    if (props.onInput) {
         props.onInput(e);
     }
     if (props.onChange) {

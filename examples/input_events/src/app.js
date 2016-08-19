@@ -9,7 +9,7 @@ module.exports = App;
 
 function App(props, children, context) {
     virt.Component.call(this, props, children, context);
-    
+
     this.state = {
         inputValue: "Hello!"
     };
@@ -30,14 +30,14 @@ AppPrototype.render = function() {
         virt.createView("div", {
                 className: "app"
             },
-            
+
             // buttons
             virt.createView("button", {
                 disabled: true
             }, "Disabled Button"),
             virt.createView("button", {
             }, "Button"),
-            
+
             // input
             virt.createView("input", {
                 ref: "input",
@@ -73,7 +73,7 @@ AppPrototype.render = function() {
                 type: "checkbox",
                 checked: false
             }),
-            
+
             virt.createView("input", {
                 name: "yesOrNo",
                 value: "yes",
@@ -87,7 +87,7 @@ AppPrototype.render = function() {
                 type: "radio"
             }),
 
-            // textarea            
+            // textarea
             virt.createView("textarea", {
                 autoFocus: true
             })

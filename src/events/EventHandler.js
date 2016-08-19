@@ -7,6 +7,7 @@ var has = require("@nathanfaucett/has"),
     getNodeAttributeId = require("../utils/getNodeAttributeId"),
     nativeEventToJSON = require("../utils/nativeEventToJSON"),
     isEventSupported = require("./isEventSupported"),
+    ChangePlugin = require("./plugins/ChangePlugin"),
     TapPlugin = require("./plugins/TapPlugin");
 
 
@@ -52,6 +53,7 @@ function EventHandler(messenger, document, window, isClient) {
     this.__onResize = onResize;
     eventListener.on(window, "resize orientationchange", onResize);
 
+    this.addPlugin(new ChangePlugin(this));
     this.addPlugin(new TapPlugin(this));
 }
 EventHandlerPrototype = EventHandler.prototype;
@@ -90,20 +92,20 @@ EventHandlerPrototype.pluginListenTo = function(topLevelType) {
         dependencies, events, i, il;
 
     if (plugin && !pluginListening[topLevelType]) {
-        dependencies = plugin.dependencies;
-        i = -1;
-        il = dependencies.length - 1;
-
-        while (i++ < il) {
-            this.listenTo(null, dependencies[i]);
-        }
-
         events = plugin.events;
         i = -1;
         il = events.length - 1;
 
         while (i++ < il) {
             pluginListening[events[i]] = plugin;
+        }
+
+        dependencies = plugin.dependencies;
+        i = -1;
+        il = dependencies.length - 1;
+
+        while (i++ < il) {
+            this.listenTo(null, dependencies[i]);
         }
 
         return true;

@@ -25,8 +25,8 @@ SyntheticEvent.extend = function(child) {
     return child;
 };
 
-SyntheticEvent.create = function create(nativeTouch, eventHandler) {
-    return this.getPooled(nativeTouch, eventHandler);
+SyntheticEvent.create = function create(nativeEvent, eventHandler) {
+    return this.getPooled(nativeEvent, eventHandler);
 };
 
 SyntheticEventPrototype.destructor = function() {
