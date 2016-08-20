@@ -1,6 +1,7 @@
 (function(dependencies, chunks, undefined, global) {
     
-    var cache = [];
+    var cache = [],
+        cacheCallbacks = {};
     
 
     function Module() {
@@ -37,9 +38,57 @@
     };
 
     
-
     require.async = function async(index, callback) {
-        callback(require(index));
+        var module = cache[index],
+            callbacks, node;
+
+        if (module) {
+            callback(module.exports);
+        } else if ((callbacks = cacheCallbacks[index])) {
+            callbacks[callbacks.length] = callback;
+        } else {
+            node = document.createElement("script");
+            callbacks = cacheCallbacks[index] = [callback];
+
+            node.type = "text/javascript";
+            node.charset = "utf-8";
+            node.async = true;
+
+            function onLoad() {
+                var i = -1,
+                    il = callbacks.length - 1;
+
+                while (i++ < il) {
+                    callbacks[i](require(index));
+                }
+                delete cacheCallbacks[index];
+            }
+
+            if (node.attachEvent && !(node.attachEvent.toString && node.attachEvent.toString().indexOf("[native code") < 0)) {
+                node.attachEvent("onreadystatechange", onLoad);
+            } else {
+                node.addEventListener("load", onLoad, false);
+            }
+
+            node.src = chunks[index];
+
+            document.head.appendChild(node);
+        }
+    };
+
+    global["LclxGo8i-KmQb-4XIz-plis-zc7qrva7sfAPv"] = function(asyncDependencies) {
+        var i = -1,
+            il = asyncDependencies.length - 1,
+            dependency, index;
+
+        while (i++ < il) {
+            dependency = asyncDependencies[i];
+            index = dependency[0];
+
+            if (dependencies[index] === null) {
+                dependencies[index] = dependency[1];
+            }
+        }
     };
 
     
@@ -57,8 +106,7 @@
     }
 }([
 function(require, exports, module, undefined, global) {
-/* index.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/examples/simple/src/index.js-=@*/
 var environment = require(1),
     eventListener = require(2),
     virt = require(3),
@@ -118,11 +166,9 @@ eventListener.on(environment.window, "load", function() {
     render();
 });
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/environment/src/index.js */
-
+/*@=-@nathanfaucett/environment@0.0.1/src/index.js-=@*/
 var environment = exports,
 
     hasWindow = typeof(window) !== "undefined",
@@ -151,11 +197,9 @@ environment.pixelRatio = environment.window.devicePixelRatio || 1;
 
 environment.document = typeof(document) !== "undefined" ? document : {};
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/event_listener/src/index.js */
-
+/*@=-@nathanfaucett/event_listener@0.0.1/src/index.js-=@*/
 var process = require(5);
 var isObject = require(6),
     isFunction = require(7),
@@ -300,11 +344,9 @@ if (isFunction(document.addEventListener)) {
     };
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/index.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/index.js-=@*/
 var View = require(15);
 
 
@@ -333,11 +375,9 @@ virt.traverseTwoPhase = require(24);
 virt.context = require(25);
 virt.owner = require(26);
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/index.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/index.js-=@*/
 var renderString = require(71),
     nativeDOMComponents = require(72),
     nativeDOMHandlers = require(73);
@@ -372,11 +412,9 @@ virtDOM.renderWorker = require(80);
 virtDOM.createWebSocketRender = require(81);
 virtDOM.renderWebSocket = require(82);
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/process/browser.js */
-
+/*@=-process@0.11.8/browser.js-=@*/
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -538,11 +576,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_object/src/index.js */
-
+/*@=-@nathanfaucett/is_object@0.0.1/src/index.js-=@*/
 var isNull = require(9);
 
 
@@ -554,11 +590,9 @@ function isObject(value) {
     return type === "function" || (!isNull(value) && type === "object") || false;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_function/src/index.js */
-
+/*@=-@nathanfaucett/is_function@0.0.1/src/index.js-=@*/
 var objectToString = Object.prototype.toString,
     isFunction;
 
@@ -580,11 +614,9 @@ if (objectToString.call(function() {}) === "[object Object]") {
 
 module.exports = isFunction;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/event_listener/src/event_table.js */
-
+/*@=-@nathanfaucett/event_listener@0.0.1/src/event_table.js-=@*/
 var isNode = require(10),
     environment = require(1);
 
@@ -991,11 +1023,9 @@ module.exports = {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_null/src/index.js */
-
+/*@=-@nathanfaucett/is_null@0.0.1/src/index.js-=@*/
 module.exports = isNull;
 
 
@@ -1003,11 +1033,9 @@ function isNull(value) {
     return value === null;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_node/src/index.js */
-
+/*@=-@nathanfaucett/is_node@0.0.1/src/index.js-=@*/
 var isString = require(11),
     isNullOrUndefined = require(12),
     isNumber = require(13),
@@ -1033,11 +1061,9 @@ if (typeof(Node) !== "undefined" && isFunction(Node)) {
 
 module.exports = isNode;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_string/src/index.js */
-
+/*@=-@nathanfaucett/is_string@0.0.1/src/index.js-=@*/
 module.exports = isString;
 
 
@@ -1045,11 +1071,9 @@ function isString(value) {
     return typeof(value) === "string" || false;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_null_or_undefined/src/index.js */
-
+/*@=-@nathanfaucett/is_null_or_undefined@0.0.1/src/index.js-=@*/
 var isNull = require(9),
     isUndefined = require(14);
 
@@ -1073,11 +1097,9 @@ function isNullOrUndefined(value) {
     return isNull(value) || isUndefined(value);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_number/src/index.js */
-
+/*@=-@nathanfaucett/is_number@0.0.1/src/index.js-=@*/
 module.exports = isNumber;
 
 
@@ -1085,11 +1107,9 @@ function isNumber(value) {
     return typeof(value) === "number" || false;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_undefined/src/index.js */
-
+/*@=-@nathanfaucett/is_undefined@0.0.1/src/index.js-=@*/
 module.exports = isUndefined;
 
 
@@ -1097,11 +1117,9 @@ function isUndefined(value) {
     return value === void(0);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/View.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/View.js-=@*/
 var isPrimitive = require(27),
     isFunction = require(7),
     isArray = require(28),
@@ -1361,11 +1379,9 @@ function ensureValidChildren(children) {
     return children;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Root.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Root.js-=@*/
 var isFunction = require(7),
     isNull = require(9),
     isUndefined = require(14),
@@ -1526,11 +1542,9 @@ RootPrototype.render = function(nextView, id, callback) {
     return this;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Component.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Component.js-=@*/
 var inherits = require(65),
     extend = require(31),
     componentState = require(60);
@@ -1643,11 +1657,9 @@ ComponentPrototype.shouldComponentUpdate = function( /* nextProps, nextChildren,
     return true;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/consts.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/consts.js-=@*/
 var keyMirror = require(56);
 
 
@@ -1662,11 +1674,9 @@ module.exports = keyMirror([
     "UNMOUNT"
 ]);
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/getChildKey.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/getChildKey.js-=@*/
 var getViewKey = require(68);
 
 
@@ -1677,11 +1687,9 @@ function getChildKey(parentId, child, index) {
     return parentId + "." + getViewKey(child, index);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/getRootIdFromId.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/getRootIdFromId.js-=@*/
 module.exports = getRootIdFromId;
 
 
@@ -1696,11 +1704,9 @@ function getRootIdFromId(id) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/isAncestorIdOf.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/isAncestorIdOf.js-=@*/
 var isBoundary = require(69);
 
 
@@ -1714,11 +1720,9 @@ function isAncestorIdOf(ancestorID, descendantID) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/traverseAncestors.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/traverseAncestors.js-=@*/
 var traversePath = require(70);
 
 
@@ -1729,11 +1733,9 @@ function traverseAncestors(id, callback) {
     traversePath(id, "", callback, false, true);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/traverseDescendants.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/traverseDescendants.js-=@*/
 var traversePath = require(70);
 
 
@@ -1744,11 +1746,9 @@ function traverseDescendant(id, callback) {
     traversePath("", id, callback, true, false);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/traverseTwoPhase.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/traverseTwoPhase.js-=@*/
 var traversePath = require(70);
 
 
@@ -1762,31 +1762,25 @@ function traverseTwoPhase(id, callback) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/context.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/context.js-=@*/
 var context = exports;
 
 
 context.current = null;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/owner.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/owner.js-=@*/
 var owner = exports;
 
 
 owner.current = null;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_primitive/src/index.js */
-
+/*@=-@nathanfaucett/is_primitive@0.0.1/src/index.js-=@*/
 var isNullOrUndefined = require(12);
 
 
@@ -1798,11 +1792,9 @@ function isPrimitive(obj) {
     return isNullOrUndefined(obj) || ((typeStr = typeof(obj)) !== "object" && typeStr !== "function") || false;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_array/src/index.js */
-
+/*@=-@nathanfaucett/is_array@0.0.1/src/index.js-=@*/
 var isNative = require(33),
     isLength = require(34),
     isObject = require(6);
@@ -1828,11 +1820,9 @@ if (isNative(nativeIsArray)) {
 
 module.exports = isArray;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/has/src/index.js */
-
+/*@=-@nathanfaucett/has@0.0.1/src/index.js-=@*/
 var isNative = require(33),
     getPrototypeOf = require(37),
     isNullOrUndefined = require(12);
@@ -1873,11 +1863,9 @@ if (isNative(nativeHasOwnProp)) {
     };
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/array-map/src/index.js */
-
+/*@=-@nathanfaucett/array-map@0.0.1/src/index.js-=@*/
 module.exports = arrayMap;
 
 
@@ -1894,11 +1882,9 @@ function arrayMap(array, callback) {
     return results;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/extend/src/index.js */
-
+/*@=-@nathanfaucett/extend@0.0.1/src/index.js-=@*/
 var keys = require(38);
 
 
@@ -1928,11 +1914,9 @@ function baseExtend(a, b) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/propsToJSON.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/propsToJSON.js-=@*/
 var has = require(29),
     isNull = require(9),
     isPrimitive = require(27);
@@ -1969,11 +1953,9 @@ function toJSON(props, json) {
     return json;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_native/src/index.js */
-
+/*@=-@nathanfaucett/is_native@0.0.2/src/index.js-=@*/
 var isFunction = require(7),
     isNullOrUndefined = require(12),
     escapeRegExp = require(35);
@@ -2019,11 +2001,9 @@ isHostObject = function isHostObject(value) {
     return !isFunction(value.toString) && typeof(value + "") === "string";
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_length/src/index.js */
-
+/*@=-@nathanfaucett/is_length@0.0.1/src/index.js-=@*/
 var isNumber = require(13);
 
 
@@ -2037,11 +2017,9 @@ function isLength(value) {
     return isNumber(value) && value > -1 && value % 1 === 0 && value <= MAX_SAFE_INTEGER;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/escape_regexp/src/index.js */
-
+/*@=-@nathanfaucett/escape_regexp@0.0.1/src/index.js-=@*/
 var toString = require(36);
 
 
@@ -2061,11 +2039,9 @@ function escapeRegExp(string) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/to_string/src/index.js */
-
+/*@=-@nathanfaucett/to_string@0.0.1/src/index.js-=@*/
 var isString = require(11),
     isNullOrUndefined = require(12);
 
@@ -2083,11 +2059,9 @@ function toString(value) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/get_prototype_of/src/index.js */
-
+/*@=-@nathanfaucett/get_prototype_of@0.0.1/src/index.js-=@*/
 var isObject = require(6),
     isNative = require(33),
     isNullOrUndefined = require(12);
@@ -2124,11 +2098,9 @@ if (isNative(nativeGetPrototypeOf)) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/keys/src/index.js */
-
+/*@=-@nathanfaucett/keys@0.0.1/src/index.js-=@*/
 var has = require(29),
     isNative = require(33),
     isNullOrUndefined = require(12),
@@ -2166,11 +2138,9 @@ if (!isNative(nativeKeys)) {
     };
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/empty_function/src/index.js */
-
+/*@=-@nathanfaucett/empty_function@0.0.1/src/index.js-=@*/
 module.exports = emptyFunction;
 
 
@@ -2193,11 +2163,9 @@ emptyFunction.thatReturnsArgument = function(argument) {
     return argument;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/index.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/index.js-=@*/
 var createPool = require(45),
     Queue = require(46),
     has = require(29),
@@ -2349,11 +2317,9 @@ TransactionPrototype.toJSON = function() {
     };
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/diffProps.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/diffProps.js-=@*/
 var has = require(29),
     isObject = require(6),
     getPrototypeOf = require(37),
@@ -2419,11 +2385,9 @@ function diffProps(id, eventManager, transaction, previous, next) {
     return result;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/shouldUpdate.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/shouldUpdate.js-=@*/
 var isString = require(11),
     isNumber = require(13),
     isNullOrUndefined = require(12);
@@ -2447,11 +2411,9 @@ function shouldUpdate(previous, next) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/EventManager.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/EventManager.js-=@*/
 var indexOf = require(58),
     isUndefined = require(14);
 
@@ -2526,11 +2488,9 @@ EventManagerPrototype.globalAllOff = function() {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Node.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Node.js-=@*/
 var process = require(5);
 var has = require(29),
     arrayMap = require(30),
@@ -2793,6 +2753,7 @@ NodePrototype.updateComponent = function(
         component.state = nextState;
         component.context = nextContext;
 
+        component.__nextState = null;
         component.__mountState = componentState.MOUNTED;
     }
 };
@@ -2817,6 +2778,8 @@ NodePrototype.__updateComponent = function(
     component.children = nextChildren;
     component.state = nextState;
     component.context = nextContext;
+
+    component.__nextState = null;
 
     this.context = unmaskedContext;
 
@@ -3066,11 +3029,9 @@ function mountEvents(id, props, eventManager, transaction) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/create_pool/src/index.js */
-
+/*@=-@nathanfaucett/create_pool@0.0.1/src/index.js-=@*/
 var isFunction = require(7),
     isNumber = require(13),
     defineProperty = require(55);
@@ -3254,11 +3215,9 @@ function createReleaser(Constructor) {
     };
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/queue/src/index.js */
-
+/*@=-@nathanfaucett/queue@0.0.1/src/index.js-=@*/
 var createPool = require(45);
 
 
@@ -3297,11 +3256,9 @@ Queue.prototype.destructor = function() {
 
 Queue.prototype.reset = Queue.prototype.destructor;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/InsertPatch.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/InsertPatch.js-=@*/
 var createPool = require(45),
     consts = require(18);
 
@@ -3343,11 +3300,9 @@ InsertPatchPrototype.destroy = function() {
     return InsertPatch.release(this);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/MountPatch.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/MountPatch.js-=@*/
 var createPool = require(45),
     consts = require(18);
 
@@ -3383,11 +3338,9 @@ MountPatchPrototype.destroy = function() {
     return MountPatch.release(this);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/UnmountPatch.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/UnmountPatch.js-=@*/
 var createPool = require(45),
     consts = require(18);
 
@@ -3420,11 +3373,9 @@ UnmountPatchPrototype.destroy = function() {
     return UnmountPatch.release(this);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/OrderPatch.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/OrderPatch.js-=@*/
 var createPool = require(45),
     consts = require(18);
 
@@ -3460,11 +3411,9 @@ OrderPatchPrototype.destroy = function() {
     return OrderPatch.release(this);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/PropsPatch.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/PropsPatch.js-=@*/
 var createPool = require(45),
     consts = require(18);
 
@@ -3503,11 +3452,9 @@ PropsPatchPrototype.destroy = function() {
     return PropsPatch.release(this);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/RemovePatch.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/RemovePatch.js-=@*/
 var createPool = require(45),
     consts = require(18);
 
@@ -3546,11 +3493,9 @@ RemovePatchPrototype.destroy = function() {
     return RemovePatch.release(this);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/ReplacePatch.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/ReplacePatch.js-=@*/
 var createPool = require(45),
     consts = require(18);
 
@@ -3592,11 +3537,9 @@ ReplacePatchPrototype.destroy = function() {
     return ReplacePatch.release(this);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/Transaction/TextPatch.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/TextPatch.js-=@*/
 var createPool = require(45),
     propsToJSON = require(32),
     consts = require(18);
@@ -3649,11 +3592,9 @@ TextPatchPrototype.toJSON = function() {
     };
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/define_property/src/index.js */
-
+/*@=-@nathanfaucett/define_property@0.0.1/src/index.js-=@*/
 var isObject = require(6),
     isFunction = require(7),
     isPrimitive = require(27),
@@ -3709,11 +3650,9 @@ if (!isNative(nativeDefineProperty) || !(function() {
     };
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/key_mirror/src/index.js */
-
+/*@=-@nathanfaucett/key_mirror@0.0.1/src/index.js-=@*/
 var keys = require(38),
     isArrayLike = require(57);
 
@@ -3753,11 +3692,9 @@ function keyMirrorObject(object) {
     return results;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_array_like/src/index.js */
-
+/*@=-@nathanfaucett/is_array_like@0.0.2/src/index.js-=@*/
 var isLength = require(34),
     isFunction = require(7),
     isObject = require(6);
@@ -3770,11 +3707,9 @@ function isArrayLike(value) {
     return !isFunction(value) && isObject(value) && isLength(value.length);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/index_of/src/index.js */
-
+/*@=-@nathanfaucett/index_of@0.0.1/src/index.js-=@*/
 var isEqual = require(59);
 
 
@@ -3794,11 +3729,9 @@ function indexOf(array, value, fromIndex) {
     return -1;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_equal/src/index.js */
-
+/*@=-@nathanfaucett/is_equal@0.0.1/src/index.js-=@*/
 module.exports = isEqual;
 
 
@@ -3806,11 +3739,9 @@ function isEqual(a, b) {
     return !(a !== b && !(a !== a && b !== b));
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/componentState.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/componentState.js-=@*/
 var keyMirror = require(56);
 
 
@@ -3822,11 +3753,9 @@ module.exports = keyMirror([
     "UNMOUNTED"
 ]);
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/getComponentClassForType.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/getComponentClassForType.js-=@*/
 var createNativeComponentForType = require(64);
 
 
@@ -3845,18 +3774,14 @@ function getComponentClassForType(type, rootNativeComponents) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/emptyObject.js */
-
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/emptyObject.js-=@*/
 
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/diffChildren.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/diffChildren.js-=@*/
 var isNull = require(9),
     isUndefined = require(14),
     isNullOrUndefined = require(12),
@@ -4057,11 +3982,9 @@ function keyIndex(children) {
     return keys;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/createNativeComponentForType.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/createNativeComponentForType.js-=@*/
 var View = require(15),
     Component = require(17);
 
@@ -4083,11 +4006,9 @@ function createNativeComponentForType(type) {
     return NativeComponent;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/inherits/src/index.js */
-
+/*@=-@nathanfaucett/inherits@0.0.1/src/index.js-=@*/
 var create = require(66),
     extend = require(31),
     mixin = require(67),
@@ -4135,11 +4056,9 @@ function defineStatic(name, value) {
     defineNonEnumerableProperty(this, name, value);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/create/src/index.js */
-
+/*@=-@nathanfaucett/create@0.0.1/src/index.js-=@*/
 var isNull = require(9),
     isNative = require(33),
     isPrimitive = require(27);
@@ -4179,11 +4098,9 @@ if (!isNative(nativeCreate)) {
 
 module.exports = create;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/mixin/src/index.js */
-
+/*@=-@nathanfaucett/mixin@0.0.1/src/index.js-=@*/
 var keys = require(38),
     isNullOrUndefined = require(12);
 
@@ -4217,11 +4134,9 @@ function baseMixin(a, b) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/getViewKey.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/getViewKey.js-=@*/
 var isNullOrUndefined = require(12);
 
 
@@ -4245,11 +4160,9 @@ function escapeKey(key) {
     return (key + "").replace(reEscape, "$");
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/isBoundary.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/isBoundary.js-=@*/
 module.exports = isBoundary;
 
 
@@ -4257,11 +4170,9 @@ function isBoundary(id, index) {
     return id.charAt(index) === "." || index === id.length;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/virt/src/utils/traversePath.js */
-
+/*@=-@nathanfaucett/virt@0.0.2/src/utils/traversePath.js-=@*/
 var isBoundary = require(69),
     isAncestorIdOf = require(21);
 
@@ -4311,11 +4222,9 @@ function getParentID(id) {
     return id ? id.substr(0, id.lastIndexOf(".")) : "";
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/renderString.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/renderString.js-=@*/
 var virt = require(3),
 
     isFunction = require(7),
@@ -4437,11 +4346,9 @@ function contentTag(type, content, id, props) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/components.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/components.js-=@*/
 var components = exports;
 
 
@@ -4450,11 +4357,9 @@ components.img = require(89);
 components.input = require(90);
 components.textarea = require(91);
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/handlers.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/handlers.js-=@*/
 var extend = require(31);
 
 
@@ -4467,11 +4372,9 @@ extend(
     require(96)
 );
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/render.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/render.js-=@*/
 var virt = require(3),
     isNull = require(9),
     isUndefined = require(14),
@@ -4504,11 +4407,9 @@ function render(nextView, containerDOMNode, callback) {
     return root;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/unmount.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/unmount.js-=@*/
 var rootsById = require(119),
     getRootNodeInContainer = require(182),
     getNodeId = require(181);
@@ -4528,11 +4429,9 @@ function unmount(containerDOMNode) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/findDOMNode.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/findDOMNode.js-=@*/
 var isString = require(11),
     getNodeById = require(104);
 
@@ -4552,11 +4451,9 @@ function findDOMNode(value) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/findRoot.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/findRoot.js-=@*/
 var virt = require(3),
     isString = require(11),
     rootsById = require(119);
@@ -4576,11 +4473,9 @@ function findRoot(value) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/findEventHandler.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/findEventHandler.js-=@*/
 var virt = require(3),
     isString = require(11),
     eventHandlersById = require(117);
@@ -4600,11 +4495,9 @@ function findDOMNode(value) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/worker/createWorkerRender.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/worker/createWorkerRender.js-=@*/
 var Messenger = require(121),
     isNull = require(9),
     MessengerWorkerAdapter = require(183),
@@ -4663,11 +4556,9 @@ function createWorkerRender(url, containerDOMNode) {
     return messenger;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/worker/renderWorker.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/worker/renderWorker.js-=@*/
 var virt = require(3),
     isNull = require(9),
     rootsById = require(119),
@@ -4698,11 +4589,9 @@ render.unmount = function() {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/websocket/createWebSocketRender.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/websocket/createWebSocketRender.js-=@*/
 var Messenger = require(121),
     isNull = require(9),
     MessengerWebSocketAdapter = require(185),
@@ -4760,11 +4649,9 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
     return messenger;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/websocket/renderWebSocket.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/websocket/renderWebSocket.js-=@*/
 var virt = require(3),
     rootsById = require(119),
     WebSocketAdapter = require(186);
@@ -4789,11 +4676,9 @@ render.unmount = function(root) {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/hyphenateStyleName.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/hyphenateStyleName.js-=@*/
 var reUppercasePattern = /([A-Z])/g,
     reMS = /^ms-/;
 
@@ -4805,11 +4690,9 @@ function hyphenateStyleName(str) {
     return str.replace(reUppercasePattern, "-$1").toLowerCase().replace(reMS, "-ms-");
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/renderMarkup.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/renderMarkup.js-=@*/
 var escapeTextContent = require(87);
 
 
@@ -4824,18 +4707,14 @@ function renderMarkup(markup, props) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/DOM_ID_NAME.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/DOM_ID_NAME.js-=@*/
 module.exports = "data-virtid";
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/renderChildrenString.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/renderChildrenString.js-=@*/
 var virt = require(3);
 
 
@@ -4862,11 +4741,9 @@ function renderChildrenString(children, parentProps, id) {
     return out;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/escape_text_content/src/index.js */
-
+/*@=-@nathanfaucett/escape_text_content@0.0.1/src/index.js-=@*/
 var reEscape = /[&><"']/g;
 
 
@@ -4894,11 +4771,9 @@ function escaper(match) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/Button.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/Button.js-=@*/
 var virt = require(3),
     indexOf = require(58),
     has = require(29);
@@ -4983,11 +4858,9 @@ ButtonPrototype.render = function() {
     return new View("button", null, null, this.__getRenderProps(), this.children, null, null);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/Image.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/Image.js-=@*/
 var process = require(5);
 var virt = require(3),
     has = require(29),
@@ -5065,11 +4938,9 @@ function getProps(props) {
     return renderProps;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/Input.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/Input.js-=@*/
 var process = require(5);
 var virt = require(3),
     has = require(29),
@@ -5305,11 +5176,9 @@ InputPrototype.render = function() {
     return new View("input", null, null, this.__getRenderProps(), this.children, null, null);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/TextArea.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/TextArea.js-=@*/
 var process = require(5);
 var virt = require(3),
     has = require(29),
@@ -5472,11 +5341,9 @@ TextAreaPrototype.render = function() {
     return new View("textarea", null, null, this.__getRenderProps(), this.children, null, null);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/nodeHandlers.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/nodeHandlers.js-=@*/
 var domDimensions = require(97),
     findDOMNode = require(76);
 
@@ -5590,11 +5457,9 @@ nodeHandlers["virt.setViewStyleProperty"] = function(data, callback) {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/buttonHandlers.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/buttonHandlers.js-=@*/
 var sharedHandlers = require(106);
 
 
@@ -5604,11 +5469,9 @@ var buttonHandlers = exports;
 buttonHandlers["virt.dom.Button.focus"] = sharedHandlers.focus;
 buttonHandlers["virt.dom.Button.blur"] = sharedHandlers.blur;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/imageHandlers.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/imageHandlers.js-=@*/
 var consts = require(113),
     findEventHandler = require(78),
     findDOMNode = require(76);
@@ -5657,11 +5520,9 @@ imageHandlers["virt.dom.Image.setSrc"] = function(data, callback) {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/inputHandlers.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/inputHandlers.js-=@*/
 var findDOMNode = require(76),
     sharedHandlers = require(106);
 
@@ -5694,11 +5555,9 @@ inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/textareaHandlers.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/textareaHandlers.js-=@*/
 var sharedHandlers = require(106);
 
 
@@ -5712,11 +5571,9 @@ textareaHandlers["virt.dom.TextArea.setSelection"] = sharedHandlers.setSelection
 textareaHandlers["virt.dom.TextArea.focus"] = sharedHandlers.focus;
 textareaHandlers["virt.dom.TextArea.blur"] = sharedHandlers.blur;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/dom_dimensions/src/index.js */
-
+/*@=-@nathanfaucett/dom_dimensions@0.0.1/src/index.js-=@*/
 var getCurrentStyle = require(98),
     isElement = require(99);
 
@@ -5849,11 +5706,9 @@ domDimensions.outerHeight = function(node) {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/get_current_style/src/index.js */
-
+/*@=-@nathanfaucett/get_current_style@0.0.1/src/index.js-=@*/
 var supports = require(100),
     environment = require(1),
     isElement = require(99),
@@ -5897,11 +5752,9 @@ if (supports.dom && environment.document.defaultView) {
     };
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_element/src/index.js */
-
+/*@=-@nathanfaucett/is_element@0.0.1/src/index.js-=@*/
 var isNode = require(10);
 
 
@@ -5912,11 +5765,9 @@ function isElement(value) {
     return isNode(value) && value.nodeType === 1;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/supports/src/index.js */
-
+/*@=-@nathanfaucett/supports@0.0.1/src/index.js-=@*/
 var environment = require(1);
 
 
@@ -5932,11 +5783,9 @@ supports.attachEvents = supports.dom && !!environment.window.attachEvent;
 supports.viewport = supports.dom && !!environment.window.screen;
 supports.touch = supports.dom && "ontouchstart" in environment.window;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/camelize/src/index.js */
-
+/*@=-@nathanfaucett/camelize@0.0.1/src/index.js-=@*/
 var reInflect = require(102),
     capitalizeString = require(103);
 
@@ -5963,18 +5812,14 @@ function camelize(string, lowFirstLetter) {
     return parts.join("");
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/re_inflect/src/index.js */
-
+/*@=-@nathanfaucett/re_inflect@0.0.1/src/index.js-=@*/
 module.exports = /[^A-Z-_ ]+|[A-Z][^A-Z-_ ]+|[^a-z-_ ]+/g;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/capitalize_string/src/index.js */
-
+/*@=-@nathanfaucett/capitalize_string@0.0.1/src/index.js-=@*/
 module.exports = capitalizeString;
 
 
@@ -5982,11 +5827,9 @@ function capitalizeString(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/getNodeById.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/getNodeById.js-=@*/
 var nodeCache = require(105);
 
 
@@ -5997,18 +5840,14 @@ function getNodeById(id) {
     return nodeCache[id];
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/nodeCache.js */
-
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/nodeCache.js-=@*/
 
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/nativeDOM/sharedHandlers.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/sharedHandlers.js-=@*/
 var domCaret = require(107),
     blurNode = require(108),
     focusNode = require(109),
@@ -6104,11 +5943,9 @@ sharedInputHandlers.blur = function(data, callback) {
     }
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/dom_caret/src/index.js */
-
+/*@=-@nathanfaucett/dom_caret@0.0.1/src/index.js-=@*/
 var environment = require(1),
     focusNode = require(109),
     getActiveElement = require(110),
@@ -6203,11 +6040,9 @@ if (!!window.getSelection) {
     setNodeCaretPosition = function setNodeCaretPosition() {};
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/blur_node/src/index.js */
-
+/*@=-@nathanfaucett/blur_node@0.0.1/src/index.js-=@*/
 var isNode = require(10);
 
 
@@ -6222,11 +6057,9 @@ function blurNode(node) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/focus_node/src/index.js */
-
+/*@=-@nathanfaucett/focus_node@0.0.1/src/index.js-=@*/
 var isNode = require(10);
 
 
@@ -6241,11 +6074,9 @@ function focusNode(node) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/get_active_element/src/index.js */
-
+/*@=-@nathanfaucett/get_active_element@0.0.1/src/index.js-=@*/
 var isDocument = require(112),
     environment = require(1);
 
@@ -6266,11 +6097,9 @@ function getActiveElement(ownerDocument) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_text_input_element/src/index.js */
-
+/*@=-@nathanfaucett/is_text_input_element@0.0.1/src/index.js-=@*/
 var isNullOrUndefined = require(12);
 
 
@@ -6290,11 +6119,9 @@ function isTextInputElement(value) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/is_document/src/index.js */
-
+/*@=-@nathanfaucett/is_document@0.0.1/src/index.js-=@*/
 var isNode = require(10);
 
 
@@ -6305,11 +6132,9 @@ function isDocument(value) {
     return isNode(value) && value.nodeType === 9;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/consts.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/consts.js-=@*/
 var arrayMap = require(30),
     arrayForEach = require(114),
     keyMirror = require(56),
@@ -6414,11 +6239,9 @@ arrayForEach(eventTypes, function(string) {
     topLevelToEvent[string] = removeTop(string).toLowerCase();
 });
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/array-for_each/src/index.js */
-
+/*@=-@nathanfaucett/array-for_each@0.0.1/src/index.js-=@*/
 module.exports = arrayForEach;
 
 
@@ -6435,11 +6258,9 @@ function arrayForEach(array, callback) {
     return array;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/removeTop.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/removeTop.js-=@*/
 module.exports = removeTop;
 
 
@@ -6447,11 +6268,9 @@ function removeTop(str) {
     return str.replace(/^top/, "");
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/replaceTopWithOn.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/replaceTopWithOn.js-=@*/
 module.exports = replaceTopWithOn;
 
 
@@ -6459,18 +6278,14 @@ function replaceTopWithOn(string) {
     return string.replace(/^top/, "on");
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/eventHandlersById.js */
-
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/eventHandlersById.js-=@*/
 
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/Adapter.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/Adapter.js-=@*/
 var extend = require(31),
     Messenger = require(121),
     createMessengerAdapter = require(122),
@@ -6558,18 +6373,14 @@ function Adapter(root, containerDOMNode) {
     registerNativeComponentHandlers(messengerClient, nativeDOMHandlers);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/rootsById.js */
-
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/rootsById.js-=@*/
 
 
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/getRootNodeId.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/getRootNodeId.js-=@*/
 var getRootNodeInContainer = require(182),
     getNodeId = require(181);
 
@@ -6581,11 +6392,9 @@ function getRootNodeId(containerDOMNode) {
     return getNodeId(getRootNodeInContainer(containerDOMNode));
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/messenger/src/index.js */
-
+/*@=-@nathanfaucett/messenger@0.0.1/src/index.js-=@*/
 var MESSENGER_ID = 0,
     MessengerPrototype;
 
@@ -6707,11 +6516,9 @@ function isMatch(messageId, id) {
     return messageId.split("-")[0] === id;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/messenger_adapter/src/index.js */
-
+/*@=-@nathanfaucett/messenger_adapter@0.0.1/src/index.js-=@*/
 var MessengerAdapterPrototype;
 
 
@@ -6756,11 +6563,9 @@ MessengerAdapterPrototype.postMessage = function(data) {
     this.socket.onMessage(data);
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/getWindow.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/getWindow.js-=@*/
 module.exports = getWindow;
 
 
@@ -6785,11 +6590,9 @@ function getWindow(document) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/registerNativeComponents.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/registerNativeComponents.js-=@*/
 var has = require(29);
 
 
@@ -6807,11 +6610,9 @@ function registerNativeComponents(root, nativeDOMComponents) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/registerNativeComponentHandlers.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/registerNativeComponentHandlers.js-=@*/
 var has = require(29);
 
 
@@ -6829,11 +6630,9 @@ function registerNativeComponentHandlers(messenger, nativeDOMHandlers) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/EventHandler.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/EventHandler.js-=@*/
 var has = require(29),
     eventListener = require(2),
     consts = require(113),
@@ -7088,11 +6887,9 @@ EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
     });
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/eventClassMap.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/eventClassMap.js-=@*/
 var SyntheticAnimationEvent = require(148),
     SyntheticTransitionEvent = require(149),
     SyntheticClipboardEvent = require(150),
@@ -7211,11 +7008,9 @@ module.exports = {
     topWheel: SyntheticWheelEvent
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/handleEventDispatch.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/handleEventDispatch.js-=@*/
 var virt = require(3),
     isNullOrUndefined = require(12),
     getNodeById = require(104);
@@ -7273,11 +7068,9 @@ function handleEventDispatch(childHash, events, topLevelType, targetId, event) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/applyEvents.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/applyEvents.js-=@*/
 var has = require(29);
 
 
@@ -7301,11 +7094,9 @@ function applyEvents(events, eventHandler) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/applyPatches.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/applyPatches.js-=@*/
 var getNodeById = require(104),
     applyPatch = require(175);
 
@@ -7332,11 +7123,9 @@ function applyPatchIndices(DOMNode, patchArray, id, document, rootDOMNode) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getWindowWidth.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getWindowWidth.js-=@*/
 module.exports = getWindowWidth;
 
 
@@ -7344,11 +7133,9 @@ function getWindowWidth(window, document, documentElement) {
     return window.innerWidth || document.clientWidth || documentElement.clientWidth;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getWindowHeight.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getWindowHeight.js-=@*/
 module.exports = getWindowHeight;
 
 
@@ -7356,11 +7143,9 @@ function getWindowHeight(window, document, documentElement) {
     return window.innerHeight || document.clientHeight || documentElement.clientHeight;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getEventTarget.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getEventTarget.js-=@*/
 module.exports = getEventTarget;
 
 
@@ -7369,11 +7154,9 @@ function getEventTarget(nativeEvent, window) {
     return target.nodeType === 3 ? target.parentNode : target;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/getNodeAttributeId.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/getNodeAttributeId.js-=@*/
 var DOM_ID_NAME = require(85);
 
 
@@ -7384,11 +7167,9 @@ function getNodeAttributeId(node) {
     return node && node.getAttribute && node.getAttribute(DOM_ID_NAME) || "";
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/nativeEventToJSON.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/nativeEventToJSON.js-=@*/
 var indexOf = require(58),
     isNode = require(10),
     isFunction = require(7),
@@ -7413,11 +7194,9 @@ function nativeEventToJSON(nativeEvent) {
     return json;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/isEventSupported.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/isEventSupported.js-=@*/
 var isFunction = require(7),
     isNullOrUndefined = require(12),
     has = require(29),
@@ -7460,11 +7239,9 @@ function isEventSupported(eventNameSuffix, capture) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/plugins/ChangePlugin.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/plugins/ChangePlugin.js-=@*/
 var environment = require(1),
     getEventTarget = require(133),
     SyntheticInputEvent = require(140),
@@ -7603,11 +7380,9 @@ function hasInputCapabilities(element) {
     return element.nodeName === "INPUT" || element.nodeName === "TEXTAREA";
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/plugins/TapPlugin.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/plugins/TapPlugin.js-=@*/
 var now = require(145),
     indexOf = require(58),
     SyntheticUIEvent = require(146),
@@ -7752,11 +7527,9 @@ function isEndish(topLevelType) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/ignoreNativeEventProp.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/ignoreNativeEventProp.js-=@*/
 module.exports = [
     "view", "target", "currentTarget", "path", "srcElement",
     "cancelBubble", "stopPropagation", "stopImmediatePropagation", "preventDefault", "initEvent",
@@ -7765,11 +7538,9 @@ module.exports = [
     "KEYUP", "KEYPRESS", "DRAGDROP", "FOCUS", "BLUR", "SELECT", "CHANGE"
 ];
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticInputEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticInputEvent.js-=@*/
 var getInputEvent = require(141),
     SyntheticEvent = require(142);
 
@@ -7806,11 +7577,9 @@ SyntheticInputEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getInputEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getInputEvent.js-=@*/
 module.exports = getInputEvent;
 
 
@@ -7818,11 +7587,9 @@ function getInputEvent(obj, nativeEvent) {
     obj.data = nativeEvent.data;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticEvent.js-=@*/
 var inherits = require(65),
     createPool = require(45),
     nativeEventToJSON = require(135),
@@ -7926,11 +7693,9 @@ SyntheticEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getEvent.js-=@*/
 var getEventTarget = require(133),
     getPath = require(144);
 
@@ -7956,11 +7721,9 @@ function getEvent(obj, nativeEvent, eventHandler) {
     obj.isTrusted = nativeEvent.isTrusted;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getPath.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getPath.js-=@*/
 var isArray = require(28),
     isDocument = require(112),
     getEventTarget = require(133);
@@ -7989,11 +7752,9 @@ function getPath(nativeEvent, window) {
     return path;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/now/src/browser.js */
-
+/*@=-@nathanfaucett/now@0.0.2/src/browser.js-=@*/
 var Date_now = Date.now || function Date_now() {
         return (new Date()).getTime();
     },
@@ -8030,11 +7791,9 @@ START_TIME -= now();
 
 module.exports = now;
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticUIEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticUIEvent.js-=@*/
 var getUIEvent = require(147),
     SyntheticEvent = require(142);
 
@@ -8073,11 +7832,9 @@ SyntheticUIEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getUIEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getUIEvent.js-=@*/
 var getWindow = require(123),
     getEventTarget = require(133);
 
@@ -8112,11 +7869,9 @@ function getView(nativeEvent, eventHandler) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticAnimationEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticAnimationEvent.js-=@*/
 var getAnimationEvent = require(158),
     SyntheticEvent = require(142);
 
@@ -8156,11 +7911,9 @@ SyntheticAnimationEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticTransitionEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticTransitionEvent.js-=@*/
 var getTransitionEvent = require(159),
     SyntheticEvent = require(142);
 
@@ -8200,11 +7953,9 @@ SyntheticTransitionEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticClipboardEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticClipboardEvent.js-=@*/
 var getClipboardEvent = require(160),
     SyntheticEvent = require(142);
 
@@ -8241,11 +7992,9 @@ SyntheticClipboardEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticCompositionEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticCompositionEvent.js-=@*/
 var getCompositionEvent = require(161),
     SyntheticEvent = require(142);
 
@@ -8282,11 +8031,9 @@ SyntheticCompositionEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticDragEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticDragEvent.js-=@*/
 var getDragEvent = require(162),
     SyntheticMouseEvent = require(155);
 
@@ -8323,11 +8070,9 @@ SyntheticDragEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticFocusEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticFocusEvent.js-=@*/
 var getFocusEvent = require(167),
     SyntheticUIEvent = require(146);
 
@@ -8364,11 +8109,9 @@ SyntheticFocusEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticKeyboardEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticKeyboardEvent.js-=@*/
 var getKeyboardEvent = require(168),
     SyntheticUIEvent = require(146);
 
@@ -8427,11 +8170,9 @@ SynthetiKeyboardEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticMouseEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticMouseEvent.js-=@*/
 var getMouseEvent = require(163),
     SyntheticUIEvent = require(146);
 
@@ -8494,11 +8235,9 @@ SyntheticMouseEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticTouchEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticTouchEvent.js-=@*/
 var getTouchEvent = require(171),
     SyntheticUIEvent = require(146),
     SyntheticTouch = require(172);
@@ -8577,11 +8316,9 @@ function destroyTouches(touches) {
     return touches;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticWheelEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticWheelEvent.js-=@*/
 var getWheelEvent = require(174),
     SyntheticMouseEvent = require(155);
 
@@ -8624,11 +8361,9 @@ SyntheticWheelEventPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getAnimationEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getAnimationEvent.js-=@*/
 module.exports = getAnimationEvent;
 
 
@@ -8638,11 +8373,9 @@ function getAnimationEvent(obj, nativeEvent) {
     obj.pseudoElement = nativeEvent.pseudoElement;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getTransitionEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getTransitionEvent.js-=@*/
 module.exports = getTransitionEvent;
 
 
@@ -8652,11 +8385,9 @@ function getTransitionEvent(obj, nativeEvent) {
     obj.pseudoElement = nativeEvent.pseudoElement;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getClipboardEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getClipboardEvent.js-=@*/
 module.exports = getClipboardEvent;
 
 
@@ -8668,11 +8399,9 @@ function getClipboardData(nativeEvent, window) {
     return nativeEvent.clipboardData != null ? nativeEvent.clipboardData : window.clipboardData;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getCompositionEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getCompositionEvent.js-=@*/
 module.exports = getCompositionEvent;
 
 
@@ -8680,11 +8409,9 @@ function getCompositionEvent(obj, nativeEvent) {
     obj.data = nativeEvent.data;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getDragEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getDragEvent.js-=@*/
 module.exports = getDragEvent;
 
 
@@ -8692,11 +8419,9 @@ function getDragEvent(obj, nativeEvent) {
     obj.dataTransfer = nativeEvent.dataTransfer;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getMouseEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getMouseEvent.js-=@*/
 var getPageX = require(165),
     getPageY = require(166);
 
@@ -8736,11 +8461,9 @@ function getButton(nativeEvent) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getEventModifierState.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getEventModifierState.js-=@*/
 var modifierKeyToProp = {
     Alt: "altKey",
     Control: "ctrlKey",
@@ -8764,11 +8487,9 @@ function getEventModifierState(keyArg) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getPageX.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getPageX.js-=@*/
 module.exports = getPageX;
 
 
@@ -8776,11 +8497,9 @@ function getPageX(nativeEvent, viewport) {
     return nativeEvent.pageX != null ? nativeEvent.pageX : nativeEvent.clientX + viewport.currentScrollLeft;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getPageY.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getPageY.js-=@*/
 module.exports = getPageY;
 
 
@@ -8788,11 +8507,9 @@ function getPageY(nativeEvent, viewport) {
     return nativeEvent.pageY != null ? nativeEvent.pageY : nativeEvent.clientY + viewport.currentScrollTop;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getFocusEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getFocusEvent.js-=@*/
 module.exports = getFocusEvent;
 
 
@@ -8800,11 +8517,9 @@ function getFocusEvent(obj, nativeEvent) {
     obj.relatedTarget = nativeEvent.relatedTarget;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getKeyboardEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getKeyboardEvent.js-=@*/
 var getEventKey = require(169),
     getEventCharCode = require(170);
 
@@ -8844,11 +8559,9 @@ function getWhich(nativeEvent) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/get_event_key/src/index.js */
-
+/*@=-@nathanfaucett/get_event_key@0.0.1/src/index.js-=@*/
 var getEventCharCode = require(170);
 
 
@@ -8936,11 +8649,9 @@ function getEventKey(nativeEvent) {
     return "";
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/get_event_char_code/src/index.js */
-
+/*@=-@nathanfaucett/get_event_char_code@0.0.1/src/index.js-=@*/
 module.exports = getEventCharCode;
 
 
@@ -8965,11 +8676,9 @@ function getEventCharCode(nativeEvent) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getTouchEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getTouchEvent.js-=@*/
 module.exports = getTouchEvent;
 
 
@@ -8980,11 +8689,9 @@ function getTouchEvent(obj, nativeEvent) {
     obj.shiftKey = nativeEvent.shiftKey;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/syntheticEvents/SyntheticTouch.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticTouch.js-=@*/
 var getTouch = require(173),
     nativeEventToJSON = require(135),
     createPool = require(45);
@@ -9046,11 +8753,9 @@ SyntheticTouchPrototype.toJSON = function(json) {
     return json;
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getTouch.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getTouch.js-=@*/
 module.exports = getTouch;
 
 
@@ -9122,11 +8827,9 @@ function getForce(nativeTouch) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/events/getters/getWheelEvent.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getWheelEvent.js-=@*/
 module.exports = getWheelEvent;
 
 
@@ -9151,11 +8854,9 @@ function getDeltaY(nativeEvent) {
     );
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/applyPatch.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/applyPatch.js-=@*/
 var virt = require(3),
     isNull = require(9),
     isUndefined = require(14),
@@ -9307,11 +9008,9 @@ function order(parentNode, orderIndex) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/createDOMElement.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/createDOMElement.js-=@*/
 var virt = require(3),
     isString = require(11),
 
@@ -9347,11 +9046,9 @@ function createDOMElement(view, id, document) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/addDOMNodes.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/addDOMNodes.js-=@*/
 var isElement = require(99),
     getNodeId = require(181);
 
@@ -9375,11 +9072,9 @@ function addDOMNode(node) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/removeDOMNode.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/removeDOMNode.js-=@*/
 var isElement = require(99),
     nodeCache = require(105),
     getNodeAttributeId = require(134);
@@ -9398,11 +9093,9 @@ function removeDOMNode(node) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/removeDOMNodes.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/removeDOMNodes.js-=@*/
 module.exports = removeDOMNodes;
 
 
@@ -9418,11 +9111,9 @@ function removeDOMNodes(nodes) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/applyProperties.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/applyProperties.js-=@*/
 var isString = require(11),
     isObject = require(6),
     isFunction = require(7),
@@ -9529,11 +9220,9 @@ function applyObject(node, previous, propKey, propValues) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/getNodeId.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/getNodeId.js-=@*/
 var has = require(29),
     nodeCache = require(105),
     getNodeAttributeId = require(134);
@@ -9567,11 +9256,9 @@ function getId(node) {
     return id;
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/utils/getRootNodeInContainer.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/utils/getRootNodeInContainer.js-=@*/
 module.exports = getRootNodeInContainer;
 
 
@@ -9587,11 +9274,9 @@ function getRootNodeInContainer(containerNode) {
     }
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/messenger_worker_adapter/src/index.js */
-
+/*@=-@nathanfaucett/messenger_worker_adapter@0.0.1/src/index.js-=@*/
 var isString = require(11),
     environment = require(1);
 
@@ -9623,11 +9308,9 @@ MessengerWorkerAdapterPrototype.postMessage = function(data) {
     this.__worker.postMessage(JSON.stringify(data));
 };
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/worker/WorkerAdapter.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/worker/WorkerAdapter.js-=@*/
 var extend = require(31),
     Messenger = require(121),
     MessengerWorkerAdapter = require(183),
@@ -9681,11 +9364,9 @@ function WorkerAdapter(root) {
     registerNativeComponents(root, nativeDOMComponents);
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../node_modules/@nathanfaucett/messenger_websocket_adapter/src/index.js */
-
+/*@=-@nathanfaucett/messenger_websocket_adapter@0.0.1/src/index.js-=@*/
 var MessengerWebSocketAdapterPrototype;
 
 
@@ -9718,11 +9399,9 @@ function defaultSendMessage(socket, data) {
     socket.send(JSON.stringify(data));
 }
 
-
 },
 function(require, exports, module, undefined, global) {
-/* ../../../src/websocket/WebSocketAdapter.js */
-
+/*@=-/var/www/html/node/_virt/virt-dom/src/websocket/WebSocketAdapter.js-=@*/
 var extend = require(31),
     Messenger = require(121),
     MessengerWebSocketAdapter = require(185),
@@ -9779,5 +9458,4 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
     registerNativeComponents(root, nativeDOMComponents);
 }
 
-
-}], null, void(0), (new Function("return this;"))()));
+}], {}, void(0), (new Function("return this;"))()));

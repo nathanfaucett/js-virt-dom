@@ -1,4 +1,5 @@
 test
+dist
 examples
 Gruntfile.js
 node_modules
