@@ -11,6 +11,15 @@ node_js:
   - "stable"
   - "iojs"
 
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+
 before_install: npm install -g @nathanfaucett/task-cli
 
 script: 'task jshint'
