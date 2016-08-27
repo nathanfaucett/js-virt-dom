@@ -76,7 +76,7 @@
         }
     };
 
-    global["fXgayjzY-0kxC-4030-ALnC-pLN4fveacL1Bn"] = function(asyncDependencies) {
+    global["invUnfqo-T5z9-4K8T-RTsR-wMPIWQKgUS3JP"] = function(asyncDependencies) {
         var i = -1,
             il = asyncDependencies.length - 1,
             dependency, index;
@@ -143,7 +143,9 @@ eventListener.on(environment.window, "load", function() {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/environment@0.0.1/src/index.js-=@*/
+/*@=-@nathanfaucett/environment@0.0.2/src/index.js-=@*/
+var Buffer = require(5).Buffer;
+var process = require(6);
 var environment = exports,
 
     hasWindow = typeof(window) !== "undefined",
@@ -158,7 +160,12 @@ environment.browser = environment.worker || !!(
     window.document
 );
 
-environment.node = !environment.worker && !environment.browser;
+environment.node = (!hasWindow &&
+    typeof(process) !== "undefined" &&
+    typeof(process.versions) !== "undefined" &&
+    typeof(process.versions.node) !== "undefined" &&
+    typeof(Buffer) !== "undefined"
+);
 
 environment.mobile = environment.browser && /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
 
@@ -175,11 +182,11 @@ environment.document = typeof(document) !== "undefined" ? document : {};
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/event_listener@0.0.1/src/index.js-=@*/
-var process = require(5);
-var isObject = require(6),
-    isFunction = require(7),
-    environment = require(1),
-    eventTable = require(8);
+var process = require(6);
+var isObject = require(10),
+    isFunction = require(11),
+    environment = require(12),
+    eventTable = require(13);
 
 
 var eventListener = module.exports,
@@ -327,10 +334,10 @@ function(require, exports, module, undefined, global) {
  * Module dependencies.
  */
 
-var url = require(15);
-var parser = require(16);
-var Manager = require(17);
-var debug = require(18)('socket.io-client');
+var url = require(20);
+var parser = require(21);
+var Manager = require(22);
+var debug = require(23)('socket.io-client');
 
 /**
  * Module exports.
@@ -412,21 +419,21 @@ exports.connect = lookup;
  * @api public
  */
 
-exports.Manager = require(17);
-exports.Socket = require(19);
+exports.Manager = require(22);
+exports.Socket = require(24);
 
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/index.js-=@*/
-var renderString = require(241),
-    nativeDOMComponents = require(242),
-    nativeDOMHandlers = require(243);
+var renderString = require(242),
+    nativeDOMComponents = require(243),
+    nativeDOMHandlers = require(244);
 
 
 var virtDOM = exports;
 
 
-virtDOM.virt = require(244);
+virtDOM.virt = require(245);
 
 virtDOM.addNativeComponent = function(type, constructor) {
     nativeDOMComponents[type] = constructor;
@@ -435,2735 +442,22 @@ virtDOM.addNativeHandler = function(name, fn) {
     nativeDOMHandlers[name] = fn;
 };
 
-virtDOM.render = require(245);
-virtDOM.unmount = require(246);
+virtDOM.render = require(246);
+virtDOM.unmount = require(247);
 
 virtDOM.renderString = function(view, id) {
     return renderString(view, null, id || ".0");
 };
 
-virtDOM.findDOMNode = require(247);
-virtDOM.findRoot = require(248);
-virtDOM.findEventHandler = require(249);
-
-virtDOM.createWorkerRender = require(250);
-virtDOM.renderWorker = require(251);
-
-virtDOM.createWebSocketRender = require(252);
-virtDOM.renderWebSocket = require(253);
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-process@0.11.8/browser.js-=@*/
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-(function () {
-    try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
-        }
-    }
-    try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
-        }
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/is_object@0.0.1/src/index.js-=@*/
-var isNull = require(9);
-
-
-module.exports = isObject;
-
-
-function isObject(value) {
-    var type = typeof(value);
-    return type === "function" || (!isNull(value) && type === "object") || false;
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/is_function@0.0.1/src/index.js-=@*/
-var objectToString = Object.prototype.toString,
-    isFunction;
-
-
-if (objectToString.call(function() {}) === "[object Object]") {
-    isFunction = function isFunction(value) {
-        return value instanceof Function;
-    };
-} else if (typeof(/./) === "function" || (typeof(Uint8Array) !== "undefined" && typeof(Uint8Array) !== "function")) {
-    isFunction = function isFunction(value) {
-        return objectToString.call(value) === "[object Function]";
-    };
-} else {
-    isFunction = function isFunction(value) {
-        return typeof(value) === "function" || false;
-    };
-}
-
-
-module.exports = isFunction;
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/event_listener@0.0.1/src/event_table.js-=@*/
-var isNode = require(10),
-    environment = require(1);
-
-
-var window = environment.window,
-
-    XMLHttpRequest = window.XMLHttpRequest,
-    OfflineAudioContext = window.OfflineAudioContext;
-
-
-function returnEvent() {
-    return window.Event;
-}
-
-
-module.exports = {
-    abort: function(target) {
-        if (XMLHttpRequest && target instanceof XMLHttpRequest) {
-            return window.ProgressEvent || window.Event;
-        } else {
-            return window.UIEvent || window.Event;
-        }
-    },
-
-    afterprint: returnEvent,
-
-    animationend: function() {
-        return window.AnimationEvent || window.Event;
-    },
-    animationiteration: function() {
-        return window.AnimationEvent || window.Event;
-    },
-    animationstart: function() {
-        return window.AnimationEvent || window.Event;
-    },
-
-    audioprocess: function() {
-        return window.AudioProcessingEvent || window.Event;
-    },
-
-    beforeprint: returnEvent,
-    beforeunload: function() {
-        return window.BeforeUnloadEvent || window.Event;
-    },
-    beginevent: function() {
-        return window.TimeEvent || window.Event;
-    },
-
-    blocked: returnEvent,
-    blur: function() {
-        return window.FocusEvent || window.Event;
-    },
-
-    cached: returnEvent,
-    canplay: returnEvent,
-    canplaythrough: returnEvent,
-    chargingchange: returnEvent,
-    chargingtimechange: returnEvent,
-    checking: returnEvent,
-
-    click: function() {
-        return window.MouseEvent || window.Event;
-    },
-
-    close: returnEvent,
-    compassneedscalibration: function() {
-        return window.SensorEvent || window.Event;
-    },
-    complete: function(target) {
-        if (OfflineAudioContext && target instanceof OfflineAudioContext) {
-            return window.OfflineAudioCompletionEvent || window.Event;
-        } else {
-            return window.Event;
-        }
-    },
-
-    compositionend: function() {
-        return window.CompositionEvent || window.Event;
-    },
-    compositionstart: function() {
-        return window.CompositionEvent || window.Event;
-    },
-    compositionupdate: function() {
-        return window.CompositionEvent || window.Event;
-    },
-
-    contextmenu: function() {
-        return window.MouseEvent || window.Event;
-    },
-    copy: function() {
-        return window.ClipboardEvent || window.Event;
-    },
-    cut: function() {
-        return window.ClipboardEvent || window.Event;
-    },
-
-    dblclick: function() {
-        return window.MouseEvent || window.Event;
-    },
-    devicelight: function() {
-        return window.DeviceLightEvent || window.Event;
-    },
-    devicemotion: function() {
-        return window.DeviceMotionEvent || window.Event;
-    },
-    deviceorientation: function() {
-        return window.DeviceOrientationEvent || window.Event;
-    },
-    deviceproximity: function() {
-        return window.DeviceProximityEvent || window.Event;
-    },
-
-    dischargingtimechange: returnEvent,
-
-    DOMActivate: function() {
-        return window.UIEvent || window.Event;
-    },
-    DOMAttributeNameChanged: function() {
-        return window.MutationNameEvent || window.Event;
-    },
-    DOMAttrModified: function() {
-        return window.MutationEvent || window.Event;
-    },
-    DOMCharacterDataModified: function() {
-        return window.MutationEvent || window.Event;
-    },
-    DOMContentLoaded: returnEvent,
-    DOMElementNameChanged: function() {
-        return window.MutationNameEvent || window.Event;
-    },
-    DOMFocusIn: function() {
-        return window.FocusEvent || window.Event;
-    },
-    DOMFocusOut: function() {
-        return window.FocusEvent || window.Event;
-    },
-    DOMNodeInserted: function() {
-        return window.MutationEvent || window.Event;
-    },
-    DOMNodeInsertedIntoDocument: function() {
-        return window.MutationEvent || window.Event;
-    },
-    DOMNodeRemoved: function() {
-        return window.MutationEvent || window.Event;
-    },
-    DOMNodeRemovedFromDocument: function() {
-        return window.MutationEvent || window.Event;
-    },
-    DOMSubtreeModified: function() {
-        return window.FocusEvent || window.Event;
-    },
-    downloading: returnEvent,
-
-    drag: function() {
-        return window.DragEvent || window.Event;
-    },
-    dragend: function() {
-        return window.DragEvent || window.Event;
-    },
-    dragenter: function() {
-        return window.DragEvent || window.Event;
-    },
-    dragleave: function() {
-        return window.DragEvent || window.Event;
-    },
-    dragover: function() {
-        return window.DragEvent || window.Event;
-    },
-    dragstart: function() {
-        return window.DragEvent || window.Event;
-    },
-    drop: function() {
-        return window.DragEvent || window.Event;
-    },
-
-    durationchange: returnEvent,
-    ended: returnEvent,
-
-    endEvent: function() {
-        return window.TimeEvent || window.Event;
-    },
-    error: function(target) {
-        if (XMLHttpRequest && target instanceof XMLHttpRequest) {
-            return window.ProgressEvent || window.Event;
-        } else if (isNode(target)) {
-            return window.UIEvent || window.Event;
-        } else {
-            return window.Event;
-        }
-    },
-    focus: function() {
-        return window.FocusEvent || window.Event;
-    },
-    focusin: function() {
-        return window.FocusEvent || window.Event;
-    },
-    focusout: function() {
-        return window.FocusEvent || window.Event;
-    },
-
-    fullscreenchange: returnEvent,
-    fullscreenerror: returnEvent,
-
-    gamepadconnected: function() {
-        return window.GamepadEvent || window.Event;
-    },
-    gamepaddisconnected: function() {
-        return window.GamepadEvent || window.Event;
-    },
-
-    hashchange: function() {
-        return window.HashChangeEvent || window.Event;
-    },
-
-    input: returnEvent,
-    invalid: returnEvent,
-
-    keydown: function() {
-        return window.KeyboardEvent || window.Event;
-    },
-    keyup: function() {
-        return window.KeyboardEvent || window.Event;
-    },
-    keypress: function() {
-        return window.KeyboardEvent || window.Event;
-    },
-
-    languagechange: returnEvent,
-    levelchange: returnEvent,
-
-    load: function(target) {
-        if (XMLHttpRequest && target instanceof XMLHttpRequest) {
-            return window.ProgressEvent || window.Event;
-        } else {
-            return window.UIEvent || window.Event;
-        }
-    },
-
-    loadeddata: returnEvent,
-    loadedmetadata: returnEvent,
-
-    loadend: function() {
-        return window.ProgressEvent || window.Event;
-    },
-    loadstart: function() {
-        return window.ProgressEvent || window.Event;
-    },
-
-    message: function() {
-        return window.MessageEvent || window.Event;
-    },
-
-    mousedown: function() {
-        return window.MouseEvent || window.Event;
-    },
-    mouseenter: function() {
-        return window.MouseEvent || window.Event;
-    },
-    mouseleave: function() {
-        return window.MouseEvent || window.Event;
-    },
-    mousemove: function() {
-        return window.MouseEvent || window.Event;
-    },
-    mouseout: function() {
-        return window.MouseEvent || window.Event;
-    },
-    mouseover: function() {
-        return window.MouseEvent || window.Event;
-    },
-    mouseup: function() {
-        return window.MouseEvent || window.Event;
-    },
-
-    noupdate: returnEvent,
-    obsolete: returnEvent,
-    offline: returnEvent,
-    online: returnEvent,
-    open: returnEvent,
-    orientationchange: returnEvent,
-
-    pagehide: function() {
-        return window.PageTransitionEvent || window.Event;
-    },
-    pageshow: function() {
-        return window.PageTransitionEvent || window.Event;
-    },
-
-    paste: function() {
-        return window.ClipboardEvent || window.Event;
-    },
-    pause: returnEvent,
-    pointerlockchange: returnEvent,
-    pointerlockerror: returnEvent,
-    play: returnEvent,
-    playing: returnEvent,
-
-    popstate: function() {
-        return window.PopStateEvent || window.Event;
-    },
-    progress: function() {
-        return window.ProgressEvent || window.Event;
-    },
-
-    ratechange: returnEvent,
-    readystatechange: returnEvent,
-
-    repeatevent: function() {
-        return window.TimeEvent || window.Event;
-    },
-
-    reset: returnEvent,
-
-    resize: function() {
-        return window.UIEvent || window.Event;
-    },
-    scroll: function() {
-        return window.UIEvent || window.Event;
-    },
-
-    seeked: returnEvent,
-    seeking: returnEvent,
-
-    select: function() {
-        return window.UIEvent || window.Event;
-    },
-    show: function() {
-        return window.MouseEvent || window.Event;
-    },
-    stalled: returnEvent,
-    storage: function() {
-        return window.StorageEvent || window.Event;
-    },
-    submit: returnEvent,
-    success: returnEvent,
-    suspend: returnEvent,
-
-    SVGAbort: function() {
-        return window.SVGEvent || window.Event;
-    },
-    SVGError: function() {
-        return window.SVGEvent || window.Event;
-    },
-    SVGLoad: function() {
-        return window.SVGEvent || window.Event;
-    },
-    SVGResize: function() {
-        return window.SVGEvent || window.Event;
-    },
-    SVGScroll: function() {
-        return window.SVGEvent || window.Event;
-    },
-    SVGUnload: function() {
-        return window.SVGEvent || window.Event;
-    },
-    SVGZoom: function() {
-        return window.SVGEvent || window.Event;
-    },
-    timeout: function() {
-        return window.ProgressEvent || window.Event;
-    },
-
-    timeupdate: returnEvent,
-
-    touchcancel: function() {
-        return window.TouchEvent || window.Event;
-    },
-    touchend: function() {
-        return window.TouchEvent || window.Event;
-    },
-    touchenter: function() {
-        return window.TouchEvent || window.Event;
-    },
-    touchleave: function() {
-        return window.TouchEvent || window.Event;
-    },
-    touchmove: function() {
-        return window.TouchEvent || window.Event;
-    },
-    touchstart: function() {
-        return window.TouchEvent || window.Event;
-    },
-
-    transitionend: function() {
-        return window.TransitionEvent || window.Event;
-    },
-    unload: function() {
-        return window.UIEvent || window.Event;
-    },
-
-    updateready: returnEvent,
-    upgradeneeded: returnEvent,
-
-    userproximity: function() {
-        return window.SensorEvent || window.Event;
-    },
-
-    visibilitychange: returnEvent,
-    volumechange: returnEvent,
-    waiting: returnEvent,
-
-    wheel: function() {
-        return window.WheelEvent || window.Event;
-    }
-};
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/is_null@0.0.1/src/index.js-=@*/
-module.exports = isNull;
-
-
-function isNull(value) {
-    return value === null;
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/is_node@0.0.1/src/index.js-=@*/
-var isString = require(11),
-    isNullOrUndefined = require(12),
-    isNumber = require(13),
-    isFunction = require(7);
-
-
-var isNode;
-
-
-if (typeof(Node) !== "undefined" && isFunction(Node)) {
-    isNode = function isNode(value) {
-        return value instanceof Node;
-    };
-} else {
-    isNode = function isNode(value) {
-        return (!isNullOrUndefined(value) &&
-            isNumber(value.nodeType) &&
-            isString(value.nodeName)
-        );
-    };
-}
-
-
-module.exports = isNode;
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/is_string@0.0.1/src/index.js-=@*/
-module.exports = isString;
-
-
-function isString(value) {
-    return typeof(value) === "string" || false;
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/is_null_or_undefined@0.0.1/src/index.js-=@*/
-var isNull = require(9),
-    isUndefined = require(14);
-
-
-module.exports = isNullOrUndefined;
-
-/**
-  isNullOrUndefined accepts any value and returns true
-  if the value is null or undefined. For all other values
-  false is returned.
-  
-  @param {Any}        any value to test
-  @returns {Boolean}  the boolean result of testing value
-
-  @example
-    isNullOrUndefined(null);   // returns true
-    isNullOrUndefined(undefined);   // returns true
-    isNullOrUndefined("string");    // returns false
-**/
-function isNullOrUndefined(value) {
-    return isNull(value) || isUndefined(value);
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/is_number@0.0.1/src/index.js-=@*/
-module.exports = isNumber;
-
-
-function isNumber(value) {
-    return typeof(value) === "number" || false;
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/is_undefined@0.0.1/src/index.js-=@*/
-module.exports = isUndefined;
-
-
-function isUndefined(value) {
-    return value === void(0);
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-socket.io-client@1.4.8/lib/url.js-=@*/
-
-/**
- * Module dependencies.
- */
-
-var parseuri = require(20);
-var debug = require(18)('socket.io-client:url');
-
-/**
- * Module exports.
- */
-
-module.exports = url;
-
-/**
- * URL parser.
- *
- * @param {String} url
- * @param {Object} An object meant to mimic window.location.
- *                 Defaults to window.location.
- * @api public
- */
-
-function url(uri, loc){
-  var obj = uri;
-
-  // default to window.location
-  var loc = loc || global.location;
-  if (null == uri) uri = loc.protocol + '//' + loc.host;
-
-  // relative path support
-  if ('string' == typeof uri) {
-    if ('/' == uri.charAt(0)) {
-      if ('/' == uri.charAt(1)) {
-        uri = loc.protocol + uri;
-      } else {
-        uri = loc.host + uri;
-      }
-    }
-
-    if (!/^(https?|wss?):\/\//.test(uri)) {
-      debug('protocol-less url %s', uri);
-      if ('undefined' != typeof loc) {
-        uri = loc.protocol + '//' + uri;
-      } else {
-        uri = 'https://' + uri;
-      }
-    }
-
-    // parse
-    debug('parse %s', uri);
-    obj = parseuri(uri);
-  }
-
-  // make sure we treat `localhost:80` and `localhost` equally
-  if (!obj.port) {
-    if (/^(http|ws)$/.test(obj.protocol)) {
-      obj.port = '80';
-    }
-    else if (/^(http|ws)s$/.test(obj.protocol)) {
-      obj.port = '443';
-    }
-  }
-
-  obj.path = obj.path || '/';
-
-  var ipv6 = obj.host.indexOf(':') !== -1;
-  var host = ipv6 ? '[' + obj.host + ']' : obj.host;
-
-  // define unique id
-  obj.id = obj.protocol + '://' + host + ':' + obj.port;
-  // define href
-  obj.href = obj.protocol + '://' + host + (loc && loc.port == obj.port ? '' : (':' + obj.port));
-
-  return obj;
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-socket.io-parser@2.2.6/index.js-=@*/
-var Buffer = require(23).Buffer;
-
-/**
- * Module dependencies.
- */
-
-var debug = require(18)('socket.io-parser');
-var json = require(24);
-var isArray = require(25);
-var Emitter = require(26);
-var binary = require(27);
-var isBuf = require(28);
-
-/**
- * Protocol version.
- *
- * @api public
- */
-
-exports.protocol = 4;
-
-/**
- * Packet types.
- *
- * @api public
- */
-
-exports.types = [
-  'CONNECT',
-  'DISCONNECT',
-  'EVENT',
-  'ACK',
-  'ERROR',
-  'BINARY_EVENT',
-  'BINARY_ACK'
-];
-
-/**
- * Packet type `connect`.
- *
- * @api public
- */
-
-exports.CONNECT = 0;
-
-/**
- * Packet type `disconnect`.
- *
- * @api public
- */
-
-exports.DISCONNECT = 1;
-
-/**
- * Packet type `event`.
- *
- * @api public
- */
-
-exports.EVENT = 2;
-
-/**
- * Packet type `ack`.
- *
- * @api public
- */
-
-exports.ACK = 3;
-
-/**
- * Packet type `error`.
- *
- * @api public
- */
-
-exports.ERROR = 4;
-
-/**
- * Packet type 'binary event'
- *
- * @api public
- */
-
-exports.BINARY_EVENT = 5;
-
-/**
- * Packet type `binary ack`. For acks with binary arguments.
- *
- * @api public
- */
-
-exports.BINARY_ACK = 6;
-
-/**
- * Encoder constructor.
- *
- * @api public
- */
-
-exports.Encoder = Encoder;
-
-/**
- * Decoder constructor.
- *
- * @api public
- */
-
-exports.Decoder = Decoder;
-
-/**
- * A socket.io Encoder instance
- *
- * @api public
- */
-
-function Encoder() {}
-
-/**
- * Encode a packet as a single string if non-binary, or as a
- * buffer sequence, depending on packet type.
- *
- * @param {Object} obj - packet object
- * @param {Function} callback - function to handle encodings (likely engine.write)
- * @return Calls callback with Array of encodings
- * @api public
- */
-
-Encoder.prototype.encode = function(obj, callback){
-  debug('encoding packet %j', obj);
-
-  if (exports.BINARY_EVENT == obj.type || exports.BINARY_ACK == obj.type) {
-    encodeAsBinary(obj, callback);
-  }
-  else {
-    var encoding = encodeAsString(obj);
-    callback([encoding]);
-  }
-};
-
-/**
- * Encode packet as string.
- *
- * @param {Object} packet
- * @return {String} encoded
- * @api private
- */
-
-function encodeAsString(obj) {
-  var str = '';
-  var nsp = false;
-
-  // first is type
-  str += obj.type;
-
-  // attachments if we have them
-  if (exports.BINARY_EVENT == obj.type || exports.BINARY_ACK == obj.type) {
-    str += obj.attachments;
-    str += '-';
-  }
-
-  // if we have a namespace other than `/`
-  // we append it followed by a comma `,`
-  if (obj.nsp && '/' != obj.nsp) {
-    nsp = true;
-    str += obj.nsp;
-  }
-
-  // immediately followed by the id
-  if (null != obj.id) {
-    if (nsp) {
-      str += ',';
-      nsp = false;
-    }
-    str += obj.id;
-  }
-
-  // json data
-  if (null != obj.data) {
-    if (nsp) str += ',';
-    str += json.stringify(obj.data);
-  }
-
-  debug('encoded %j as %s', obj, str);
-  return str;
-}
-
-/**
- * Encode packet as 'buffer sequence' by removing blobs, and
- * deconstructing packet into object with placeholders and
- * a list of buffers.
- *
- * @param {Object} packet
- * @return {Buffer} encoded
- * @api private
- */
-
-function encodeAsBinary(obj, callback) {
-
-  function writeEncoding(bloblessData) {
-    var deconstruction = binary.deconstructPacket(bloblessData);
-    var pack = encodeAsString(deconstruction.packet);
-    var buffers = deconstruction.buffers;
-
-    buffers.unshift(pack); // add packet info to beginning of data list
-    callback(buffers); // write all the buffers
-  }
-
-  binary.removeBlobs(obj, writeEncoding);
-}
-
-/**
- * A socket.io Decoder instance
- *
- * @return {Object} decoder
- * @api public
- */
-
-function Decoder() {
-  this.reconstructor = null;
-}
-
-/**
- * Mix in `Emitter` with Decoder.
- */
-
-Emitter(Decoder.prototype);
-
-/**
- * Decodes an ecoded packet string into packet JSON.
- *
- * @param {String} obj - encoded packet
- * @return {Object} packet
- * @api public
- */
-
-Decoder.prototype.add = function(obj) {
-  var packet;
-  if ('string' == typeof obj) {
-    packet = decodeString(obj);
-    if (exports.BINARY_EVENT == packet.type || exports.BINARY_ACK == packet.type) { // binary packet's json
-      this.reconstructor = new BinaryReconstructor(packet);
-
-      // no attachments, labeled binary but no binary data to follow
-      if (this.reconstructor.reconPack.attachments === 0) {
-        this.emit('decoded', packet);
-      }
-    } else { // non-binary full packet
-      this.emit('decoded', packet);
-    }
-  }
-  else if (isBuf(obj) || obj.base64) { // raw binary data
-    if (!this.reconstructor) {
-      throw new Error('got binary data when not reconstructing a packet');
-    } else {
-      packet = this.reconstructor.takeBinaryData(obj);
-      if (packet) { // received final buffer
-        this.reconstructor = null;
-        this.emit('decoded', packet);
-      }
-    }
-  }
-  else {
-    throw new Error('Unknown type: ' + obj);
-  }
-};
-
-/**
- * Decode a packet String (JSON data)
- *
- * @param {String} str
- * @return {Object} packet
- * @api private
- */
-
-function decodeString(str) {
-  var p = {};
-  var i = 0;
-
-  // look up type
-  p.type = Number(str.charAt(0));
-  if (null == exports.types[p.type]) return error();
-
-  // look up attachments if type binary
-  if (exports.BINARY_EVENT == p.type || exports.BINARY_ACK == p.type) {
-    var buf = '';
-    while (str.charAt(++i) != '-') {
-      buf += str.charAt(i);
-      if (i == str.length) break;
-    }
-    if (buf != Number(buf) || str.charAt(i) != '-') {
-      throw new Error('Illegal attachments');
-    }
-    p.attachments = Number(buf);
-  }
-
-  // look up namespace (if any)
-  if ('/' == str.charAt(i + 1)) {
-    p.nsp = '';
-    while (++i) {
-      var c = str.charAt(i);
-      if (',' == c) break;
-      p.nsp += c;
-      if (i == str.length) break;
-    }
-  } else {
-    p.nsp = '/';
-  }
-
-  // look up id
-  var next = str.charAt(i + 1);
-  if ('' !== next && Number(next) == next) {
-    p.id = '';
-    while (++i) {
-      var c = str.charAt(i);
-      if (null == c || Number(c) != c) {
-        --i;
-        break;
-      }
-      p.id += str.charAt(i);
-      if (i == str.length) break;
-    }
-    p.id = Number(p.id);
-  }
-
-  // look up json data
-  if (str.charAt(++i)) {
-    try {
-      p.data = json.parse(str.substr(i));
-    } catch(e){
-      return error();
-    }
-  }
-
-  debug('decoded %s as %j', str, p);
-  return p;
-}
-
-/**
- * Deallocates a parser's resources
- *
- * @api public
- */
-
-Decoder.prototype.destroy = function() {
-  if (this.reconstructor) {
-    this.reconstructor.finishedReconstruction();
-  }
-};
-
-/**
- * A manager of a binary event's 'buffer sequence'. Should
- * be constructed whenever a packet of type BINARY_EVENT is
- * decoded.
- *
- * @param {Object} packet
- * @return {BinaryReconstructor} initialized reconstructor
- * @api private
- */
-
-function BinaryReconstructor(packet) {
-  this.reconPack = packet;
-  this.buffers = [];
-}
-
-/**
- * Method to be called when binary data received from connection
- * after a BINARY_EVENT packet.
- *
- * @param {Buffer | ArrayBuffer} binData - the raw binary data received
- * @return {null | Object} returns null if more binary data is expected or
- *   a reconstructed packet object if all buffers have been received.
- * @api private
- */
-
-BinaryReconstructor.prototype.takeBinaryData = function(binData) {
-  this.buffers.push(binData);
-  if (this.buffers.length == this.reconPack.attachments) { // done with buffer list
-    var packet = binary.reconstructPacket(this.reconPack, this.buffers);
-    this.finishedReconstruction();
-    return packet;
-  }
-  return null;
-};
-
-/**
- * Cleans up binary packet reconstruction variables.
- *
- * @api private
- */
-
-BinaryReconstructor.prototype.finishedReconstruction = function() {
-  this.reconPack = null;
-  this.buffers = [];
-};
-
-function error(data){
-  return {
-    type: exports.ERROR,
-    data: 'parser error'
-  };
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-socket.io-client@1.4.8/lib/manager.js-=@*/
-
-/**
- * Module dependencies.
- */
-
-var eio = require(32);
-var Socket = require(19);
-var Emitter = require(33);
-var parser = require(16);
-var on = require(34);
-var bind = require(35);
-var debug = require(18)('socket.io-client:manager');
-var indexOf = require(36);
-var Backoff = require(37);
-
-/**
- * IE6+ hasOwnProperty
- */
-
-var has = Object.prototype.hasOwnProperty;
-
-/**
- * Module exports
- */
-
-module.exports = Manager;
-
-/**
- * `Manager` constructor.
- *
- * @param {String} engine instance or engine uri/opts
- * @param {Object} options
- * @api public
- */
-
-function Manager(uri, opts){
-  if (!(this instanceof Manager)) return new Manager(uri, opts);
-  if (uri && ('object' == typeof uri)) {
-    opts = uri;
-    uri = undefined;
-  }
-  opts = opts || {};
-
-  opts.path = opts.path || '/socket.io';
-  this.nsps = {};
-  this.subs = [];
-  this.opts = opts;
-  this.reconnection(opts.reconnection !== false);
-  this.reconnectionAttempts(opts.reconnectionAttempts || Infinity);
-  this.reconnectionDelay(opts.reconnectionDelay || 1000);
-  this.reconnectionDelayMax(opts.reconnectionDelayMax || 5000);
-  this.randomizationFactor(opts.randomizationFactor || 0.5);
-  this.backoff = new Backoff({
-    min: this.reconnectionDelay(),
-    max: this.reconnectionDelayMax(),
-    jitter: this.randomizationFactor()
-  });
-  this.timeout(null == opts.timeout ? 20000 : opts.timeout);
-  this.readyState = 'closed';
-  this.uri = uri;
-  this.connecting = [];
-  this.lastPing = null;
-  this.encoding = false;
-  this.packetBuffer = [];
-  this.encoder = new parser.Encoder();
-  this.decoder = new parser.Decoder();
-  this.autoConnect = opts.autoConnect !== false;
-  if (this.autoConnect) this.open();
-}
-
-/**
- * Propagate given event to sockets and emit on `this`
- *
- * @api private
- */
-
-Manager.prototype.emitAll = function() {
-  this.emit.apply(this, arguments);
-  for (var nsp in this.nsps) {
-    if (has.call(this.nsps, nsp)) {
-      this.nsps[nsp].emit.apply(this.nsps[nsp], arguments);
-    }
-  }
-};
-
-/**
- * Update `socket.id` of all sockets
- *
- * @api private
- */
-
-Manager.prototype.updateSocketIds = function(){
-  for (var nsp in this.nsps) {
-    if (has.call(this.nsps, nsp)) {
-      this.nsps[nsp].id = this.engine.id;
-    }
-  }
-};
-
-/**
- * Mix in `Emitter`.
- */
-
-Emitter(Manager.prototype);
-
-/**
- * Sets the `reconnection` config.
- *
- * @param {Boolean} true/false if it should automatically reconnect
- * @return {Manager} self or value
- * @api public
- */
-
-Manager.prototype.reconnection = function(v){
-  if (!arguments.length) return this._reconnection;
-  this._reconnection = !!v;
-  return this;
-};
-
-/**
- * Sets the reconnection attempts config.
- *
- * @param {Number} max reconnection attempts before giving up
- * @return {Manager} self or value
- * @api public
- */
-
-Manager.prototype.reconnectionAttempts = function(v){
-  if (!arguments.length) return this._reconnectionAttempts;
-  this._reconnectionAttempts = v;
-  return this;
-};
-
-/**
- * Sets the delay between reconnections.
- *
- * @param {Number} delay
- * @return {Manager} self or value
- * @api public
- */
-
-Manager.prototype.reconnectionDelay = function(v){
-  if (!arguments.length) return this._reconnectionDelay;
-  this._reconnectionDelay = v;
-  this.backoff && this.backoff.setMin(v);
-  return this;
-};
-
-Manager.prototype.randomizationFactor = function(v){
-  if (!arguments.length) return this._randomizationFactor;
-  this._randomizationFactor = v;
-  this.backoff && this.backoff.setJitter(v);
-  return this;
-};
-
-/**
- * Sets the maximum delay between reconnections.
- *
- * @param {Number} delay
- * @return {Manager} self or value
- * @api public
- */
-
-Manager.prototype.reconnectionDelayMax = function(v){
-  if (!arguments.length) return this._reconnectionDelayMax;
-  this._reconnectionDelayMax = v;
-  this.backoff && this.backoff.setMax(v);
-  return this;
-};
-
-/**
- * Sets the connection timeout. `false` to disable
- *
- * @return {Manager} self or value
- * @api public
- */
-
-Manager.prototype.timeout = function(v){
-  if (!arguments.length) return this._timeout;
-  this._timeout = v;
-  return this;
-};
-
-/**
- * Starts trying to reconnect if reconnection is enabled and we have not
- * started reconnecting yet
- *
- * @api private
- */
-
-Manager.prototype.maybeReconnectOnOpen = function() {
-  // Only try to reconnect if it's the first time we're connecting
-  if (!this.reconnecting && this._reconnection && this.backoff.attempts === 0) {
-    // keeps reconnection from firing twice for the same reconnection loop
-    this.reconnect();
-  }
-};
-
-
-/**
- * Sets the current transport `socket`.
- *
- * @param {Function} optional, callback
- * @return {Manager} self
- * @api public
- */
-
-Manager.prototype.open =
-Manager.prototype.connect = function(fn){
-  debug('readyState %s', this.readyState);
-  if (~this.readyState.indexOf('open')) return this;
-
-  debug('opening %s', this.uri);
-  this.engine = eio(this.uri, this.opts);
-  var socket = this.engine;
-  var self = this;
-  this.readyState = 'opening';
-  this.skipReconnect = false;
-
-  // emit `open`
-  var openSub = on(socket, 'open', function() {
-    self.onopen();
-    fn && fn();
-  });
-
-  // emit `connect_error`
-  var errorSub = on(socket, 'error', function(data){
-    debug('connect_error');
-    self.cleanup();
-    self.readyState = 'closed';
-    self.emitAll('connect_error', data);
-    if (fn) {
-      var err = new Error('Connection error');
-      err.data = data;
-      fn(err);
-    } else {
-      // Only do this if there is no fn to handle the error
-      self.maybeReconnectOnOpen();
-    }
-  });
-
-  // emit `connect_timeout`
-  if (false !== this._timeout) {
-    var timeout = this._timeout;
-    debug('connect attempt will timeout after %d', timeout);
-
-    // set timer
-    var timer = setTimeout(function(){
-      debug('connect attempt timed out after %d', timeout);
-      openSub.destroy();
-      socket.close();
-      socket.emit('error', 'timeout');
-      self.emitAll('connect_timeout', timeout);
-    }, timeout);
-
-    this.subs.push({
-      destroy: function(){
-        clearTimeout(timer);
-      }
-    });
-  }
-
-  this.subs.push(openSub);
-  this.subs.push(errorSub);
-
-  return this;
-};
-
-/**
- * Called upon transport open.
- *
- * @api private
- */
-
-Manager.prototype.onopen = function(){
-  debug('open');
-
-  // clear old subs
-  this.cleanup();
-
-  // mark as open
-  this.readyState = 'open';
-  this.emit('open');
-
-  // add new subs
-  var socket = this.engine;
-  this.subs.push(on(socket, 'data', bind(this, 'ondata')));
-  this.subs.push(on(socket, 'ping', bind(this, 'onping')));
-  this.subs.push(on(socket, 'pong', bind(this, 'onpong')));
-  this.subs.push(on(socket, 'error', bind(this, 'onerror')));
-  this.subs.push(on(socket, 'close', bind(this, 'onclose')));
-  this.subs.push(on(this.decoder, 'decoded', bind(this, 'ondecoded')));
-};
-
-/**
- * Called upon a ping.
- *
- * @api private
- */
-
-Manager.prototype.onping = function(){
-  this.lastPing = new Date;
-  this.emitAll('ping');
-};
-
-/**
- * Called upon a packet.
- *
- * @api private
- */
-
-Manager.prototype.onpong = function(){
-  this.emitAll('pong', new Date - this.lastPing);
-};
-
-/**
- * Called with data.
- *
- * @api private
- */
-
-Manager.prototype.ondata = function(data){
-  this.decoder.add(data);
-};
-
-/**
- * Called when parser fully decodes a packet.
- *
- * @api private
- */
-
-Manager.prototype.ondecoded = function(packet) {
-  this.emit('packet', packet);
-};
-
-/**
- * Called upon socket error.
- *
- * @api private
- */
-
-Manager.prototype.onerror = function(err){
-  debug('error', err);
-  this.emitAll('error', err);
-};
-
-/**
- * Creates a new socket for the given `nsp`.
- *
- * @return {Socket}
- * @api public
- */
-
-Manager.prototype.socket = function(nsp){
-  var socket = this.nsps[nsp];
-  if (!socket) {
-    socket = new Socket(this, nsp);
-    this.nsps[nsp] = socket;
-    var self = this;
-    socket.on('connecting', onConnecting);
-    socket.on('connect', function(){
-      socket.id = self.engine.id;
-    });
-
-    if (this.autoConnect) {
-      // manually call here since connecting evnet is fired before listening
-      onConnecting();
-    }
-  }
-
-  function onConnecting() {
-    if (!~indexOf(self.connecting, socket)) {
-      self.connecting.push(socket);
-    }
-  }
-
-  return socket;
-};
-
-/**
- * Called upon a socket close.
- *
- * @param {Socket} socket
- */
-
-Manager.prototype.destroy = function(socket){
-  var index = indexOf(this.connecting, socket);
-  if (~index) this.connecting.splice(index, 1);
-  if (this.connecting.length) return;
-
-  this.close();
-};
-
-/**
- * Writes a packet.
- *
- * @param {Object} packet
- * @api private
- */
-
-Manager.prototype.packet = function(packet){
-  debug('writing packet %j', packet);
-  var self = this;
-
-  if (!self.encoding) {
-    // encode, then write to engine with result
-    self.encoding = true;
-    this.encoder.encode(packet, function(encodedPackets) {
-      for (var i = 0; i < encodedPackets.length; i++) {
-        self.engine.write(encodedPackets[i], packet.options);
-      }
-      self.encoding = false;
-      self.processPacketQueue();
-    });
-  } else { // add packet to the queue
-    self.packetBuffer.push(packet);
-  }
-};
-
-/**
- * If packet buffer is non-empty, begins encoding the
- * next packet in line.
- *
- * @api private
- */
-
-Manager.prototype.processPacketQueue = function() {
-  if (this.packetBuffer.length > 0 && !this.encoding) {
-    var pack = this.packetBuffer.shift();
-    this.packet(pack);
-  }
-};
-
-/**
- * Clean up transport subscriptions and packet buffer.
- *
- * @api private
- */
-
-Manager.prototype.cleanup = function(){
-  debug('cleanup');
-
-  var sub;
-  while (sub = this.subs.shift()) sub.destroy();
-
-  this.packetBuffer = [];
-  this.encoding = false;
-  this.lastPing = null;
-
-  this.decoder.destroy();
-};
-
-/**
- * Close the current socket.
- *
- * @api private
- */
-
-Manager.prototype.close =
-Manager.prototype.disconnect = function(){
-  debug('disconnect');
-  this.skipReconnect = true;
-  this.reconnecting = false;
-  if ('opening' == this.readyState) {
-    // `onclose` will not fire because
-    // an open event never happened
-    this.cleanup();
-  }
-  this.backoff.reset();
-  this.readyState = 'closed';
-  if (this.engine) this.engine.close();
-};
-
-/**
- * Called upon engine close.
- *
- * @api private
- */
-
-Manager.prototype.onclose = function(reason){
-  debug('onclose');
-
-  this.cleanup();
-  this.backoff.reset();
-  this.readyState = 'closed';
-  this.emit('close', reason);
-
-  if (this._reconnection && !this.skipReconnect) {
-    this.reconnect();
-  }
-};
-
-/**
- * Attempt a reconnection.
- *
- * @api private
- */
-
-Manager.prototype.reconnect = function(){
-  if (this.reconnecting || this.skipReconnect) return this;
-
-  var self = this;
-
-  if (this.backoff.attempts >= this._reconnectionAttempts) {
-    debug('reconnect failed');
-    this.backoff.reset();
-    this.emitAll('reconnect_failed');
-    this.reconnecting = false;
-  } else {
-    var delay = this.backoff.duration();
-    debug('will wait %dms before reconnect attempt', delay);
-
-    this.reconnecting = true;
-    var timer = setTimeout(function(){
-      if (self.skipReconnect) return;
-
-      debug('attempting reconnect');
-      self.emitAll('reconnect_attempt', self.backoff.attempts);
-      self.emitAll('reconnecting', self.backoff.attempts);
-
-      // check again for the case socket closed in above events
-      if (self.skipReconnect) return;
-
-      self.open(function(err){
-        if (err) {
-          debug('reconnect attempt error');
-          self.reconnecting = false;
-          self.reconnect();
-          self.emitAll('reconnect_error', err.data);
-        } else {
-          debug('reconnect success');
-          self.onreconnect();
-        }
-      });
-    }, delay);
-
-    this.subs.push({
-      destroy: function(){
-        clearTimeout(timer);
-      }
-    });
-  }
-};
-
-/**
- * Called upon successful reconnect.
- *
- * @api private
- */
-
-Manager.prototype.onreconnect = function(){
-  var attempt = this.backoff.attempts;
-  this.reconnecting = false;
-  this.backoff.reset();
-  this.updateSocketIds();
-  this.emitAll('reconnect', attempt);
-};
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-debug@2.2.0/browser.js-=@*/
-
-/**
- * This is the web browser implementation of `debug()`.
- *
- * Expose `debug()` as the module.
- */
-
-exports = module.exports = require(21);
-exports.log = log;
-exports.formatArgs = formatArgs;
-exports.save = save;
-exports.load = load;
-exports.useColors = useColors;
-exports.storage = 'undefined' != typeof chrome
-               && 'undefined' != typeof chrome.storage
-                  ? chrome.storage.local
-                  : localstorage();
-
-/**
- * Colors.
- */
-
-exports.colors = [
-  'lightseagreen',
-  'forestgreen',
-  'goldenrod',
-  'dodgerblue',
-  'darkorchid',
-  'crimson'
-];
-
-/**
- * Currently only WebKit-based Web Inspectors, Firefox >= v31,
- * and the Firebug extension (any Firefox version) are known
- * to support "%c" CSS customizations.
- *
- * TODO: add a `localStorage` variable to explicitly enable/disable colors
- */
-
-function useColors() {
-  // is webkit? http://stackoverflow.com/a/16459606/376773
-  return ('WebkitAppearance' in document.documentElement.style) ||
-    // is firebug? http://stackoverflow.com/a/398120/376773
-    (window.console && (console.firebug || (console.exception && console.table))) ||
-    // is firefox >= v31?
-    // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-    (navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31);
-}
-
-/**
- * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
- */
-
-exports.formatters.j = function(v) {
-  return JSON.stringify(v);
-};
-
-
-/**
- * Colorize log arguments if enabled.
- *
- * @api public
- */
-
-function formatArgs() {
-  var args = arguments;
-  var useColors = this.useColors;
-
-  args[0] = (useColors ? '%c' : '')
-    + this.namespace
-    + (useColors ? ' %c' : ' ')
-    + args[0]
-    + (useColors ? '%c ' : ' ')
-    + '+' + exports.humanize(this.diff);
-
-  if (!useColors) return args;
-
-  var c = 'color: ' + this.color;
-  args = [args[0], c, 'color: inherit'].concat(Array.prototype.slice.call(args, 1));
-
-  // the final "%c" is somewhat tricky, because there could be other
-  // arguments passed either before or after the %c, so we need to
-  // figure out the correct index to insert the CSS into
-  var index = 0;
-  var lastC = 0;
-  args[0].replace(/%[a-z%]/g, function(match) {
-    if ('%%' === match) return;
-    index++;
-    if ('%c' === match) {
-      // we only are interested in the *last* %c
-      // (the user may have provided their own)
-      lastC = index;
-    }
-  });
-
-  args.splice(lastC, 0, c);
-  return args;
-}
-
-/**
- * Invokes `console.log()` when available.
- * No-op when `console.log` is not a "function".
- *
- * @api public
- */
-
-function log() {
-  // this hackery is required for IE8/9, where
-  // the `console.log` function doesn't have 'apply'
-  return 'object' === typeof console
-    && console.log
-    && Function.prototype.apply.call(console.log, console, arguments);
-}
-
-/**
- * Save `namespaces`.
- *
- * @param {String} namespaces
- * @api private
- */
-
-function save(namespaces) {
-  try {
-    if (null == namespaces) {
-      exports.storage.removeItem('debug');
-    } else {
-      exports.storage.debug = namespaces;
-    }
-  } catch(e) {}
-}
-
-/**
- * Load `namespaces`.
- *
- * @return {String} returns the previously persisted debug modes
- * @api private
- */
-
-function load() {
-  var r;
-  try {
-    r = exports.storage.debug;
-  } catch(e) {}
-  return r;
-}
-
-/**
- * Enable namespaces listed in `localStorage.debug` initially.
- */
-
-exports.enable(load());
-
-/**
- * Localstorage attempts to return the localstorage.
- *
- * This is necessary because safari throws
- * when a user disables cookies/localstorage
- * and you attempt to access it.
- *
- * @return {LocalStorage}
- * @api private
- */
-
-function localstorage(){
-  try {
-    return window.localStorage;
-  } catch (e) {}
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-socket.io-client@1.4.8/lib/socket.js-=@*/
-
-/**
- * Module dependencies.
- */
-
-var parser = require(16);
-var Emitter = require(33);
-var toArray = require(239);
-var on = require(34);
-var bind = require(35);
-var debug = require(18)('socket.io-client:socket');
-var hasBin = require(240);
-
-/**
- * Module exports.
- */
-
-module.exports = exports = Socket;
-
-/**
- * Internal events (blacklisted).
- * These events can't be emitted by the user.
- *
- * @api private
- */
-
-var events = {
-  connect: 1,
-  connect_error: 1,
-  connect_timeout: 1,
-  connecting: 1,
-  disconnect: 1,
-  error: 1,
-  reconnect: 1,
-  reconnect_attempt: 1,
-  reconnect_failed: 1,
-  reconnect_error: 1,
-  reconnecting: 1,
-  ping: 1,
-  pong: 1
-};
-
-/**
- * Shortcut to `Emitter#emit`.
- */
-
-var emit = Emitter.prototype.emit;
-
-/**
- * `Socket` constructor.
- *
- * @api public
- */
-
-function Socket(io, nsp){
-  this.io = io;
-  this.nsp = nsp;
-  this.json = this; // compat
-  this.ids = 0;
-  this.acks = {};
-  this.receiveBuffer = [];
-  this.sendBuffer = [];
-  this.connected = false;
-  this.disconnected = true;
-  if (this.io.autoConnect) this.open();
-}
-
-/**
- * Mix in `Emitter`.
- */
-
-Emitter(Socket.prototype);
-
-/**
- * Subscribe to open, close and packet events
- *
- * @api private
- */
-
-Socket.prototype.subEvents = function() {
-  if (this.subs) return;
-
-  var io = this.io;
-  this.subs = [
-    on(io, 'open', bind(this, 'onopen')),
-    on(io, 'packet', bind(this, 'onpacket')),
-    on(io, 'close', bind(this, 'onclose'))
-  ];
-};
-
-/**
- * "Opens" the socket.
- *
- * @api public
- */
-
-Socket.prototype.open =
-Socket.prototype.connect = function(){
-  if (this.connected) return this;
-
-  this.subEvents();
-  this.io.open(); // ensure open
-  if ('open' == this.io.readyState) this.onopen();
-  this.emit('connecting');
-  return this;
-};
-
-/**
- * Sends a `message` event.
- *
- * @return {Socket} self
- * @api public
- */
-
-Socket.prototype.send = function(){
-  var args = toArray(arguments);
-  args.unshift('message');
-  this.emit.apply(this, args);
-  return this;
-};
-
-/**
- * Override `emit`.
- * If the event is in `events`, it's emitted normally.
- *
- * @param {String} event name
- * @return {Socket} self
- * @api public
- */
-
-Socket.prototype.emit = function(ev){
-  if (events.hasOwnProperty(ev)) {
-    emit.apply(this, arguments);
-    return this;
-  }
-
-  var args = toArray(arguments);
-  var parserType = parser.EVENT; // default
-  if (hasBin(args)) { parserType = parser.BINARY_EVENT; } // binary
-  var packet = { type: parserType, data: args };
-
-  packet.options = {};
-  packet.options.compress = !this.flags || false !== this.flags.compress;
-
-  // event ack callback
-  if ('function' == typeof args[args.length - 1]) {
-    debug('emitting packet with ack id %d', this.ids);
-    this.acks[this.ids] = args.pop();
-    packet.id = this.ids++;
-  }
-
-  if (this.connected) {
-    this.packet(packet);
-  } else {
-    this.sendBuffer.push(packet);
-  }
-
-  delete this.flags;
-
-  return this;
-};
-
-/**
- * Sends a packet.
- *
- * @param {Object} packet
- * @api private
- */
-
-Socket.prototype.packet = function(packet){
-  packet.nsp = this.nsp;
-  this.io.packet(packet);
-};
-
-/**
- * Called upon engine `open`.
- *
- * @api private
- */
-
-Socket.prototype.onopen = function(){
-  debug('transport is open - connecting');
-
-  // write connect packet if necessary
-  if ('/' != this.nsp) {
-    this.packet({ type: parser.CONNECT });
-  }
-};
-
-/**
- * Called upon engine `close`.
- *
- * @param {String} reason
- * @api private
- */
-
-Socket.prototype.onclose = function(reason){
-  debug('close (%s)', reason);
-  this.connected = false;
-  this.disconnected = true;
-  delete this.id;
-  this.emit('disconnect', reason);
-};
-
-/**
- * Called with socket packet.
- *
- * @param {Object} packet
- * @api private
- */
-
-Socket.prototype.onpacket = function(packet){
-  if (packet.nsp != this.nsp) return;
-
-  switch (packet.type) {
-    case parser.CONNECT:
-      this.onconnect();
-      break;
-
-    case parser.EVENT:
-      this.onevent(packet);
-      break;
-
-    case parser.BINARY_EVENT:
-      this.onevent(packet);
-      break;
-
-    case parser.ACK:
-      this.onack(packet);
-      break;
-
-    case parser.BINARY_ACK:
-      this.onack(packet);
-      break;
-
-    case parser.DISCONNECT:
-      this.ondisconnect();
-      break;
-
-    case parser.ERROR:
-      this.emit('error', packet.data);
-      break;
-  }
-};
-
-/**
- * Called upon a server event.
- *
- * @param {Object} packet
- * @api private
- */
-
-Socket.prototype.onevent = function(packet){
-  var args = packet.data || [];
-  debug('emitting event %j', args);
-
-  if (null != packet.id) {
-    debug('attaching ack callback to event');
-    args.push(this.ack(packet.id));
-  }
-
-  if (this.connected) {
-    emit.apply(this, args);
-  } else {
-    this.receiveBuffer.push(args);
-  }
-};
-
-/**
- * Produces an ack callback to emit with an event.
- *
- * @api private
- */
-
-Socket.prototype.ack = function(id){
-  var self = this;
-  var sent = false;
-  return function(){
-    // prevent double callbacks
-    if (sent) return;
-    sent = true;
-    var args = toArray(arguments);
-    debug('sending ack %j', args);
-
-    var type = hasBin(args) ? parser.BINARY_ACK : parser.ACK;
-    self.packet({
-      type: type,
-      id: id,
-      data: args
-    });
-  };
-};
-
-/**
- * Called upon a server acknowlegement.
- *
- * @param {Object} packet
- * @api private
- */
-
-Socket.prototype.onack = function(packet){
-  var ack = this.acks[packet.id];
-  if ('function' == typeof ack) {
-    debug('calling ack %s with %j', packet.id, packet.data);
-    ack.apply(this, packet.data);
-    delete this.acks[packet.id];
-  } else {
-    debug('bad ack %s', packet.id);
-  }
-};
-
-/**
- * Called upon server connect.
- *
- * @api private
- */
-
-Socket.prototype.onconnect = function(){
-  this.connected = true;
-  this.disconnected = false;
-  this.emit('connect');
-  this.emitBuffered();
-};
-
-/**
- * Emit buffered events (received and emitted).
- *
- * @api private
- */
-
-Socket.prototype.emitBuffered = function(){
-  var i;
-  for (i = 0; i < this.receiveBuffer.length; i++) {
-    emit.apply(this, this.receiveBuffer[i]);
-  }
-  this.receiveBuffer = [];
-
-  for (i = 0; i < this.sendBuffer.length; i++) {
-    this.packet(this.sendBuffer[i]);
-  }
-  this.sendBuffer = [];
-};
-
-/**
- * Called upon server disconnect.
- *
- * @api private
- */
-
-Socket.prototype.ondisconnect = function(){
-  debug('server disconnect (%s)', this.nsp);
-  this.destroy();
-  this.onclose('io server disconnect');
-};
-
-/**
- * Called upon forced client/server side disconnections,
- * this method ensures the manager stops tracking us and
- * that reconnections don't get triggered for this.
- *
- * @api private.
- */
-
-Socket.prototype.destroy = function(){
-  if (this.subs) {
-    // clean subscriptions to avoid reconnections
-    for (var i = 0; i < this.subs.length; i++) {
-      this.subs[i].destroy();
-    }
-    this.subs = null;
-  }
-
-  this.io.destroy(this);
-};
-
-/**
- * Disconnects the socket manually.
- *
- * @return {Socket} self
- * @api public
- */
-
-Socket.prototype.close =
-Socket.prototype.disconnect = function(){
-  if (this.connected) {
-    debug('performing disconnect (%s)', this.nsp);
-    this.packet({ type: parser.DISCONNECT });
-  }
-
-  // remove socket from pool
-  this.destroy();
-
-  if (this.connected) {
-    // fire events
-    this.onclose('io client disconnect');
-  }
-  return this;
-};
-
-/**
- * Sets the compress flag.
- *
- * @param {Boolean} if `true`, compresses the sending data
- * @return {Socket} self
- * @api public
- */
-
-Socket.prototype.compress = function(compress){
-  this.flags = this.flags || {};
-  this.flags.compress = compress;
-  return this;
-};
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-parseuri@0.0.4/index.js-=@*/
-/**
- * Parses an URI
- *
- * @author Steven Levithan <stevenlevithan.com> (MIT license)
- * @api private
- */
-
-var re = /^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
-
-var parts = [
-    'source', 'protocol', 'authority', 'userInfo', 'user', 'password', 'host', 'port', 'relative', 'path', 'directory', 'file', 'query', 'anchor'
-];
-
-module.exports = function parseuri(str) {
-    var src = str,
-        b = str.indexOf('['),
-        e = str.indexOf(']');
-
-    if (b != -1 && e != -1) {
-        str = str.substring(0, b) + str.substring(b, e).replace(/:/g, ';') + str.substring(e, str.length);
-    }
-
-    var m = re.exec(str || ''),
-        uri = {},
-        i = 14;
-
-    while (i--) {
-        uri[parts[i]] = m[i] || '';
-    }
-
-    if (b != -1 && e != -1) {
-        uri.source = src;
-        uri.host = uri.host.substring(1, uri.host.length - 1).replace(/;/g, ':');
-        uri.authority = uri.authority.replace('[', '').replace(']', '').replace(/;/g, ':');
-        uri.ipv6uri = true;
-    }
-
-    return uri;
-};
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-debug@2.2.0/debug.js-=@*/
-
-/**
- * This is the common logic for both the Node.js and web browser
- * implementations of `debug()`.
- *
- * Expose `debug()` as the module.
- */
-
-exports = module.exports = debug;
-exports.coerce = coerce;
-exports.disable = disable;
-exports.enable = enable;
-exports.enabled = enabled;
-exports.humanize = require(22);
-
-/**
- * The currently active debug mode names, and names to skip.
- */
-
-exports.names = [];
-exports.skips = [];
-
-/**
- * Map of special "%n" handling functions, for the debug "format" argument.
- *
- * Valid key names are a single, lowercased letter, i.e. "n".
- */
-
-exports.formatters = {};
-
-/**
- * Previously assigned color.
- */
-
-var prevColor = 0;
-
-/**
- * Previous log timestamp.
- */
-
-var prevTime;
-
-/**
- * Select a color.
- *
- * @return {Number}
- * @api private
- */
-
-function selectColor() {
-  return exports.colors[prevColor++ % exports.colors.length];
-}
-
-/**
- * Create a debugger with the given `namespace`.
- *
- * @param {String} namespace
- * @return {Function}
- * @api public
- */
-
-function debug(namespace) {
-
-  // define the `disabled` version
-  function disabled() {
-  }
-  disabled.enabled = false;
-
-  // define the `enabled` version
-  function enabled() {
-
-    var self = enabled;
-
-    // set `diff` timestamp
-    var curr = +new Date();
-    var ms = curr - (prevTime || curr);
-    self.diff = ms;
-    self.prev = prevTime;
-    self.curr = curr;
-    prevTime = curr;
-
-    // add the `color` if not set
-    if (null == self.useColors) self.useColors = exports.useColors();
-    if (null == self.color && self.useColors) self.color = selectColor();
-
-    var args = Array.prototype.slice.call(arguments);
-
-    args[0] = exports.coerce(args[0]);
-
-    if ('string' !== typeof args[0]) {
-      // anything else let's inspect with %o
-      args = ['%o'].concat(args);
-    }
-
-    // apply any `formatters` transformations
-    var index = 0;
-    args[0] = args[0].replace(/%([a-z%])/g, function(match, format) {
-      // if we encounter an escaped % then don't increase the array index
-      if (match === '%%') return match;
-      index++;
-      var formatter = exports.formatters[format];
-      if ('function' === typeof formatter) {
-        var val = args[index];
-        match = formatter.call(self, val);
-
-        // now we need to remove `args[index]` since it's inlined in the `format`
-        args.splice(index, 1);
-        index--;
-      }
-      return match;
-    });
-
-    if ('function' === typeof exports.formatArgs) {
-      args = exports.formatArgs.apply(self, args);
-    }
-    var logFn = enabled.log || exports.log || console.log.bind(console);
-    logFn.apply(self, args);
-  }
-  enabled.enabled = true;
-
-  var fn = exports.enabled(namespace) ? enabled : disabled;
-
-  fn.namespace = namespace;
-
-  return fn;
-}
-
-/**
- * Enables a debug mode by namespaces. This can include modes
- * separated by a colon and wildcards.
- *
- * @param {String} namespaces
- * @api public
- */
-
-function enable(namespaces) {
-  exports.save(namespaces);
-
-  var split = (namespaces || '').split(/[\s,]+/);
-  var len = split.length;
-
-  for (var i = 0; i < len; i++) {
-    if (!split[i]) continue; // ignore empty strings
-    namespaces = split[i].replace(/\*/g, '.*?');
-    if (namespaces[0] === '-') {
-      exports.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
-    } else {
-      exports.names.push(new RegExp('^' + namespaces + '$'));
-    }
-  }
-}
-
-/**
- * Disable debug output.
- *
- * @api public
- */
-
-function disable() {
-  exports.enable('');
-}
-
-/**
- * Returns true if the given mode name is enabled, false otherwise.
- *
- * @param {String} name
- * @return {Boolean}
- * @api public
- */
-
-function enabled(name) {
-  var i, len;
-  for (i = 0, len = exports.skips.length; i < len; i++) {
-    if (exports.skips[i].test(name)) {
-      return false;
-    }
-  }
-  for (i = 0, len = exports.names.length; i < len; i++) {
-    if (exports.names[i].test(name)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Coerce `val`.
- *
- * @param {Mixed} val
- * @return {Mixed}
- * @api private
- */
-
-function coerce(val) {
-  if (val instanceof Error) return val.stack || val.message;
-  return val;
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-ms@0.7.1/index.js-=@*/
-/**
- * Helpers.
- */
-
-var s = 1000;
-var m = s * 60;
-var h = m * 60;
-var d = h * 24;
-var y = d * 365.25;
-
-/**
- * Parse or format the given `val`.
- *
- * Options:
- *
- *  - `long` verbose formatting [false]
- *
- * @param {String|Number} val
- * @param {Object} options
- * @return {String|Number}
- * @api public
- */
-
-module.exports = function(val, options){
-  options = options || {};
-  if ('string' == typeof val) return parse(val);
-  return options.long
-    ? long(val)
-    : short(val);
-};
-
-/**
- * Parse the given `str` and return milliseconds.
- *
- * @param {String} str
- * @return {Number}
- * @api private
- */
-
-function parse(str) {
-  str = '' + str;
-  if (str.length > 10000) return;
-  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
-  if (!match) return;
-  var n = parseFloat(match[1]);
-  var type = (match[2] || 'ms').toLowerCase();
-  switch (type) {
-    case 'years':
-    case 'year':
-    case 'yrs':
-    case 'yr':
-    case 'y':
-      return n * y;
-    case 'days':
-    case 'day':
-    case 'd':
-      return n * d;
-    case 'hours':
-    case 'hour':
-    case 'hrs':
-    case 'hr':
-    case 'h':
-      return n * h;
-    case 'minutes':
-    case 'minute':
-    case 'mins':
-    case 'min':
-    case 'm':
-      return n * m;
-    case 'seconds':
-    case 'second':
-    case 'secs':
-    case 'sec':
-    case 's':
-      return n * s;
-    case 'milliseconds':
-    case 'millisecond':
-    case 'msecs':
-    case 'msec':
-    case 'ms':
-      return n;
-  }
-}
-
-/**
- * Short format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function short(ms) {
-  if (ms >= d) return Math.round(ms / d) + 'd';
-  if (ms >= h) return Math.round(ms / h) + 'h';
-  if (ms >= m) return Math.round(ms / m) + 'm';
-  if (ms >= s) return Math.round(ms / s) + 's';
-  return ms + 'ms';
-}
-
-/**
- * Long format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function long(ms) {
-  return plural(ms, d, 'day')
-    || plural(ms, h, 'hour')
-    || plural(ms, m, 'minute')
-    || plural(ms, s, 'second')
-    || ms + ' ms';
-}
-
-/**
- * Pluralization helper.
- */
-
-function plural(ms, n, name) {
-  if (ms < n) return;
-  if (ms < n * 1.5) return Math.floor(ms / n) + ' ' + name;
-  return Math.ceil(ms / n) + ' ' + name + 's';
-}
-
+virtDOM.findDOMNode = require(248);
+virtDOM.findRoot = require(249);
+virtDOM.findEventHandler = require(250);
+
+virtDOM.createWorkerRender = require(251);
+virtDOM.renderWorker = require(252);
+
+virtDOM.createWebSocketRender = require(253);
+virtDOM.renderWebSocket = require(254);
 },
 function(require, exports, module, undefined, global) {
 /*@=-buffer@3.6.0/index.js-=@*/
@@ -3177,9 +471,9 @@ function(require, exports, module, undefined, global) {
 
 'use strict'
 
-var base64 = require(29)
-var ieee754 = require(30)
-var isArray = require(31)
+var base64 = require(7)
+var ieee754 = require(8)
+var isArray = require(9)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -4718,6 +2012,2974 @@ function blitBuffer (src, dst, offset, length) {
 
 },
 function(require, exports, module, undefined, global) {
+/*@=-process@0.11.8/browser.js-=@*/
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+    try {
+        cachedSetTimeout = setTimeout;
+    } catch (e) {
+        cachedSetTimeout = function () {
+            throw new Error('setTimeout is not defined');
+        }
+    }
+    try {
+        cachedClearTimeout = clearTimeout;
+    } catch (e) {
+        cachedClearTimeout = function () {
+            throw new Error('clearTimeout is not defined');
+        }
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-base64-js@0.0.8/lib/b64.js-=@*/
+var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+;(function (exports) {
+	'use strict';
+
+  var Arr = (typeof Uint8Array !== 'undefined')
+    ? Uint8Array
+    : Array
+
+	var PLUS   = '+'.charCodeAt(0)
+	var SLASH  = '/'.charCodeAt(0)
+	var NUMBER = '0'.charCodeAt(0)
+	var LOWER  = 'a'.charCodeAt(0)
+	var UPPER  = 'A'.charCodeAt(0)
+	var PLUS_URL_SAFE = '-'.charCodeAt(0)
+	var SLASH_URL_SAFE = '_'.charCodeAt(0)
+
+	function decode (elt) {
+		var code = elt.charCodeAt(0)
+		if (code === PLUS ||
+		    code === PLUS_URL_SAFE)
+			return 62 // '+'
+		if (code === SLASH ||
+		    code === SLASH_URL_SAFE)
+			return 63 // '/'
+		if (code < NUMBER)
+			return -1 //no match
+		if (code < NUMBER + 10)
+			return code - NUMBER + 26 + 26
+		if (code < UPPER + 26)
+			return code - UPPER
+		if (code < LOWER + 26)
+			return code - LOWER + 26
+	}
+
+	function b64ToByteArray (b64) {
+		var i, j, l, tmp, placeHolders, arr
+
+		if (b64.length % 4 > 0) {
+			throw new Error('Invalid string. Length must be a multiple of 4')
+		}
+
+		// the number of equal signs (place holders)
+		// if there are two placeholders, than the two characters before it
+		// represent one byte
+		// if there is only one, then the three characters before it represent 2 bytes
+		// this is just a cheap hack to not do indexOf twice
+		var len = b64.length
+		placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
+
+		// base64 is 4/3 + up to two characters of the original data
+		arr = new Arr(b64.length * 3 / 4 - placeHolders)
+
+		// if there are placeholders, only get up to the last complete 4 chars
+		l = placeHolders > 0 ? b64.length - 4 : b64.length
+
+		var L = 0
+
+		function push (v) {
+			arr[L++] = v
+		}
+
+		for (i = 0, j = 0; i < l; i += 4, j += 3) {
+			tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
+			push((tmp & 0xFF0000) >> 16)
+			push((tmp & 0xFF00) >> 8)
+			push(tmp & 0xFF)
+		}
+
+		if (placeHolders === 2) {
+			tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
+			push(tmp & 0xFF)
+		} else if (placeHolders === 1) {
+			tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
+			push((tmp >> 8) & 0xFF)
+			push(tmp & 0xFF)
+		}
+
+		return arr
+	}
+
+	function uint8ToBase64 (uint8) {
+		var i,
+			extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
+			output = "",
+			temp, length
+
+		function encode (num) {
+			return lookup.charAt(num)
+		}
+
+		function tripletToBase64 (num) {
+			return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
+		}
+
+		// go through the array every three bytes, we'll deal with trailing stuff later
+		for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
+			temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+			output += tripletToBase64(temp)
+		}
+
+		// pad the end with zeros, but make sure to not forget the extra bytes
+		switch (extraBytes) {
+			case 1:
+				temp = uint8[uint8.length - 1]
+				output += encode(temp >> 2)
+				output += encode((temp << 4) & 0x3F)
+				output += '=='
+				break
+			case 2:
+				temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
+				output += encode(temp >> 10)
+				output += encode((temp >> 4) & 0x3F)
+				output += encode((temp << 2) & 0x3F)
+				output += '='
+				break
+		}
+
+		return output
+	}
+
+	exports.toByteArray = b64ToByteArray
+	exports.fromByteArray = uint8ToBase64
+}(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-ieee754@1.1.6/index.js-=@*/
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-isarray@1.0.0/index.js-=@*/
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/is_object@0.0.1/src/index.js-=@*/
+var isNull = require(14);
+
+
+module.exports = isObject;
+
+
+function isObject(value) {
+    var type = typeof(value);
+    return type === "function" || (!isNull(value) && type === "object") || false;
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/is_function@0.0.1/src/index.js-=@*/
+var objectToString = Object.prototype.toString,
+    isFunction;
+
+
+if (objectToString.call(function() {}) === "[object Object]") {
+    isFunction = function isFunction(value) {
+        return value instanceof Function;
+    };
+} else if (typeof(/./) === "function" || (typeof(Uint8Array) !== "undefined" && typeof(Uint8Array) !== "function")) {
+    isFunction = function isFunction(value) {
+        return objectToString.call(value) === "[object Function]";
+    };
+} else {
+    isFunction = function isFunction(value) {
+        return typeof(value) === "function" || false;
+    };
+}
+
+
+module.exports = isFunction;
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/environment@0.0.1/src/index.js-=@*/
+var environment = exports,
+
+    hasWindow = typeof(window) !== "undefined",
+    userAgent = hasWindow ? window.navigator.userAgent : "";
+
+
+environment.worker = typeof(importScripts) !== "undefined";
+
+environment.browser = environment.worker || !!(
+    hasWindow &&
+    typeof(navigator) !== "undefined" &&
+    window.document
+);
+
+environment.node = !environment.worker && !environment.browser;
+
+environment.mobile = environment.browser && /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+
+environment.window = (
+    hasWindow ? window :
+    typeof(global) !== "undefined" ? global :
+    typeof(self) !== "undefined" ? self : {}
+);
+
+environment.pixelRatio = environment.window.devicePixelRatio || 1;
+
+environment.document = typeof(document) !== "undefined" ? document : {};
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/event_listener@0.0.1/src/event_table.js-=@*/
+var isNode = require(15),
+    environment = require(12);
+
+
+var window = environment.window,
+
+    XMLHttpRequest = window.XMLHttpRequest,
+    OfflineAudioContext = window.OfflineAudioContext;
+
+
+function returnEvent() {
+    return window.Event;
+}
+
+
+module.exports = {
+    abort: function(target) {
+        if (XMLHttpRequest && target instanceof XMLHttpRequest) {
+            return window.ProgressEvent || window.Event;
+        } else {
+            return window.UIEvent || window.Event;
+        }
+    },
+
+    afterprint: returnEvent,
+
+    animationend: function() {
+        return window.AnimationEvent || window.Event;
+    },
+    animationiteration: function() {
+        return window.AnimationEvent || window.Event;
+    },
+    animationstart: function() {
+        return window.AnimationEvent || window.Event;
+    },
+
+    audioprocess: function() {
+        return window.AudioProcessingEvent || window.Event;
+    },
+
+    beforeprint: returnEvent,
+    beforeunload: function() {
+        return window.BeforeUnloadEvent || window.Event;
+    },
+    beginevent: function() {
+        return window.TimeEvent || window.Event;
+    },
+
+    blocked: returnEvent,
+    blur: function() {
+        return window.FocusEvent || window.Event;
+    },
+
+    cached: returnEvent,
+    canplay: returnEvent,
+    canplaythrough: returnEvent,
+    chargingchange: returnEvent,
+    chargingtimechange: returnEvent,
+    checking: returnEvent,
+
+    click: function() {
+        return window.MouseEvent || window.Event;
+    },
+
+    close: returnEvent,
+    compassneedscalibration: function() {
+        return window.SensorEvent || window.Event;
+    },
+    complete: function(target) {
+        if (OfflineAudioContext && target instanceof OfflineAudioContext) {
+            return window.OfflineAudioCompletionEvent || window.Event;
+        } else {
+            return window.Event;
+        }
+    },
+
+    compositionend: function() {
+        return window.CompositionEvent || window.Event;
+    },
+    compositionstart: function() {
+        return window.CompositionEvent || window.Event;
+    },
+    compositionupdate: function() {
+        return window.CompositionEvent || window.Event;
+    },
+
+    contextmenu: function() {
+        return window.MouseEvent || window.Event;
+    },
+    copy: function() {
+        return window.ClipboardEvent || window.Event;
+    },
+    cut: function() {
+        return window.ClipboardEvent || window.Event;
+    },
+
+    dblclick: function() {
+        return window.MouseEvent || window.Event;
+    },
+    devicelight: function() {
+        return window.DeviceLightEvent || window.Event;
+    },
+    devicemotion: function() {
+        return window.DeviceMotionEvent || window.Event;
+    },
+    deviceorientation: function() {
+        return window.DeviceOrientationEvent || window.Event;
+    },
+    deviceproximity: function() {
+        return window.DeviceProximityEvent || window.Event;
+    },
+
+    dischargingtimechange: returnEvent,
+
+    DOMActivate: function() {
+        return window.UIEvent || window.Event;
+    },
+    DOMAttributeNameChanged: function() {
+        return window.MutationNameEvent || window.Event;
+    },
+    DOMAttrModified: function() {
+        return window.MutationEvent || window.Event;
+    },
+    DOMCharacterDataModified: function() {
+        return window.MutationEvent || window.Event;
+    },
+    DOMContentLoaded: returnEvent,
+    DOMElementNameChanged: function() {
+        return window.MutationNameEvent || window.Event;
+    },
+    DOMFocusIn: function() {
+        return window.FocusEvent || window.Event;
+    },
+    DOMFocusOut: function() {
+        return window.FocusEvent || window.Event;
+    },
+    DOMNodeInserted: function() {
+        return window.MutationEvent || window.Event;
+    },
+    DOMNodeInsertedIntoDocument: function() {
+        return window.MutationEvent || window.Event;
+    },
+    DOMNodeRemoved: function() {
+        return window.MutationEvent || window.Event;
+    },
+    DOMNodeRemovedFromDocument: function() {
+        return window.MutationEvent || window.Event;
+    },
+    DOMSubtreeModified: function() {
+        return window.FocusEvent || window.Event;
+    },
+    downloading: returnEvent,
+
+    drag: function() {
+        return window.DragEvent || window.Event;
+    },
+    dragend: function() {
+        return window.DragEvent || window.Event;
+    },
+    dragenter: function() {
+        return window.DragEvent || window.Event;
+    },
+    dragleave: function() {
+        return window.DragEvent || window.Event;
+    },
+    dragover: function() {
+        return window.DragEvent || window.Event;
+    },
+    dragstart: function() {
+        return window.DragEvent || window.Event;
+    },
+    drop: function() {
+        return window.DragEvent || window.Event;
+    },
+
+    durationchange: returnEvent,
+    ended: returnEvent,
+
+    endEvent: function() {
+        return window.TimeEvent || window.Event;
+    },
+    error: function(target) {
+        if (XMLHttpRequest && target instanceof XMLHttpRequest) {
+            return window.ProgressEvent || window.Event;
+        } else if (isNode(target)) {
+            return window.UIEvent || window.Event;
+        } else {
+            return window.Event;
+        }
+    },
+    focus: function() {
+        return window.FocusEvent || window.Event;
+    },
+    focusin: function() {
+        return window.FocusEvent || window.Event;
+    },
+    focusout: function() {
+        return window.FocusEvent || window.Event;
+    },
+
+    fullscreenchange: returnEvent,
+    fullscreenerror: returnEvent,
+
+    gamepadconnected: function() {
+        return window.GamepadEvent || window.Event;
+    },
+    gamepaddisconnected: function() {
+        return window.GamepadEvent || window.Event;
+    },
+
+    hashchange: function() {
+        return window.HashChangeEvent || window.Event;
+    },
+
+    input: returnEvent,
+    invalid: returnEvent,
+
+    keydown: function() {
+        return window.KeyboardEvent || window.Event;
+    },
+    keyup: function() {
+        return window.KeyboardEvent || window.Event;
+    },
+    keypress: function() {
+        return window.KeyboardEvent || window.Event;
+    },
+
+    languagechange: returnEvent,
+    levelchange: returnEvent,
+
+    load: function(target) {
+        if (XMLHttpRequest && target instanceof XMLHttpRequest) {
+            return window.ProgressEvent || window.Event;
+        } else {
+            return window.UIEvent || window.Event;
+        }
+    },
+
+    loadeddata: returnEvent,
+    loadedmetadata: returnEvent,
+
+    loadend: function() {
+        return window.ProgressEvent || window.Event;
+    },
+    loadstart: function() {
+        return window.ProgressEvent || window.Event;
+    },
+
+    message: function() {
+        return window.MessageEvent || window.Event;
+    },
+
+    mousedown: function() {
+        return window.MouseEvent || window.Event;
+    },
+    mouseenter: function() {
+        return window.MouseEvent || window.Event;
+    },
+    mouseleave: function() {
+        return window.MouseEvent || window.Event;
+    },
+    mousemove: function() {
+        return window.MouseEvent || window.Event;
+    },
+    mouseout: function() {
+        return window.MouseEvent || window.Event;
+    },
+    mouseover: function() {
+        return window.MouseEvent || window.Event;
+    },
+    mouseup: function() {
+        return window.MouseEvent || window.Event;
+    },
+
+    noupdate: returnEvent,
+    obsolete: returnEvent,
+    offline: returnEvent,
+    online: returnEvent,
+    open: returnEvent,
+    orientationchange: returnEvent,
+
+    pagehide: function() {
+        return window.PageTransitionEvent || window.Event;
+    },
+    pageshow: function() {
+        return window.PageTransitionEvent || window.Event;
+    },
+
+    paste: function() {
+        return window.ClipboardEvent || window.Event;
+    },
+    pause: returnEvent,
+    pointerlockchange: returnEvent,
+    pointerlockerror: returnEvent,
+    play: returnEvent,
+    playing: returnEvent,
+
+    popstate: function() {
+        return window.PopStateEvent || window.Event;
+    },
+    progress: function() {
+        return window.ProgressEvent || window.Event;
+    },
+
+    ratechange: returnEvent,
+    readystatechange: returnEvent,
+
+    repeatevent: function() {
+        return window.TimeEvent || window.Event;
+    },
+
+    reset: returnEvent,
+
+    resize: function() {
+        return window.UIEvent || window.Event;
+    },
+    scroll: function() {
+        return window.UIEvent || window.Event;
+    },
+
+    seeked: returnEvent,
+    seeking: returnEvent,
+
+    select: function() {
+        return window.UIEvent || window.Event;
+    },
+    show: function() {
+        return window.MouseEvent || window.Event;
+    },
+    stalled: returnEvent,
+    storage: function() {
+        return window.StorageEvent || window.Event;
+    },
+    submit: returnEvent,
+    success: returnEvent,
+    suspend: returnEvent,
+
+    SVGAbort: function() {
+        return window.SVGEvent || window.Event;
+    },
+    SVGError: function() {
+        return window.SVGEvent || window.Event;
+    },
+    SVGLoad: function() {
+        return window.SVGEvent || window.Event;
+    },
+    SVGResize: function() {
+        return window.SVGEvent || window.Event;
+    },
+    SVGScroll: function() {
+        return window.SVGEvent || window.Event;
+    },
+    SVGUnload: function() {
+        return window.SVGEvent || window.Event;
+    },
+    SVGZoom: function() {
+        return window.SVGEvent || window.Event;
+    },
+    timeout: function() {
+        return window.ProgressEvent || window.Event;
+    },
+
+    timeupdate: returnEvent,
+
+    touchcancel: function() {
+        return window.TouchEvent || window.Event;
+    },
+    touchend: function() {
+        return window.TouchEvent || window.Event;
+    },
+    touchenter: function() {
+        return window.TouchEvent || window.Event;
+    },
+    touchleave: function() {
+        return window.TouchEvent || window.Event;
+    },
+    touchmove: function() {
+        return window.TouchEvent || window.Event;
+    },
+    touchstart: function() {
+        return window.TouchEvent || window.Event;
+    },
+
+    transitionend: function() {
+        return window.TransitionEvent || window.Event;
+    },
+    unload: function() {
+        return window.UIEvent || window.Event;
+    },
+
+    updateready: returnEvent,
+    upgradeneeded: returnEvent,
+
+    userproximity: function() {
+        return window.SensorEvent || window.Event;
+    },
+
+    visibilitychange: returnEvent,
+    volumechange: returnEvent,
+    waiting: returnEvent,
+
+    wheel: function() {
+        return window.WheelEvent || window.Event;
+    }
+};
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/is_null@0.0.1/src/index.js-=@*/
+module.exports = isNull;
+
+
+function isNull(value) {
+    return value === null;
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/is_node@0.0.1/src/index.js-=@*/
+var isString = require(16),
+    isNullOrUndefined = require(17),
+    isNumber = require(18),
+    isFunction = require(11);
+
+
+var isNode;
+
+
+if (typeof(Node) !== "undefined" && isFunction(Node)) {
+    isNode = function isNode(value) {
+        return value instanceof Node;
+    };
+} else {
+    isNode = function isNode(value) {
+        return (!isNullOrUndefined(value) &&
+            isNumber(value.nodeType) &&
+            isString(value.nodeName)
+        );
+    };
+}
+
+
+module.exports = isNode;
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/is_string@0.0.1/src/index.js-=@*/
+module.exports = isString;
+
+
+function isString(value) {
+    return typeof(value) === "string" || false;
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/is_null_or_undefined@0.0.1/src/index.js-=@*/
+var isNull = require(14),
+    isUndefined = require(19);
+
+
+module.exports = isNullOrUndefined;
+
+/**
+  isNullOrUndefined accepts any value and returns true
+  if the value is null or undefined. For all other values
+  false is returned.
+  
+  @param {Any}        any value to test
+  @returns {Boolean}  the boolean result of testing value
+
+  @example
+    isNullOrUndefined(null);   // returns true
+    isNullOrUndefined(undefined);   // returns true
+    isNullOrUndefined("string");    // returns false
+**/
+function isNullOrUndefined(value) {
+    return isNull(value) || isUndefined(value);
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/is_number@0.0.1/src/index.js-=@*/
+module.exports = isNumber;
+
+
+function isNumber(value) {
+    return typeof(value) === "number" || false;
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/is_undefined@0.0.1/src/index.js-=@*/
+module.exports = isUndefined;
+
+
+function isUndefined(value) {
+    return value === void(0);
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-socket.io-client@1.4.8/lib/url.js-=@*/
+
+/**
+ * Module dependencies.
+ */
+
+var parseuri = require(25);
+var debug = require(23)('socket.io-client:url');
+
+/**
+ * Module exports.
+ */
+
+module.exports = url;
+
+/**
+ * URL parser.
+ *
+ * @param {String} url
+ * @param {Object} An object meant to mimic window.location.
+ *                 Defaults to window.location.
+ * @api public
+ */
+
+function url(uri, loc){
+  var obj = uri;
+
+  // default to window.location
+  var loc = loc || global.location;
+  if (null == uri) uri = loc.protocol + '//' + loc.host;
+
+  // relative path support
+  if ('string' == typeof uri) {
+    if ('/' == uri.charAt(0)) {
+      if ('/' == uri.charAt(1)) {
+        uri = loc.protocol + uri;
+      } else {
+        uri = loc.host + uri;
+      }
+    }
+
+    if (!/^(https?|wss?):\/\//.test(uri)) {
+      debug('protocol-less url %s', uri);
+      if ('undefined' != typeof loc) {
+        uri = loc.protocol + '//' + uri;
+      } else {
+        uri = 'https://' + uri;
+      }
+    }
+
+    // parse
+    debug('parse %s', uri);
+    obj = parseuri(uri);
+  }
+
+  // make sure we treat `localhost:80` and `localhost` equally
+  if (!obj.port) {
+    if (/^(http|ws)$/.test(obj.protocol)) {
+      obj.port = '80';
+    }
+    else if (/^(http|ws)s$/.test(obj.protocol)) {
+      obj.port = '443';
+    }
+  }
+
+  obj.path = obj.path || '/';
+
+  var ipv6 = obj.host.indexOf(':') !== -1;
+  var host = ipv6 ? '[' + obj.host + ']' : obj.host;
+
+  // define unique id
+  obj.id = obj.protocol + '://' + host + ':' + obj.port;
+  // define href
+  obj.href = obj.protocol + '://' + host + (loc && loc.port == obj.port ? '' : (':' + obj.port));
+
+  return obj;
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-socket.io-parser@2.2.6/index.js-=@*/
+var Buffer = require(5).Buffer;
+
+/**
+ * Module dependencies.
+ */
+
+var debug = require(23)('socket.io-parser');
+var json = require(28);
+var isArray = require(29);
+var Emitter = require(30);
+var binary = require(31);
+var isBuf = require(32);
+
+/**
+ * Protocol version.
+ *
+ * @api public
+ */
+
+exports.protocol = 4;
+
+/**
+ * Packet types.
+ *
+ * @api public
+ */
+
+exports.types = [
+  'CONNECT',
+  'DISCONNECT',
+  'EVENT',
+  'ACK',
+  'ERROR',
+  'BINARY_EVENT',
+  'BINARY_ACK'
+];
+
+/**
+ * Packet type `connect`.
+ *
+ * @api public
+ */
+
+exports.CONNECT = 0;
+
+/**
+ * Packet type `disconnect`.
+ *
+ * @api public
+ */
+
+exports.DISCONNECT = 1;
+
+/**
+ * Packet type `event`.
+ *
+ * @api public
+ */
+
+exports.EVENT = 2;
+
+/**
+ * Packet type `ack`.
+ *
+ * @api public
+ */
+
+exports.ACK = 3;
+
+/**
+ * Packet type `error`.
+ *
+ * @api public
+ */
+
+exports.ERROR = 4;
+
+/**
+ * Packet type 'binary event'
+ *
+ * @api public
+ */
+
+exports.BINARY_EVENT = 5;
+
+/**
+ * Packet type `binary ack`. For acks with binary arguments.
+ *
+ * @api public
+ */
+
+exports.BINARY_ACK = 6;
+
+/**
+ * Encoder constructor.
+ *
+ * @api public
+ */
+
+exports.Encoder = Encoder;
+
+/**
+ * Decoder constructor.
+ *
+ * @api public
+ */
+
+exports.Decoder = Decoder;
+
+/**
+ * A socket.io Encoder instance
+ *
+ * @api public
+ */
+
+function Encoder() {}
+
+/**
+ * Encode a packet as a single string if non-binary, or as a
+ * buffer sequence, depending on packet type.
+ *
+ * @param {Object} obj - packet object
+ * @param {Function} callback - function to handle encodings (likely engine.write)
+ * @return Calls callback with Array of encodings
+ * @api public
+ */
+
+Encoder.prototype.encode = function(obj, callback){
+  debug('encoding packet %j', obj);
+
+  if (exports.BINARY_EVENT == obj.type || exports.BINARY_ACK == obj.type) {
+    encodeAsBinary(obj, callback);
+  }
+  else {
+    var encoding = encodeAsString(obj);
+    callback([encoding]);
+  }
+};
+
+/**
+ * Encode packet as string.
+ *
+ * @param {Object} packet
+ * @return {String} encoded
+ * @api private
+ */
+
+function encodeAsString(obj) {
+  var str = '';
+  var nsp = false;
+
+  // first is type
+  str += obj.type;
+
+  // attachments if we have them
+  if (exports.BINARY_EVENT == obj.type || exports.BINARY_ACK == obj.type) {
+    str += obj.attachments;
+    str += '-';
+  }
+
+  // if we have a namespace other than `/`
+  // we append it followed by a comma `,`
+  if (obj.nsp && '/' != obj.nsp) {
+    nsp = true;
+    str += obj.nsp;
+  }
+
+  // immediately followed by the id
+  if (null != obj.id) {
+    if (nsp) {
+      str += ',';
+      nsp = false;
+    }
+    str += obj.id;
+  }
+
+  // json data
+  if (null != obj.data) {
+    if (nsp) str += ',';
+    str += json.stringify(obj.data);
+  }
+
+  debug('encoded %j as %s', obj, str);
+  return str;
+}
+
+/**
+ * Encode packet as 'buffer sequence' by removing blobs, and
+ * deconstructing packet into object with placeholders and
+ * a list of buffers.
+ *
+ * @param {Object} packet
+ * @return {Buffer} encoded
+ * @api private
+ */
+
+function encodeAsBinary(obj, callback) {
+
+  function writeEncoding(bloblessData) {
+    var deconstruction = binary.deconstructPacket(bloblessData);
+    var pack = encodeAsString(deconstruction.packet);
+    var buffers = deconstruction.buffers;
+
+    buffers.unshift(pack); // add packet info to beginning of data list
+    callback(buffers); // write all the buffers
+  }
+
+  binary.removeBlobs(obj, writeEncoding);
+}
+
+/**
+ * A socket.io Decoder instance
+ *
+ * @return {Object} decoder
+ * @api public
+ */
+
+function Decoder() {
+  this.reconstructor = null;
+}
+
+/**
+ * Mix in `Emitter` with Decoder.
+ */
+
+Emitter(Decoder.prototype);
+
+/**
+ * Decodes an ecoded packet string into packet JSON.
+ *
+ * @param {String} obj - encoded packet
+ * @return {Object} packet
+ * @api public
+ */
+
+Decoder.prototype.add = function(obj) {
+  var packet;
+  if ('string' == typeof obj) {
+    packet = decodeString(obj);
+    if (exports.BINARY_EVENT == packet.type || exports.BINARY_ACK == packet.type) { // binary packet's json
+      this.reconstructor = new BinaryReconstructor(packet);
+
+      // no attachments, labeled binary but no binary data to follow
+      if (this.reconstructor.reconPack.attachments === 0) {
+        this.emit('decoded', packet);
+      }
+    } else { // non-binary full packet
+      this.emit('decoded', packet);
+    }
+  }
+  else if (isBuf(obj) || obj.base64) { // raw binary data
+    if (!this.reconstructor) {
+      throw new Error('got binary data when not reconstructing a packet');
+    } else {
+      packet = this.reconstructor.takeBinaryData(obj);
+      if (packet) { // received final buffer
+        this.reconstructor = null;
+        this.emit('decoded', packet);
+      }
+    }
+  }
+  else {
+    throw new Error('Unknown type: ' + obj);
+  }
+};
+
+/**
+ * Decode a packet String (JSON data)
+ *
+ * @param {String} str
+ * @return {Object} packet
+ * @api private
+ */
+
+function decodeString(str) {
+  var p = {};
+  var i = 0;
+
+  // look up type
+  p.type = Number(str.charAt(0));
+  if (null == exports.types[p.type]) return error();
+
+  // look up attachments if type binary
+  if (exports.BINARY_EVENT == p.type || exports.BINARY_ACK == p.type) {
+    var buf = '';
+    while (str.charAt(++i) != '-') {
+      buf += str.charAt(i);
+      if (i == str.length) break;
+    }
+    if (buf != Number(buf) || str.charAt(i) != '-') {
+      throw new Error('Illegal attachments');
+    }
+    p.attachments = Number(buf);
+  }
+
+  // look up namespace (if any)
+  if ('/' == str.charAt(i + 1)) {
+    p.nsp = '';
+    while (++i) {
+      var c = str.charAt(i);
+      if (',' == c) break;
+      p.nsp += c;
+      if (i == str.length) break;
+    }
+  } else {
+    p.nsp = '/';
+  }
+
+  // look up id
+  var next = str.charAt(i + 1);
+  if ('' !== next && Number(next) == next) {
+    p.id = '';
+    while (++i) {
+      var c = str.charAt(i);
+      if (null == c || Number(c) != c) {
+        --i;
+        break;
+      }
+      p.id += str.charAt(i);
+      if (i == str.length) break;
+    }
+    p.id = Number(p.id);
+  }
+
+  // look up json data
+  if (str.charAt(++i)) {
+    try {
+      p.data = json.parse(str.substr(i));
+    } catch(e){
+      return error();
+    }
+  }
+
+  debug('decoded %s as %j', str, p);
+  return p;
+}
+
+/**
+ * Deallocates a parser's resources
+ *
+ * @api public
+ */
+
+Decoder.prototype.destroy = function() {
+  if (this.reconstructor) {
+    this.reconstructor.finishedReconstruction();
+  }
+};
+
+/**
+ * A manager of a binary event's 'buffer sequence'. Should
+ * be constructed whenever a packet of type BINARY_EVENT is
+ * decoded.
+ *
+ * @param {Object} packet
+ * @return {BinaryReconstructor} initialized reconstructor
+ * @api private
+ */
+
+function BinaryReconstructor(packet) {
+  this.reconPack = packet;
+  this.buffers = [];
+}
+
+/**
+ * Method to be called when binary data received from connection
+ * after a BINARY_EVENT packet.
+ *
+ * @param {Buffer | ArrayBuffer} binData - the raw binary data received
+ * @return {null | Object} returns null if more binary data is expected or
+ *   a reconstructed packet object if all buffers have been received.
+ * @api private
+ */
+
+BinaryReconstructor.prototype.takeBinaryData = function(binData) {
+  this.buffers.push(binData);
+  if (this.buffers.length == this.reconPack.attachments) { // done with buffer list
+    var packet = binary.reconstructPacket(this.reconPack, this.buffers);
+    this.finishedReconstruction();
+    return packet;
+  }
+  return null;
+};
+
+/**
+ * Cleans up binary packet reconstruction variables.
+ *
+ * @api private
+ */
+
+BinaryReconstructor.prototype.finishedReconstruction = function() {
+  this.reconPack = null;
+  this.buffers = [];
+};
+
+function error(data){
+  return {
+    type: exports.ERROR,
+    data: 'parser error'
+  };
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-socket.io-client@1.4.8/lib/manager.js-=@*/
+
+/**
+ * Module dependencies.
+ */
+
+var eio = require(33);
+var Socket = require(24);
+var Emitter = require(34);
+var parser = require(21);
+var on = require(35);
+var bind = require(36);
+var debug = require(23)('socket.io-client:manager');
+var indexOf = require(37);
+var Backoff = require(38);
+
+/**
+ * IE6+ hasOwnProperty
+ */
+
+var has = Object.prototype.hasOwnProperty;
+
+/**
+ * Module exports
+ */
+
+module.exports = Manager;
+
+/**
+ * `Manager` constructor.
+ *
+ * @param {String} engine instance or engine uri/opts
+ * @param {Object} options
+ * @api public
+ */
+
+function Manager(uri, opts){
+  if (!(this instanceof Manager)) return new Manager(uri, opts);
+  if (uri && ('object' == typeof uri)) {
+    opts = uri;
+    uri = undefined;
+  }
+  opts = opts || {};
+
+  opts.path = opts.path || '/socket.io';
+  this.nsps = {};
+  this.subs = [];
+  this.opts = opts;
+  this.reconnection(opts.reconnection !== false);
+  this.reconnectionAttempts(opts.reconnectionAttempts || Infinity);
+  this.reconnectionDelay(opts.reconnectionDelay || 1000);
+  this.reconnectionDelayMax(opts.reconnectionDelayMax || 5000);
+  this.randomizationFactor(opts.randomizationFactor || 0.5);
+  this.backoff = new Backoff({
+    min: this.reconnectionDelay(),
+    max: this.reconnectionDelayMax(),
+    jitter: this.randomizationFactor()
+  });
+  this.timeout(null == opts.timeout ? 20000 : opts.timeout);
+  this.readyState = 'closed';
+  this.uri = uri;
+  this.connecting = [];
+  this.lastPing = null;
+  this.encoding = false;
+  this.packetBuffer = [];
+  this.encoder = new parser.Encoder();
+  this.decoder = new parser.Decoder();
+  this.autoConnect = opts.autoConnect !== false;
+  if (this.autoConnect) this.open();
+}
+
+/**
+ * Propagate given event to sockets and emit on `this`
+ *
+ * @api private
+ */
+
+Manager.prototype.emitAll = function() {
+  this.emit.apply(this, arguments);
+  for (var nsp in this.nsps) {
+    if (has.call(this.nsps, nsp)) {
+      this.nsps[nsp].emit.apply(this.nsps[nsp], arguments);
+    }
+  }
+};
+
+/**
+ * Update `socket.id` of all sockets
+ *
+ * @api private
+ */
+
+Manager.prototype.updateSocketIds = function(){
+  for (var nsp in this.nsps) {
+    if (has.call(this.nsps, nsp)) {
+      this.nsps[nsp].id = this.engine.id;
+    }
+  }
+};
+
+/**
+ * Mix in `Emitter`.
+ */
+
+Emitter(Manager.prototype);
+
+/**
+ * Sets the `reconnection` config.
+ *
+ * @param {Boolean} true/false if it should automatically reconnect
+ * @return {Manager} self or value
+ * @api public
+ */
+
+Manager.prototype.reconnection = function(v){
+  if (!arguments.length) return this._reconnection;
+  this._reconnection = !!v;
+  return this;
+};
+
+/**
+ * Sets the reconnection attempts config.
+ *
+ * @param {Number} max reconnection attempts before giving up
+ * @return {Manager} self or value
+ * @api public
+ */
+
+Manager.prototype.reconnectionAttempts = function(v){
+  if (!arguments.length) return this._reconnectionAttempts;
+  this._reconnectionAttempts = v;
+  return this;
+};
+
+/**
+ * Sets the delay between reconnections.
+ *
+ * @param {Number} delay
+ * @return {Manager} self or value
+ * @api public
+ */
+
+Manager.prototype.reconnectionDelay = function(v){
+  if (!arguments.length) return this._reconnectionDelay;
+  this._reconnectionDelay = v;
+  this.backoff && this.backoff.setMin(v);
+  return this;
+};
+
+Manager.prototype.randomizationFactor = function(v){
+  if (!arguments.length) return this._randomizationFactor;
+  this._randomizationFactor = v;
+  this.backoff && this.backoff.setJitter(v);
+  return this;
+};
+
+/**
+ * Sets the maximum delay between reconnections.
+ *
+ * @param {Number} delay
+ * @return {Manager} self or value
+ * @api public
+ */
+
+Manager.prototype.reconnectionDelayMax = function(v){
+  if (!arguments.length) return this._reconnectionDelayMax;
+  this._reconnectionDelayMax = v;
+  this.backoff && this.backoff.setMax(v);
+  return this;
+};
+
+/**
+ * Sets the connection timeout. `false` to disable
+ *
+ * @return {Manager} self or value
+ * @api public
+ */
+
+Manager.prototype.timeout = function(v){
+  if (!arguments.length) return this._timeout;
+  this._timeout = v;
+  return this;
+};
+
+/**
+ * Starts trying to reconnect if reconnection is enabled and we have not
+ * started reconnecting yet
+ *
+ * @api private
+ */
+
+Manager.prototype.maybeReconnectOnOpen = function() {
+  // Only try to reconnect if it's the first time we're connecting
+  if (!this.reconnecting && this._reconnection && this.backoff.attempts === 0) {
+    // keeps reconnection from firing twice for the same reconnection loop
+    this.reconnect();
+  }
+};
+
+
+/**
+ * Sets the current transport `socket`.
+ *
+ * @param {Function} optional, callback
+ * @return {Manager} self
+ * @api public
+ */
+
+Manager.prototype.open =
+Manager.prototype.connect = function(fn){
+  debug('readyState %s', this.readyState);
+  if (~this.readyState.indexOf('open')) return this;
+
+  debug('opening %s', this.uri);
+  this.engine = eio(this.uri, this.opts);
+  var socket = this.engine;
+  var self = this;
+  this.readyState = 'opening';
+  this.skipReconnect = false;
+
+  // emit `open`
+  var openSub = on(socket, 'open', function() {
+    self.onopen();
+    fn && fn();
+  });
+
+  // emit `connect_error`
+  var errorSub = on(socket, 'error', function(data){
+    debug('connect_error');
+    self.cleanup();
+    self.readyState = 'closed';
+    self.emitAll('connect_error', data);
+    if (fn) {
+      var err = new Error('Connection error');
+      err.data = data;
+      fn(err);
+    } else {
+      // Only do this if there is no fn to handle the error
+      self.maybeReconnectOnOpen();
+    }
+  });
+
+  // emit `connect_timeout`
+  if (false !== this._timeout) {
+    var timeout = this._timeout;
+    debug('connect attempt will timeout after %d', timeout);
+
+    // set timer
+    var timer = setTimeout(function(){
+      debug('connect attempt timed out after %d', timeout);
+      openSub.destroy();
+      socket.close();
+      socket.emit('error', 'timeout');
+      self.emitAll('connect_timeout', timeout);
+    }, timeout);
+
+    this.subs.push({
+      destroy: function(){
+        clearTimeout(timer);
+      }
+    });
+  }
+
+  this.subs.push(openSub);
+  this.subs.push(errorSub);
+
+  return this;
+};
+
+/**
+ * Called upon transport open.
+ *
+ * @api private
+ */
+
+Manager.prototype.onopen = function(){
+  debug('open');
+
+  // clear old subs
+  this.cleanup();
+
+  // mark as open
+  this.readyState = 'open';
+  this.emit('open');
+
+  // add new subs
+  var socket = this.engine;
+  this.subs.push(on(socket, 'data', bind(this, 'ondata')));
+  this.subs.push(on(socket, 'ping', bind(this, 'onping')));
+  this.subs.push(on(socket, 'pong', bind(this, 'onpong')));
+  this.subs.push(on(socket, 'error', bind(this, 'onerror')));
+  this.subs.push(on(socket, 'close', bind(this, 'onclose')));
+  this.subs.push(on(this.decoder, 'decoded', bind(this, 'ondecoded')));
+};
+
+/**
+ * Called upon a ping.
+ *
+ * @api private
+ */
+
+Manager.prototype.onping = function(){
+  this.lastPing = new Date;
+  this.emitAll('ping');
+};
+
+/**
+ * Called upon a packet.
+ *
+ * @api private
+ */
+
+Manager.prototype.onpong = function(){
+  this.emitAll('pong', new Date - this.lastPing);
+};
+
+/**
+ * Called with data.
+ *
+ * @api private
+ */
+
+Manager.prototype.ondata = function(data){
+  this.decoder.add(data);
+};
+
+/**
+ * Called when parser fully decodes a packet.
+ *
+ * @api private
+ */
+
+Manager.prototype.ondecoded = function(packet) {
+  this.emit('packet', packet);
+};
+
+/**
+ * Called upon socket error.
+ *
+ * @api private
+ */
+
+Manager.prototype.onerror = function(err){
+  debug('error', err);
+  this.emitAll('error', err);
+};
+
+/**
+ * Creates a new socket for the given `nsp`.
+ *
+ * @return {Socket}
+ * @api public
+ */
+
+Manager.prototype.socket = function(nsp){
+  var socket = this.nsps[nsp];
+  if (!socket) {
+    socket = new Socket(this, nsp);
+    this.nsps[nsp] = socket;
+    var self = this;
+    socket.on('connecting', onConnecting);
+    socket.on('connect', function(){
+      socket.id = self.engine.id;
+    });
+
+    if (this.autoConnect) {
+      // manually call here since connecting evnet is fired before listening
+      onConnecting();
+    }
+  }
+
+  function onConnecting() {
+    if (!~indexOf(self.connecting, socket)) {
+      self.connecting.push(socket);
+    }
+  }
+
+  return socket;
+};
+
+/**
+ * Called upon a socket close.
+ *
+ * @param {Socket} socket
+ */
+
+Manager.prototype.destroy = function(socket){
+  var index = indexOf(this.connecting, socket);
+  if (~index) this.connecting.splice(index, 1);
+  if (this.connecting.length) return;
+
+  this.close();
+};
+
+/**
+ * Writes a packet.
+ *
+ * @param {Object} packet
+ * @api private
+ */
+
+Manager.prototype.packet = function(packet){
+  debug('writing packet %j', packet);
+  var self = this;
+
+  if (!self.encoding) {
+    // encode, then write to engine with result
+    self.encoding = true;
+    this.encoder.encode(packet, function(encodedPackets) {
+      for (var i = 0; i < encodedPackets.length; i++) {
+        self.engine.write(encodedPackets[i], packet.options);
+      }
+      self.encoding = false;
+      self.processPacketQueue();
+    });
+  } else { // add packet to the queue
+    self.packetBuffer.push(packet);
+  }
+};
+
+/**
+ * If packet buffer is non-empty, begins encoding the
+ * next packet in line.
+ *
+ * @api private
+ */
+
+Manager.prototype.processPacketQueue = function() {
+  if (this.packetBuffer.length > 0 && !this.encoding) {
+    var pack = this.packetBuffer.shift();
+    this.packet(pack);
+  }
+};
+
+/**
+ * Clean up transport subscriptions and packet buffer.
+ *
+ * @api private
+ */
+
+Manager.prototype.cleanup = function(){
+  debug('cleanup');
+
+  var sub;
+  while (sub = this.subs.shift()) sub.destroy();
+
+  this.packetBuffer = [];
+  this.encoding = false;
+  this.lastPing = null;
+
+  this.decoder.destroy();
+};
+
+/**
+ * Close the current socket.
+ *
+ * @api private
+ */
+
+Manager.prototype.close =
+Manager.prototype.disconnect = function(){
+  debug('disconnect');
+  this.skipReconnect = true;
+  this.reconnecting = false;
+  if ('opening' == this.readyState) {
+    // `onclose` will not fire because
+    // an open event never happened
+    this.cleanup();
+  }
+  this.backoff.reset();
+  this.readyState = 'closed';
+  if (this.engine) this.engine.close();
+};
+
+/**
+ * Called upon engine close.
+ *
+ * @api private
+ */
+
+Manager.prototype.onclose = function(reason){
+  debug('onclose');
+
+  this.cleanup();
+  this.backoff.reset();
+  this.readyState = 'closed';
+  this.emit('close', reason);
+
+  if (this._reconnection && !this.skipReconnect) {
+    this.reconnect();
+  }
+};
+
+/**
+ * Attempt a reconnection.
+ *
+ * @api private
+ */
+
+Manager.prototype.reconnect = function(){
+  if (this.reconnecting || this.skipReconnect) return this;
+
+  var self = this;
+
+  if (this.backoff.attempts >= this._reconnectionAttempts) {
+    debug('reconnect failed');
+    this.backoff.reset();
+    this.emitAll('reconnect_failed');
+    this.reconnecting = false;
+  } else {
+    var delay = this.backoff.duration();
+    debug('will wait %dms before reconnect attempt', delay);
+
+    this.reconnecting = true;
+    var timer = setTimeout(function(){
+      if (self.skipReconnect) return;
+
+      debug('attempting reconnect');
+      self.emitAll('reconnect_attempt', self.backoff.attempts);
+      self.emitAll('reconnecting', self.backoff.attempts);
+
+      // check again for the case socket closed in above events
+      if (self.skipReconnect) return;
+
+      self.open(function(err){
+        if (err) {
+          debug('reconnect attempt error');
+          self.reconnecting = false;
+          self.reconnect();
+          self.emitAll('reconnect_error', err.data);
+        } else {
+          debug('reconnect success');
+          self.onreconnect();
+        }
+      });
+    }, delay);
+
+    this.subs.push({
+      destroy: function(){
+        clearTimeout(timer);
+      }
+    });
+  }
+};
+
+/**
+ * Called upon successful reconnect.
+ *
+ * @api private
+ */
+
+Manager.prototype.onreconnect = function(){
+  var attempt = this.backoff.attempts;
+  this.reconnecting = false;
+  this.backoff.reset();
+  this.updateSocketIds();
+  this.emitAll('reconnect', attempt);
+};
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-debug@2.2.0/browser.js-=@*/
+
+/**
+ * This is the web browser implementation of `debug()`.
+ *
+ * Expose `debug()` as the module.
+ */
+
+exports = module.exports = require(26);
+exports.log = log;
+exports.formatArgs = formatArgs;
+exports.save = save;
+exports.load = load;
+exports.useColors = useColors;
+exports.storage = 'undefined' != typeof chrome
+               && 'undefined' != typeof chrome.storage
+                  ? chrome.storage.local
+                  : localstorage();
+
+/**
+ * Colors.
+ */
+
+exports.colors = [
+  'lightseagreen',
+  'forestgreen',
+  'goldenrod',
+  'dodgerblue',
+  'darkorchid',
+  'crimson'
+];
+
+/**
+ * Currently only WebKit-based Web Inspectors, Firefox >= v31,
+ * and the Firebug extension (any Firefox version) are known
+ * to support "%c" CSS customizations.
+ *
+ * TODO: add a `localStorage` variable to explicitly enable/disable colors
+ */
+
+function useColors() {
+  // is webkit? http://stackoverflow.com/a/16459606/376773
+  return ('WebkitAppearance' in document.documentElement.style) ||
+    // is firebug? http://stackoverflow.com/a/398120/376773
+    (window.console && (console.firebug || (console.exception && console.table))) ||
+    // is firefox >= v31?
+    // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+    (navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31);
+}
+
+/**
+ * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
+ */
+
+exports.formatters.j = function(v) {
+  return JSON.stringify(v);
+};
+
+
+/**
+ * Colorize log arguments if enabled.
+ *
+ * @api public
+ */
+
+function formatArgs() {
+  var args = arguments;
+  var useColors = this.useColors;
+
+  args[0] = (useColors ? '%c' : '')
+    + this.namespace
+    + (useColors ? ' %c' : ' ')
+    + args[0]
+    + (useColors ? '%c ' : ' ')
+    + '+' + exports.humanize(this.diff);
+
+  if (!useColors) return args;
+
+  var c = 'color: ' + this.color;
+  args = [args[0], c, 'color: inherit'].concat(Array.prototype.slice.call(args, 1));
+
+  // the final "%c" is somewhat tricky, because there could be other
+  // arguments passed either before or after the %c, so we need to
+  // figure out the correct index to insert the CSS into
+  var index = 0;
+  var lastC = 0;
+  args[0].replace(/%[a-z%]/g, function(match) {
+    if ('%%' === match) return;
+    index++;
+    if ('%c' === match) {
+      // we only are interested in the *last* %c
+      // (the user may have provided their own)
+      lastC = index;
+    }
+  });
+
+  args.splice(lastC, 0, c);
+  return args;
+}
+
+/**
+ * Invokes `console.log()` when available.
+ * No-op when `console.log` is not a "function".
+ *
+ * @api public
+ */
+
+function log() {
+  // this hackery is required for IE8/9, where
+  // the `console.log` function doesn't have 'apply'
+  return 'object' === typeof console
+    && console.log
+    && Function.prototype.apply.call(console.log, console, arguments);
+}
+
+/**
+ * Save `namespaces`.
+ *
+ * @param {String} namespaces
+ * @api private
+ */
+
+function save(namespaces) {
+  try {
+    if (null == namespaces) {
+      exports.storage.removeItem('debug');
+    } else {
+      exports.storage.debug = namespaces;
+    }
+  } catch(e) {}
+}
+
+/**
+ * Load `namespaces`.
+ *
+ * @return {String} returns the previously persisted debug modes
+ * @api private
+ */
+
+function load() {
+  var r;
+  try {
+    r = exports.storage.debug;
+  } catch(e) {}
+  return r;
+}
+
+/**
+ * Enable namespaces listed in `localStorage.debug` initially.
+ */
+
+exports.enable(load());
+
+/**
+ * Localstorage attempts to return the localstorage.
+ *
+ * This is necessary because safari throws
+ * when a user disables cookies/localstorage
+ * and you attempt to access it.
+ *
+ * @return {LocalStorage}
+ * @api private
+ */
+
+function localstorage(){
+  try {
+    return window.localStorage;
+  } catch (e) {}
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-socket.io-client@1.4.8/lib/socket.js-=@*/
+
+/**
+ * Module dependencies.
+ */
+
+var parser = require(21);
+var Emitter = require(34);
+var toArray = require(240);
+var on = require(35);
+var bind = require(36);
+var debug = require(23)('socket.io-client:socket');
+var hasBin = require(241);
+
+/**
+ * Module exports.
+ */
+
+module.exports = exports = Socket;
+
+/**
+ * Internal events (blacklisted).
+ * These events can't be emitted by the user.
+ *
+ * @api private
+ */
+
+var events = {
+  connect: 1,
+  connect_error: 1,
+  connect_timeout: 1,
+  connecting: 1,
+  disconnect: 1,
+  error: 1,
+  reconnect: 1,
+  reconnect_attempt: 1,
+  reconnect_failed: 1,
+  reconnect_error: 1,
+  reconnecting: 1,
+  ping: 1,
+  pong: 1
+};
+
+/**
+ * Shortcut to `Emitter#emit`.
+ */
+
+var emit = Emitter.prototype.emit;
+
+/**
+ * `Socket` constructor.
+ *
+ * @api public
+ */
+
+function Socket(io, nsp){
+  this.io = io;
+  this.nsp = nsp;
+  this.json = this; // compat
+  this.ids = 0;
+  this.acks = {};
+  this.receiveBuffer = [];
+  this.sendBuffer = [];
+  this.connected = false;
+  this.disconnected = true;
+  if (this.io.autoConnect) this.open();
+}
+
+/**
+ * Mix in `Emitter`.
+ */
+
+Emitter(Socket.prototype);
+
+/**
+ * Subscribe to open, close and packet events
+ *
+ * @api private
+ */
+
+Socket.prototype.subEvents = function() {
+  if (this.subs) return;
+
+  var io = this.io;
+  this.subs = [
+    on(io, 'open', bind(this, 'onopen')),
+    on(io, 'packet', bind(this, 'onpacket')),
+    on(io, 'close', bind(this, 'onclose'))
+  ];
+};
+
+/**
+ * "Opens" the socket.
+ *
+ * @api public
+ */
+
+Socket.prototype.open =
+Socket.prototype.connect = function(){
+  if (this.connected) return this;
+
+  this.subEvents();
+  this.io.open(); // ensure open
+  if ('open' == this.io.readyState) this.onopen();
+  this.emit('connecting');
+  return this;
+};
+
+/**
+ * Sends a `message` event.
+ *
+ * @return {Socket} self
+ * @api public
+ */
+
+Socket.prototype.send = function(){
+  var args = toArray(arguments);
+  args.unshift('message');
+  this.emit.apply(this, args);
+  return this;
+};
+
+/**
+ * Override `emit`.
+ * If the event is in `events`, it's emitted normally.
+ *
+ * @param {String} event name
+ * @return {Socket} self
+ * @api public
+ */
+
+Socket.prototype.emit = function(ev){
+  if (events.hasOwnProperty(ev)) {
+    emit.apply(this, arguments);
+    return this;
+  }
+
+  var args = toArray(arguments);
+  var parserType = parser.EVENT; // default
+  if (hasBin(args)) { parserType = parser.BINARY_EVENT; } // binary
+  var packet = { type: parserType, data: args };
+
+  packet.options = {};
+  packet.options.compress = !this.flags || false !== this.flags.compress;
+
+  // event ack callback
+  if ('function' == typeof args[args.length - 1]) {
+    debug('emitting packet with ack id %d', this.ids);
+    this.acks[this.ids] = args.pop();
+    packet.id = this.ids++;
+  }
+
+  if (this.connected) {
+    this.packet(packet);
+  } else {
+    this.sendBuffer.push(packet);
+  }
+
+  delete this.flags;
+
+  return this;
+};
+
+/**
+ * Sends a packet.
+ *
+ * @param {Object} packet
+ * @api private
+ */
+
+Socket.prototype.packet = function(packet){
+  packet.nsp = this.nsp;
+  this.io.packet(packet);
+};
+
+/**
+ * Called upon engine `open`.
+ *
+ * @api private
+ */
+
+Socket.prototype.onopen = function(){
+  debug('transport is open - connecting');
+
+  // write connect packet if necessary
+  if ('/' != this.nsp) {
+    this.packet({ type: parser.CONNECT });
+  }
+};
+
+/**
+ * Called upon engine `close`.
+ *
+ * @param {String} reason
+ * @api private
+ */
+
+Socket.prototype.onclose = function(reason){
+  debug('close (%s)', reason);
+  this.connected = false;
+  this.disconnected = true;
+  delete this.id;
+  this.emit('disconnect', reason);
+};
+
+/**
+ * Called with socket packet.
+ *
+ * @param {Object} packet
+ * @api private
+ */
+
+Socket.prototype.onpacket = function(packet){
+  if (packet.nsp != this.nsp) return;
+
+  switch (packet.type) {
+    case parser.CONNECT:
+      this.onconnect();
+      break;
+
+    case parser.EVENT:
+      this.onevent(packet);
+      break;
+
+    case parser.BINARY_EVENT:
+      this.onevent(packet);
+      break;
+
+    case parser.ACK:
+      this.onack(packet);
+      break;
+
+    case parser.BINARY_ACK:
+      this.onack(packet);
+      break;
+
+    case parser.DISCONNECT:
+      this.ondisconnect();
+      break;
+
+    case parser.ERROR:
+      this.emit('error', packet.data);
+      break;
+  }
+};
+
+/**
+ * Called upon a server event.
+ *
+ * @param {Object} packet
+ * @api private
+ */
+
+Socket.prototype.onevent = function(packet){
+  var args = packet.data || [];
+  debug('emitting event %j', args);
+
+  if (null != packet.id) {
+    debug('attaching ack callback to event');
+    args.push(this.ack(packet.id));
+  }
+
+  if (this.connected) {
+    emit.apply(this, args);
+  } else {
+    this.receiveBuffer.push(args);
+  }
+};
+
+/**
+ * Produces an ack callback to emit with an event.
+ *
+ * @api private
+ */
+
+Socket.prototype.ack = function(id){
+  var self = this;
+  var sent = false;
+  return function(){
+    // prevent double callbacks
+    if (sent) return;
+    sent = true;
+    var args = toArray(arguments);
+    debug('sending ack %j', args);
+
+    var type = hasBin(args) ? parser.BINARY_ACK : parser.ACK;
+    self.packet({
+      type: type,
+      id: id,
+      data: args
+    });
+  };
+};
+
+/**
+ * Called upon a server acknowlegement.
+ *
+ * @param {Object} packet
+ * @api private
+ */
+
+Socket.prototype.onack = function(packet){
+  var ack = this.acks[packet.id];
+  if ('function' == typeof ack) {
+    debug('calling ack %s with %j', packet.id, packet.data);
+    ack.apply(this, packet.data);
+    delete this.acks[packet.id];
+  } else {
+    debug('bad ack %s', packet.id);
+  }
+};
+
+/**
+ * Called upon server connect.
+ *
+ * @api private
+ */
+
+Socket.prototype.onconnect = function(){
+  this.connected = true;
+  this.disconnected = false;
+  this.emit('connect');
+  this.emitBuffered();
+};
+
+/**
+ * Emit buffered events (received and emitted).
+ *
+ * @api private
+ */
+
+Socket.prototype.emitBuffered = function(){
+  var i;
+  for (i = 0; i < this.receiveBuffer.length; i++) {
+    emit.apply(this, this.receiveBuffer[i]);
+  }
+  this.receiveBuffer = [];
+
+  for (i = 0; i < this.sendBuffer.length; i++) {
+    this.packet(this.sendBuffer[i]);
+  }
+  this.sendBuffer = [];
+};
+
+/**
+ * Called upon server disconnect.
+ *
+ * @api private
+ */
+
+Socket.prototype.ondisconnect = function(){
+  debug('server disconnect (%s)', this.nsp);
+  this.destroy();
+  this.onclose('io server disconnect');
+};
+
+/**
+ * Called upon forced client/server side disconnections,
+ * this method ensures the manager stops tracking us and
+ * that reconnections don't get triggered for this.
+ *
+ * @api private.
+ */
+
+Socket.prototype.destroy = function(){
+  if (this.subs) {
+    // clean subscriptions to avoid reconnections
+    for (var i = 0; i < this.subs.length; i++) {
+      this.subs[i].destroy();
+    }
+    this.subs = null;
+  }
+
+  this.io.destroy(this);
+};
+
+/**
+ * Disconnects the socket manually.
+ *
+ * @return {Socket} self
+ * @api public
+ */
+
+Socket.prototype.close =
+Socket.prototype.disconnect = function(){
+  if (this.connected) {
+    debug('performing disconnect (%s)', this.nsp);
+    this.packet({ type: parser.DISCONNECT });
+  }
+
+  // remove socket from pool
+  this.destroy();
+
+  if (this.connected) {
+    // fire events
+    this.onclose('io client disconnect');
+  }
+  return this;
+};
+
+/**
+ * Sets the compress flag.
+ *
+ * @param {Boolean} if `true`, compresses the sending data
+ * @return {Socket} self
+ * @api public
+ */
+
+Socket.prototype.compress = function(compress){
+  this.flags = this.flags || {};
+  this.flags.compress = compress;
+  return this;
+};
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-parseuri@0.0.4/index.js-=@*/
+/**
+ * Parses an URI
+ *
+ * @author Steven Levithan <stevenlevithan.com> (MIT license)
+ * @api private
+ */
+
+var re = /^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
+
+var parts = [
+    'source', 'protocol', 'authority', 'userInfo', 'user', 'password', 'host', 'port', 'relative', 'path', 'directory', 'file', 'query', 'anchor'
+];
+
+module.exports = function parseuri(str) {
+    var src = str,
+        b = str.indexOf('['),
+        e = str.indexOf(']');
+
+    if (b != -1 && e != -1) {
+        str = str.substring(0, b) + str.substring(b, e).replace(/:/g, ';') + str.substring(e, str.length);
+    }
+
+    var m = re.exec(str || ''),
+        uri = {},
+        i = 14;
+
+    while (i--) {
+        uri[parts[i]] = m[i] || '';
+    }
+
+    if (b != -1 && e != -1) {
+        uri.source = src;
+        uri.host = uri.host.substring(1, uri.host.length - 1).replace(/;/g, ':');
+        uri.authority = uri.authority.replace('[', '').replace(']', '').replace(/;/g, ':');
+        uri.ipv6uri = true;
+    }
+
+    return uri;
+};
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-debug@2.2.0/debug.js-=@*/
+
+/**
+ * This is the common logic for both the Node.js and web browser
+ * implementations of `debug()`.
+ *
+ * Expose `debug()` as the module.
+ */
+
+exports = module.exports = debug;
+exports.coerce = coerce;
+exports.disable = disable;
+exports.enable = enable;
+exports.enabled = enabled;
+exports.humanize = require(27);
+
+/**
+ * The currently active debug mode names, and names to skip.
+ */
+
+exports.names = [];
+exports.skips = [];
+
+/**
+ * Map of special "%n" handling functions, for the debug "format" argument.
+ *
+ * Valid key names are a single, lowercased letter, i.e. "n".
+ */
+
+exports.formatters = {};
+
+/**
+ * Previously assigned color.
+ */
+
+var prevColor = 0;
+
+/**
+ * Previous log timestamp.
+ */
+
+var prevTime;
+
+/**
+ * Select a color.
+ *
+ * @return {Number}
+ * @api private
+ */
+
+function selectColor() {
+  return exports.colors[prevColor++ % exports.colors.length];
+}
+
+/**
+ * Create a debugger with the given `namespace`.
+ *
+ * @param {String} namespace
+ * @return {Function}
+ * @api public
+ */
+
+function debug(namespace) {
+
+  // define the `disabled` version
+  function disabled() {
+  }
+  disabled.enabled = false;
+
+  // define the `enabled` version
+  function enabled() {
+
+    var self = enabled;
+
+    // set `diff` timestamp
+    var curr = +new Date();
+    var ms = curr - (prevTime || curr);
+    self.diff = ms;
+    self.prev = prevTime;
+    self.curr = curr;
+    prevTime = curr;
+
+    // add the `color` if not set
+    if (null == self.useColors) self.useColors = exports.useColors();
+    if (null == self.color && self.useColors) self.color = selectColor();
+
+    var args = Array.prototype.slice.call(arguments);
+
+    args[0] = exports.coerce(args[0]);
+
+    if ('string' !== typeof args[0]) {
+      // anything else let's inspect with %o
+      args = ['%o'].concat(args);
+    }
+
+    // apply any `formatters` transformations
+    var index = 0;
+    args[0] = args[0].replace(/%([a-z%])/g, function(match, format) {
+      // if we encounter an escaped % then don't increase the array index
+      if (match === '%%') return match;
+      index++;
+      var formatter = exports.formatters[format];
+      if ('function' === typeof formatter) {
+        var val = args[index];
+        match = formatter.call(self, val);
+
+        // now we need to remove `args[index]` since it's inlined in the `format`
+        args.splice(index, 1);
+        index--;
+      }
+      return match;
+    });
+
+    if ('function' === typeof exports.formatArgs) {
+      args = exports.formatArgs.apply(self, args);
+    }
+    var logFn = enabled.log || exports.log || console.log.bind(console);
+    logFn.apply(self, args);
+  }
+  enabled.enabled = true;
+
+  var fn = exports.enabled(namespace) ? enabled : disabled;
+
+  fn.namespace = namespace;
+
+  return fn;
+}
+
+/**
+ * Enables a debug mode by namespaces. This can include modes
+ * separated by a colon and wildcards.
+ *
+ * @param {String} namespaces
+ * @api public
+ */
+
+function enable(namespaces) {
+  exports.save(namespaces);
+
+  var split = (namespaces || '').split(/[\s,]+/);
+  var len = split.length;
+
+  for (var i = 0; i < len; i++) {
+    if (!split[i]) continue; // ignore empty strings
+    namespaces = split[i].replace(/\*/g, '.*?');
+    if (namespaces[0] === '-') {
+      exports.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
+    } else {
+      exports.names.push(new RegExp('^' + namespaces + '$'));
+    }
+  }
+}
+
+/**
+ * Disable debug output.
+ *
+ * @api public
+ */
+
+function disable() {
+  exports.enable('');
+}
+
+/**
+ * Returns true if the given mode name is enabled, false otherwise.
+ *
+ * @param {String} name
+ * @return {Boolean}
+ * @api public
+ */
+
+function enabled(name) {
+  var i, len;
+  for (i = 0, len = exports.skips.length; i < len; i++) {
+    if (exports.skips[i].test(name)) {
+      return false;
+    }
+  }
+  for (i = 0, len = exports.names.length; i < len; i++) {
+    if (exports.names[i].test(name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Coerce `val`.
+ *
+ * @param {Mixed} val
+ * @return {Mixed}
+ * @api private
+ */
+
+function coerce(val) {
+  if (val instanceof Error) return val.stack || val.message;
+  return val;
+}
+
+},
+function(require, exports, module, undefined, global) {
+/*@=-ms@0.7.1/index.js-=@*/
+/**
+ * Helpers.
+ */
+
+var s = 1000;
+var m = s * 60;
+var h = m * 60;
+var d = h * 24;
+var y = d * 365.25;
+
+/**
+ * Parse or format the given `val`.
+ *
+ * Options:
+ *
+ *  - `long` verbose formatting [false]
+ *
+ * @param {String|Number} val
+ * @param {Object} options
+ * @return {String|Number}
+ * @api public
+ */
+
+module.exports = function(val, options){
+  options = options || {};
+  if ('string' == typeof val) return parse(val);
+  return options.long
+    ? long(val)
+    : short(val);
+};
+
+/**
+ * Parse the given `str` and return milliseconds.
+ *
+ * @param {String} str
+ * @return {Number}
+ * @api private
+ */
+
+function parse(str) {
+  str = '' + str;
+  if (str.length > 10000) return;
+  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
+  if (!match) return;
+  var n = parseFloat(match[1]);
+  var type = (match[2] || 'ms').toLowerCase();
+  switch (type) {
+    case 'years':
+    case 'year':
+    case 'yrs':
+    case 'yr':
+    case 'y':
+      return n * y;
+    case 'days':
+    case 'day':
+    case 'd':
+      return n * d;
+    case 'hours':
+    case 'hour':
+    case 'hrs':
+    case 'hr':
+    case 'h':
+      return n * h;
+    case 'minutes':
+    case 'minute':
+    case 'mins':
+    case 'min':
+    case 'm':
+      return n * m;
+    case 'seconds':
+    case 'second':
+    case 'secs':
+    case 'sec':
+    case 's':
+      return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
+    case 'ms':
+      return n;
+  }
+}
+
+/**
+ * Short format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function short(ms) {
+  if (ms >= d) return Math.round(ms / d) + 'd';
+  if (ms >= h) return Math.round(ms / h) + 'h';
+  if (ms >= m) return Math.round(ms / m) + 'm';
+  if (ms >= s) return Math.round(ms / s) + 's';
+  return ms + 'ms';
+}
+
+/**
+ * Long format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function long(ms) {
+  return plural(ms, d, 'day')
+    || plural(ms, h, 'hour')
+    || plural(ms, m, 'minute')
+    || plural(ms, s, 'second')
+    || ms + ' ms';
+}
+
+/**
+ * Pluralization helper.
+ */
+
+function plural(ms, n, name) {
+  if (ms < n) return;
+  if (ms < n * 1.5) return Math.floor(ms / n) + ' ' + name;
+  return Math.ceil(ms / n) + ' ' + name + 's';
+}
+
+},
+function(require, exports, module, undefined, global) {
 /*@=-json3@3.3.2/lib/json3.js-=@*/
 /*! JSON v3.3.2 | http://bestiejs.github.io/json3 | Copyright 2012-2014, Kit Cambridge | http://kit.mit-license.org */
 ;(function () {
@@ -5800,15 +6062,15 @@ Emitter.prototype.hasListeners = function(event){
 },
 function(require, exports, module, undefined, global) {
 /*@=-socket.io-parser@2.2.6/binary.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*global Blob,File*/
 
 /**
  * Module requirements
  */
 
-var isArray = require(25);
-var isBuf = require(28);
+var isArray = require(29);
+var isBuf = require(32);
 
 /**
  * Replaces every Buffer | ArrayBuffer in packet with a numbered placeholder.
@@ -5946,7 +6208,7 @@ exports.removeBlobs = function(data, callback) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-socket.io-parser@2.2.6/is-buffer.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 
 module.exports = isBuf;
 
@@ -5963,234 +6225,9 @@ function isBuf(obj) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-base64-js@0.0.8/lib/b64.js-=@*/
-var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-;(function (exports) {
-	'use strict';
-
-  var Arr = (typeof Uint8Array !== 'undefined')
-    ? Uint8Array
-    : Array
-
-	var PLUS   = '+'.charCodeAt(0)
-	var SLASH  = '/'.charCodeAt(0)
-	var NUMBER = '0'.charCodeAt(0)
-	var LOWER  = 'a'.charCodeAt(0)
-	var UPPER  = 'A'.charCodeAt(0)
-	var PLUS_URL_SAFE = '-'.charCodeAt(0)
-	var SLASH_URL_SAFE = '_'.charCodeAt(0)
-
-	function decode (elt) {
-		var code = elt.charCodeAt(0)
-		if (code === PLUS ||
-		    code === PLUS_URL_SAFE)
-			return 62 // '+'
-		if (code === SLASH ||
-		    code === SLASH_URL_SAFE)
-			return 63 // '/'
-		if (code < NUMBER)
-			return -1 //no match
-		if (code < NUMBER + 10)
-			return code - NUMBER + 26 + 26
-		if (code < UPPER + 26)
-			return code - UPPER
-		if (code < LOWER + 26)
-			return code - LOWER + 26
-	}
-
-	function b64ToByteArray (b64) {
-		var i, j, l, tmp, placeHolders, arr
-
-		if (b64.length % 4 > 0) {
-			throw new Error('Invalid string. Length must be a multiple of 4')
-		}
-
-		// the number of equal signs (place holders)
-		// if there are two placeholders, than the two characters before it
-		// represent one byte
-		// if there is only one, then the three characters before it represent 2 bytes
-		// this is just a cheap hack to not do indexOf twice
-		var len = b64.length
-		placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
-
-		// base64 is 4/3 + up to two characters of the original data
-		arr = new Arr(b64.length * 3 / 4 - placeHolders)
-
-		// if there are placeholders, only get up to the last complete 4 chars
-		l = placeHolders > 0 ? b64.length - 4 : b64.length
-
-		var L = 0
-
-		function push (v) {
-			arr[L++] = v
-		}
-
-		for (i = 0, j = 0; i < l; i += 4, j += 3) {
-			tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
-			push((tmp & 0xFF0000) >> 16)
-			push((tmp & 0xFF00) >> 8)
-			push(tmp & 0xFF)
-		}
-
-		if (placeHolders === 2) {
-			tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
-			push(tmp & 0xFF)
-		} else if (placeHolders === 1) {
-			tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
-			push((tmp >> 8) & 0xFF)
-			push(tmp & 0xFF)
-		}
-
-		return arr
-	}
-
-	function uint8ToBase64 (uint8) {
-		var i,
-			extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
-			output = "",
-			temp, length
-
-		function encode (num) {
-			return lookup.charAt(num)
-		}
-
-		function tripletToBase64 (num) {
-			return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
-		}
-
-		// go through the array every three bytes, we'll deal with trailing stuff later
-		for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
-			temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-			output += tripletToBase64(temp)
-		}
-
-		// pad the end with zeros, but make sure to not forget the extra bytes
-		switch (extraBytes) {
-			case 1:
-				temp = uint8[uint8.length - 1]
-				output += encode(temp >> 2)
-				output += encode((temp << 4) & 0x3F)
-				output += '=='
-				break
-			case 2:
-				temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
-				output += encode(temp >> 10)
-				output += encode((temp >> 4) & 0x3F)
-				output += encode((temp << 2) & 0x3F)
-				output += '='
-				break
-		}
-
-		return output
-	}
-
-	exports.toByteArray = b64ToByteArray
-	exports.fromByteArray = uint8ToBase64
-}(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-ieee754@1.1.6/index.js-=@*/
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-isarray@1.0.0/index.js-=@*/
-var toString = {}.toString;
-
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
-};
-
-},
-function(require, exports, module, undefined, global) {
 /*@=-engine.io-client@1.6.11/index.js-=@*/
 
-module.exports =  require(38);
+module.exports =  require(39);
 
 },
 function(require, exports, module, undefined, global) {
@@ -6518,7 +6555,7 @@ Backoff.prototype.setJitter = function(jitter){
 function(require, exports, module, undefined, global) {
 /*@=-engine.io-client@1.6.11/lib/index.js-=@*/
 
-module.exports = require(39);
+module.exports = require(40);
 
 /**
  * Exports parser
@@ -6526,7 +6563,7 @@ module.exports = require(39);
  * @api public
  *
  */
-module.exports.parser = require(40);
+module.exports.parser = require(41);
 
 },
 function(require, exports, module, undefined, global) {
@@ -6535,14 +6572,14 @@ function(require, exports, module, undefined, global) {
  * Module dependencies.
  */
 
-var transports = require(41);
-var Emitter = require(26);
-var debug = require(18)('engine.io-client:socket');
-var index = require(36);
-var parser = require(40);
-var parseuri = require(20);
-var parsejson = require(42);
-var parseqs = require(43);
+var transports = require(42);
+var Emitter = require(30);
+var debug = require(23)('engine.io-client:socket');
+var index = require(37);
+var parser = require(41);
+var parseuri = require(25);
+var parsejson = require(43);
+var parseqs = require(44);
 
 /**
  * Module exports.
@@ -6666,9 +6703,9 @@ Socket.protocol = parser.protocol; // this is an int
  */
 
 Socket.Socket = Socket;
-Socket.Transport = require(44);
-Socket.transports = require(41);
-Socket.parser = require(40);
+Socket.Transport = require(45);
+Socket.transports = require(42);
+Socket.parser = require(41);
 
 /**
  * Creates transport of the given type.
@@ -7267,12 +7304,12 @@ function(require, exports, module, undefined, global) {
  * Module dependencies.
  */
 
-var keys = require(53);
-var hasBinary = require(54);
-var sliceBuffer = require(55);
-var base64encoder = require(56);
-var after = require(57);
-var utf8 = require(58);
+var keys = require(54);
+var hasBinary = require(55);
+var sliceBuffer = require(56);
+var base64encoder = require(57);
+var after = require(58);
+var utf8 = require(59);
 
 /**
  * Check if we are running an android browser. That requires us to use
@@ -7329,7 +7366,7 @@ var err = { type: 'error', data: 'parser error' };
  * Create a blob api even for blob builder when vendor prefixes exist
  */
 
-var Blob = require(59);
+var Blob = require(60);
 
 /**
  * Encodes a packet.
@@ -7865,10 +7902,10 @@ function(require, exports, module, undefined, global) {
  * Module dependencies
  */
 
-var XMLHttpRequest = require(45);
-var XHR = require(46);
-var JSONP = require(47);
-var websocket = require(48);
+var XMLHttpRequest = require(46);
+var XHR = require(47);
+var JSONP = require(48);
+var websocket = require(49);
 
 /**
  * Export transports.
@@ -7998,8 +8035,8 @@ function(require, exports, module, undefined, global) {
  * Module dependencies.
  */
 
-var parser = require(40);
-var Emitter = require(26);
+var parser = require(41);
+var Emitter = require(30);
 
 /**
  * Module exports.
@@ -8154,7 +8191,7 @@ Transport.prototype.onClose = function () {
 function(require, exports, module, undefined, global) {
 /*@=-engine.io-client@1.6.11/lib/xmlhttprequest.js-=@*/
 // browser shim for xmlhttprequest module
-var hasCORS = require(49);
+var hasCORS = require(50);
 
 module.exports = function(opts) {
   var xdomain = opts.xdomain;
@@ -8197,11 +8234,11 @@ function(require, exports, module, undefined, global) {
  * Module requirements.
  */
 
-var XMLHttpRequest = require(45);
-var Polling = require(50);
-var Emitter = require(26);
-var inherit = require(51);
-var debug = require(18)('engine.io-client:polling-xhr');
+var XMLHttpRequest = require(46);
+var Polling = require(51);
+var Emitter = require(30);
+var inherit = require(52);
+var debug = require(23)('engine.io-client:polling-xhr');
 
 /**
  * Module exports.
@@ -8614,8 +8651,8 @@ function(require, exports, module, undefined, global) {
  * Module requirements.
  */
 
-var Polling = require(50);
-var inherit = require(51);
+var Polling = require(51);
+var inherit = require(52);
 
 /**
  * Module exports.
@@ -8851,17 +8888,17 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-engine.io-client@1.6.11/lib/transports/websocket.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /**
  * Module dependencies.
  */
 
-var Transport = require(44);
-var parser = require(40);
-var parseqs = require(43);
-var inherit = require(51);
-var yeast = require(52);
-var debug = require(18)('engine.io-client:websocket');
+var Transport = require(45);
+var parser = require(41);
+var parseqs = require(44);
+var inherit = require(52);
+var yeast = require(53);
+var debug = require(23)('engine.io-client:websocket');
 var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 
 /**
@@ -8873,7 +8910,7 @@ var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 var WebSocket = BrowserWebSocket;
 if (!WebSocket && typeof window === 'undefined') {
   try {
-    WebSocket = require(60);
+    WebSocket = require(61);
   } catch (e) { }
 }
 
@@ -9169,12 +9206,12 @@ function(require, exports, module, undefined, global) {
  * Module dependencies.
  */
 
-var Transport = require(44);
-var parseqs = require(43);
-var parser = require(40);
-var inherit = require(51);
-var yeast = require(52);
-var debug = require(18)('engine.io-client:polling');
+var Transport = require(45);
+var parseqs = require(44);
+var parser = require(41);
+var inherit = require(52);
+var yeast = require(53);
+var debug = require(23)('engine.io-client:polling');
 
 /**
  * Module exports.
@@ -9187,7 +9224,7 @@ module.exports = Polling;
  */
 
 var hasXHR2 = (function() {
-  var XMLHttpRequest = require(45);
+  var XMLHttpRequest = require(46);
   var xhr = new XMLHttpRequest({ xdomain: false });
   return null != xhr.responseType;
 })();
@@ -9521,13 +9558,13 @@ module.exports = Object.keys || function keys (obj){
 },
 function(require, exports, module, undefined, global) {
 /*@=-has-binary@0.1.6/index.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 
 /*
  * Module requirements.
  */
 
-var isArray = require(25);
+var isArray = require(29);
 
 /**
  * Module exports.
@@ -10068,11 +10105,11 @@ function(require, exports, module, undefined, global) {
  * MIT Licensed
  */
 
-var WS = module.exports = require(61);
+var WS = module.exports = require(62);
 
-WS.Server = require(62);
-WS.Sender = require(63);
-WS.Receiver = require(64);
+WS.Server = require(63);
+WS.Sender = require(64);
+WS.Receiver = require(65);
 
 /**
  * Create a new WebSocket server.
@@ -10113,8 +10150,8 @@ WS.connect = WS.createConnection = function connect(address, fn) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/WebSocket.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
+var Buffer = require(5).Buffer;
+var process = require(6);
 'use strict';
 
 /*!
@@ -10123,21 +10160,21 @@ var process = require(5);
  * MIT Licensed
  */
 
-var url = require(65)
-  , util = require(66)
-  , http = require(67)
-  , https = require(68)
-  , crypto = require(69)
-  , stream = require(70)
-  , Ultron = require(71)
-  , Options = require(72)
-  , Sender = require(63)
-  , Receiver = require(64)
-  , SenderHixie = require(73)
-  , ReceiverHixie = require(74)
-  , Extensions = require(75)
-  , PerMessageDeflate = require(76)
-  , EventEmitter = require(77).EventEmitter;
+var url = require(66)
+  , util = require(67)
+  , http = require(68)
+  , https = require(69)
+  , crypto = require(70)
+  , stream = require(71)
+  , Ultron = require(72)
+  , Options = require(73)
+  , Sender = require(64)
+  , Receiver = require(65)
+  , SenderHixie = require(74)
+  , ReceiverHixie = require(75)
+  , Extensions = require(76)
+  , PerMessageDeflate = require(77)
+  , EventEmitter = require(78).EventEmitter;
 
 /**
  * Constants
@@ -11084,24 +11121,24 @@ function cleanupWebsocketResources(error) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/WebSocketServer.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
+var Buffer = require(5).Buffer;
+var process = require(6);
 /*!
  * ws: a node.js websocket client
  * Copyright(c) 2011 Einar Otto Stangvik <einaros@gmail.com>
  * MIT Licensed
  */
 
-var util = require(66)
-  , events = require(77)
-  , http = require(67)
-  , crypto = require(69)
-  , Options = require(72)
-  , WebSocket = require(61)
-  , Extensions = require(75)
-  , PerMessageDeflate = require(76)
-  , tls = require(212)
-  , url = require(65);
+var util = require(67)
+  , events = require(78)
+  , http = require(68)
+  , crypto = require(70)
+  , Options = require(73)
+  , WebSocket = require(62)
+  , Extensions = require(76)
+  , PerMessageDeflate = require(77)
+  , tls = require(213)
+  , url = require(66);
 
 /**
  * WebSocket Server implementation
@@ -11603,19 +11640,19 @@ function abortConnection(socket, code, name) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/Sender.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*!
  * ws: a node.js websocket client
  * Copyright(c) 2011 Einar Otto Stangvik <einaros@gmail.com>
  * MIT Licensed
  */
 
-var events = require(77)
-  , util = require(66)
+var events = require(78)
+  , util = require(67)
   , EventEmitter = events.EventEmitter
-  , ErrorCodes = require(213)
-  , bufferUtil = require(214).BufferUtil
-  , PerMessageDeflate = require(76);
+  , ErrorCodes = require(214)
+  , bufferUtil = require(215).BufferUtil
+  , PerMessageDeflate = require(77);
 
 /**
  * HyBi Sender implementation
@@ -11932,19 +11969,19 @@ function getRandomMask() {
 },
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/Receiver.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*!
  * ws: a node.js websocket client
  * Copyright(c) 2011 Einar Otto Stangvik <einaros@gmail.com>
  * MIT Licensed
  */
 
-var util = require(66)
-  , Validation = require(234).Validation
-  , ErrorCodes = require(213)
-  , BufferPool = require(235)
-  , bufferUtil = require(214).BufferUtil
-  , PerMessageDeflate = require(76);
+var util = require(67)
+  , Validation = require(235).Validation
+  , ErrorCodes = require(214)
+  , BufferPool = require(236)
+  , bufferUtil = require(215).BufferUtil
+  , PerMessageDeflate = require(77);
 
 /**
  * HyBi Receiver implementation
@@ -12662,8 +12699,8 @@ function(require, exports, module, undefined, global) {
 
 'use strict';
 
-var punycode = require(78);
-var util = require(79);
+var punycode = require(79);
+var util = require(80);
 
 exports.parse = urlParse;
 exports.resolve = urlResolve;
@@ -12738,7 +12775,7 @@ var protocolPattern = /^([a-z0-9.+-]+:)/i,
       'gopher:': true,
       'file:': true
     },
-    querystring = require(80);
+    querystring = require(81);
 
 function urlParse(url, parseQueryString, slashesDenoteHost) {
   if (url && util.isObject(url) && url instanceof Url) return url;
@@ -13375,7 +13412,7 @@ Url.prototype.parseHost = function() {
 },
 function(require, exports, module, undefined, global) {
 /*@=-util@0.10.3/util.js-=@*/
-var process = require(5);
+var process = require(6);
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -13901,7 +13938,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = require(83);
+exports.isBuffer = require(84);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -13945,7 +13982,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = require(84);
+exports.inherits = require(85);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -13966,10 +14003,10 @@ function hasOwnProperty(obj, prop) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-stream-http@2.3.1/index.js-=@*/
-var ClientRequest = require(85)
-var extend = require(86)
-var statusCodes = require(87)
-var url = require(65)
+var ClientRequest = require(86)
+var extend = require(87)
+var statusCodes = require(88)
+var url = require(66)
 
 var http = exports
 
@@ -14048,7 +14085,7 @@ http.METHODS = [
 },
 function(require, exports, module, undefined, global) {
 /*@=-https-browserify@0.0.1/index.js-=@*/
-var http = require(67);
+var http = require(68);
 
 var https = module.exports;
 
@@ -14068,20 +14105,20 @@ function(require, exports, module, undefined, global) {
 /*@=-crypto-browserify@3.11.0/index.js-=@*/
 'use strict'
 
-exports.randomBytes = exports.rng = exports.pseudoRandomBytes = exports.prng = require(103)
-exports.createHash = exports.Hash = require(104)
-exports.createHmac = exports.Hmac = require(105)
+exports.randomBytes = exports.rng = exports.pseudoRandomBytes = exports.prng = require(104)
+exports.createHash = exports.Hash = require(105)
+exports.createHmac = exports.Hmac = require(106)
 
-var hashes = ['sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'md5', 'rmd160'].concat(Object.keys(require(106)))
+var hashes = ['sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'md5', 'rmd160'].concat(Object.keys(require(107)))
 exports.getHashes = function () {
   return hashes
 }
 
-var p = require(107)
+var p = require(108)
 exports.pbkdf2 = p.pbkdf2
 exports.pbkdf2Sync = p.pbkdf2Sync
 
-var aes = require(108)
+var aes = require(109)
 ;[
   'Cipher',
   'createCipher',
@@ -14097,7 +14134,7 @@ var aes = require(108)
   exports[key] = aes[key]
 })
 
-var dh = require(109)
+var dh = require(110)
 ;[
   'DiffieHellmanGroup',
   'createDiffieHellmanGroup',
@@ -14108,7 +14145,7 @@ var dh = require(109)
   exports[key] = dh[key]
 })
 
-var sign = require(110)
+var sign = require(111)
 ;[
   'createSign',
   'Sign',
@@ -14118,9 +14155,9 @@ var sign = require(110)
   exports[key] = sign[key]
 })
 
-exports.createECDH = require(111)
+exports.createECDH = require(112)
 
-var publicEncrypt = require(112)
+var publicEncrypt = require(113)
 
 ;[
   'publicEncrypt',
@@ -14170,15 +14207,15 @@ function(require, exports, module, undefined, global) {
 
 module.exports = Stream;
 
-var EE = require(77).EventEmitter;
-var inherits = require(84);
+var EE = require(78).EventEmitter;
+var inherits = require(85);
 
 inherits(Stream, EE);
-Stream.Readable = require(90);
-Stream.Writable = require(125);
-Stream.Duplex = require(126);
-Stream.Transform = require(127);
-Stream.PassThrough = require(128);
+Stream.Readable = require(91);
+Stream.Writable = require(126);
+Stream.Duplex = require(127);
+Stream.Transform = require(128);
+Stream.PassThrough = require(129);
 
 // Backwards-compat with node 0.4.x
 Stream.Stream = Stream;
@@ -14416,7 +14453,7 @@ function(require, exports, module, undefined, global) {
  * MIT Licensed
  */
 
-var fs = require(212);
+var fs = require(213);
 
 function Options(defaults) {
   var internalValues = {};
@@ -14501,15 +14538,15 @@ module.exports = Options;
 },
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/Sender.hixie.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*!
  * ws: a node.js websocket client
  * Copyright(c) 2011 Einar Otto Stangvik <einaros@gmail.com>
  * MIT Licensed
  */
 
-var events = require(77)
-  , util = require(66)
+var events = require(78)
+  , util = require(67)
   , EventEmitter = events.EventEmitter;
 
 /**
@@ -14630,14 +14667,14 @@ Sender.prototype.error = function (reason) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/Receiver.hixie.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*!
  * ws: a node.js websocket client
  * Copyright(c) 2011 Einar Otto Stangvik <einaros@gmail.com>
  * MIT Licensed
  */
 
-var util = require(66);
+var util = require(67);
 
 /**
  * State constants
@@ -14820,7 +14857,7 @@ function bufferIndex(buffer, byte) {
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/Extensions.js-=@*/
 
-var util = require(66);
+var util = require(67);
 
 /**
  * Module exports.
@@ -14893,9 +14930,9 @@ function format(value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/PerMessageDeflate.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 
-var zlib = require(220);
+var zlib = require(221);
 
 var AVAILABLE_WINDOW_BITS = [8, 9, 10, 11, 12, 13, 14, 15];
 var DEFAULT_WINDOW_BITS = 15;
@@ -15529,7 +15566,7 @@ function isUndefined(arg) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-punycode@1.4.1/punycode.js-=@*/
-var process = require(5);
+var process = require(6);
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
 
@@ -16089,8 +16126,8 @@ function(require, exports, module, undefined, global) {
 /*@=-querystring-es3@0.2.1/index.js-=@*/
 'use strict';
 
-exports.decode = exports.parse = require(81);
-exports.encode = exports.stringify = require(82);
+exports.decode = exports.parse = require(82);
+exports.encode = exports.stringify = require(83);
 
 },
 function(require, exports, module, undefined, global) {
@@ -16272,7 +16309,7 @@ var objectKeys = Object.keys || function (obj) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-util@0.10.3/support/isBuffer.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 module.exports = function isBuffer(arg) {
   return arg instanceof Buffer;
 }
@@ -16307,13 +16344,13 @@ if (typeof Object.create === 'function') {
 },
 function(require, exports, module, undefined, global) {
 /*@=-stream-http@2.3.1/lib/request.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
-var capability = require(88)
-var inherits = require(84)
-var response = require(89)
-var stream = require(90)
-var toArrayBuffer = require(91)
+var Buffer = require(5).Buffer;
+var process = require(6);
+var capability = require(89)
+var inherits = require(85)
+var response = require(90)
+var stream = require(91)
+var toArrayBuffer = require(92)
 
 var IncomingMessage = response.IncomingMessage
 var rStates = response.readyStates
@@ -16724,11 +16761,11 @@ xhr = null // Help gc
 },
 function(require, exports, module, undefined, global) {
 /*@=-stream-http@2.3.1/lib/response.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
-var capability = require(88)
-var inherits = require(84)
-var stream = require(90)
+var Buffer = require(5).Buffer;
+var process = require(6);
+var capability = require(89)
+var inherits = require(85)
+var stream = require(91)
 
 var rStates = exports.readyStates = {
 	UNSENT: 0,
@@ -16910,19 +16947,19 @@ IncomingMessage.prototype._onXHRProgress = function () {
 },
 function(require, exports, module, undefined, global) {
 /*@=-readable-stream@2.1.5/readable.js-=@*/
-var process = require(5);
+var process = require(6);
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
   } catch(_){}
 }());
-exports = module.exports = require(92);
+exports = module.exports = require(93);
 exports.Stream = Stream || exports;
 exports.Readable = exports;
-exports.Writable = require(93);
-exports.Duplex = require(94);
-exports.Transform = require(95);
-exports.PassThrough = require(96);
+exports.Writable = require(94);
+exports.Duplex = require(95);
+exports.Transform = require(96);
+exports.PassThrough = require(97);
 
 if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
   module.exports = Stream;
@@ -16931,8 +16968,8 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-to-arraybuffer@1.0.1/index.js-=@*/
-var Buffer = require(23).Buffer;
-var Buffer = require(23).Buffer
+var Buffer = require(5).Buffer;
+var Buffer = require(5).Buffer
 
 module.exports = function (buf) {
 	// If the buffer is backed by a Uint8Array, a faster version will work
@@ -16963,24 +17000,24 @@ module.exports = function (buf) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-readable-stream@2.1.5/lib/_stream_readable.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
+var Buffer = require(5).Buffer;
+var process = require(6);
 'use strict';
 
 module.exports = Readable;
 
 /*<replacement>*/
-var processNextTick = require(97);
+var processNextTick = require(98);
 /*</replacement>*/
 
 /*<replacement>*/
-var isArray = require(31);
+var isArray = require(9);
 /*</replacement>*/
 
 Readable.ReadableState = ReadableState;
 
 /*<replacement>*/
-var EE = require(77).EventEmitter;
+var EE = require(78).EventEmitter;
 
 var EElistenerCount = function (emitter, type) {
   return emitter.listeners(type).length;
@@ -16993,23 +17030,23 @@ var Stream;
   try {
     Stream = require('st' + 'ream');
   } catch (_) {} finally {
-    if (!Stream) Stream = require(77).EventEmitter;
+    if (!Stream) Stream = require(78).EventEmitter;
   }
 })();
 /*</replacement>*/
 
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*<replacement>*/
-var bufferShim = require(98);
+var bufferShim = require(99);
 /*</replacement>*/
 
 /*<replacement>*/
-var util = require(99);
-util.inherits = require(84);
+var util = require(100);
+util.inherits = require(85);
 /*</replacement>*/
 
 /*<replacement>*/
-var debugUtil = require(66);
+var debugUtil = require(67);
 var debug = void 0;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
@@ -17018,7 +17055,7 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
-var BufferList = require(100);
+var BufferList = require(101);
 var StringDecoder;
 
 util.inherits(Readable, Stream);
@@ -17037,7 +17074,7 @@ function prependListener(emitter, event, fn) {
 
 var Duplex;
 function ReadableState(options, stream) {
-  Duplex = Duplex || require(94);
+  Duplex = Duplex || require(95);
 
   options = options || {};
 
@@ -17099,7 +17136,7 @@ function ReadableState(options, stream) {
   this.decoder = null;
   this.encoding = null;
   if (options.encoding) {
-    if (!StringDecoder) StringDecoder = require(101).StringDecoder;
+    if (!StringDecoder) StringDecoder = require(102).StringDecoder;
     this.decoder = new StringDecoder(options.encoding);
     this.encoding = options.encoding;
   }
@@ -17107,7 +17144,7 @@ function ReadableState(options, stream) {
 
 var Duplex;
 function Readable(options) {
-  Duplex = Duplex || require(94);
+  Duplex = Duplex || require(95);
 
   if (!(this instanceof Readable)) return new Readable(options);
 
@@ -17210,7 +17247,7 @@ function needMoreData(state) {
 
 // backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
-  if (!StringDecoder) StringDecoder = require(101).StringDecoder;
+  if (!StringDecoder) StringDecoder = require(102).StringDecoder;
   this._readableState.decoder = new StringDecoder(enc);
   this._readableState.encoding = enc;
   return this;
@@ -17905,8 +17942,8 @@ function indexOf(xs, x) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-readable-stream@2.1.5/lib/_stream_writable.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
+var Buffer = require(5).Buffer;
+var process = require(6);
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
 // the drain event emission and buffering.
@@ -17916,7 +17953,7 @@ var process = require(5);
 module.exports = Writable;
 
 /*<replacement>*/
-var processNextTick = require(97);
+var processNextTick = require(98);
 /*</replacement>*/
 
 /*<replacement>*/
@@ -17926,13 +17963,13 @@ var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.
 Writable.WritableState = WritableState;
 
 /*<replacement>*/
-var util = require(99);
-util.inherits = require(84);
+var util = require(100);
+util.inherits = require(85);
 /*</replacement>*/
 
 /*<replacement>*/
 var internalUtil = {
-  deprecate: require(102)
+  deprecate: require(103)
 };
 /*</replacement>*/
 
@@ -17942,14 +17979,14 @@ var Stream;
   try {
     Stream = require('st' + 'ream');
   } catch (_) {} finally {
-    if (!Stream) Stream = require(77).EventEmitter;
+    if (!Stream) Stream = require(78).EventEmitter;
   }
 })();
 /*</replacement>*/
 
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*<replacement>*/
-var bufferShim = require(98);
+var bufferShim = require(99);
 /*</replacement>*/
 
 util.inherits(Writable, Stream);
@@ -17965,7 +18002,7 @@ function WriteReq(chunk, encoding, cb) {
 
 var Duplex;
 function WritableState(options, stream) {
-  Duplex = Duplex || require(94);
+  Duplex = Duplex || require(95);
 
   options = options || {};
 
@@ -18081,7 +18118,7 @@ WritableState.prototype.getBuffer = function writableStateGetBuffer() {
 
 var Duplex;
 function Writable(options) {
-  Duplex = Duplex || require(94);
+  Duplex = Duplex || require(95);
 
   // Writable ctor is applied to Duplexes, though they're not
   // instanceof Writable, they're instanceof Readable.
@@ -18436,7 +18473,7 @@ function CorkedRequest(state) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-readable-stream@2.1.5/lib/_stream_duplex.js-=@*/
-var process = require(5);
+var process = require(6);
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -18457,16 +18494,16 @@ var objectKeys = Object.keys || function (obj) {
 module.exports = Duplex;
 
 /*<replacement>*/
-var processNextTick = require(97);
+var processNextTick = require(98);
 /*</replacement>*/
 
 /*<replacement>*/
-var util = require(99);
-util.inherits = require(84);
+var util = require(100);
+util.inherits = require(85);
 /*</replacement>*/
 
-var Readable = require(92);
-var Writable = require(93);
+var Readable = require(93);
+var Writable = require(94);
 
 util.inherits(Duplex, Readable);
 
@@ -18561,11 +18598,11 @@ function(require, exports, module, undefined, global) {
 
 module.exports = Transform;
 
-var Duplex = require(94);
+var Duplex = require(95);
 
 /*<replacement>*/
-var util = require(99);
-util.inherits = require(84);
+var util = require(100);
+util.inherits = require(85);
 /*</replacement>*/
 
 util.inherits(Transform, Duplex);
@@ -18706,11 +18743,11 @@ function(require, exports, module, undefined, global) {
 
 module.exports = PassThrough;
 
-var Transform = require(95);
+var Transform = require(96);
 
 /*<replacement>*/
-var util = require(99);
-util.inherits = require(84);
+var util = require(100);
+util.inherits = require(85);
 /*</replacement>*/
 
 util.inherits(PassThrough, Transform);
@@ -18727,7 +18764,7 @@ PassThrough.prototype._transform = function (chunk, encoding, cb) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-process-nextick-args@1.0.7/index.js-=@*/
-var process = require(5);
+var process = require(6);
 'use strict';
 
 if (!process.version ||
@@ -18775,10 +18812,10 @@ function nextTick(fn, arg1, arg2, arg3) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-buffer-shims@1.0.0/index.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 'use strict';
 
-var buffer = require(23);
+var buffer = require(5);
 var Buffer = buffer.Buffer;
 var SlowBuffer = buffer.SlowBuffer;
 var MAX_LEN = buffer.kMaxLength || 2147483647;
@@ -18888,7 +18925,7 @@ exports.allocUnsafeSlow = function allocUnsafeSlow(size) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-core-util-is@1.0.2/lib/util.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19000,12 +19037,12 @@ function objectToString(o) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-readable-stream@2.1.5/lib/internal/streams/BufferList.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 'use strict';
 
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*<replacement>*/
-var bufferShim = require(98);
+var bufferShim = require(99);
 /*</replacement>*/
 
 module.exports = BufferList;
@@ -19068,7 +19105,7 @@ BufferList.prototype.concat = function (n) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-string_decoder@0.10.31/index.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19090,7 +19127,7 @@ var Buffer = require(23).Buffer;
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 
 var isBufferEncoding = Buffer.isEncoding
   || function(encoding) {
@@ -19365,8 +19402,8 @@ function config (name) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-randombytes@2.0.3/browser.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
+var Buffer = require(5).Buffer;
+var process = require(6);
 'use strict'
 
 function oldBrowser () {
@@ -19407,14 +19444,14 @@ function randomBytes (size, cb) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-create-hash@1.1.2/browser.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 'use strict';
-var inherits = require(84)
-var md5 = require(113)
-var rmd160 = require(114)
-var sha = require(115)
+var inherits = require(85)
+var md5 = require(114)
+var rmd160 = require(115)
+var sha = require(116)
 
-var Base = require(116)
+var Base = require(117)
 
 function HashNoConstructor(hash) {
   Base.call(this, 'digest')
@@ -19464,12 +19501,12 @@ module.exports = function createHash (alg) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-create-hmac@1.1.4/browser.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 'use strict';
-var createHash = require(104);
-var inherits = require(84)
+var createHash = require(105);
+var inherits = require(85)
 
-var Transform = require(70).Transform
+var Transform = require(71).Transform
 
 var ZEROS = new Buffer(128)
 ZEROS.fill(0)
@@ -19537,7 +19574,7 @@ module.exports = function createHmac(alg, key) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-sign@4.0.0/algos.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 'use strict'
 exports['RSA-SHA224'] = exports.sha224WithRSAEncryption = {
   sign: 'rsa',
@@ -19614,8 +19651,8 @@ exports['RSA-MD5'] = exports.md5WithRSAEncryption = {
 },
 function(require, exports, module, undefined, global) {
 /*@=-pbkdf2@3.0.4/browser.js-=@*/
-var Buffer = require(23).Buffer;
-var createHmac = require(105)
+var Buffer = require(5).Buffer;
+var createHmac = require(106)
 var MAX_ALLOC = Math.pow(2, 30) - 1 // default in iojs
 
 exports.pbkdf2 = pbkdf2
@@ -19699,11 +19736,11 @@ function pbkdf2Sync (password, salt, iterations, keylen, digest) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-cipher@1.0.0/browser.js-=@*/
-var ebtk = require(129)
-var aes = require(130)
-var DES = require(131)
-var desModes = require(132)
-var aesModes = require(133)
+var ebtk = require(130)
+var aes = require(131)
+var DES = require(132)
+var desModes = require(133)
+var aesModes = require(134)
 function createCipher (suite, password) {
   var keyLen, ivLen
   suite = suite.toLowerCase()
@@ -19776,11 +19813,11 @@ exports.listCiphers = exports.getCiphers = getCiphers
 },
 function(require, exports, module, undefined, global) {
 /*@=-diffie-hellman@5.0.2/browser.js-=@*/
-var Buffer = require(23).Buffer;
-var generatePrime = require(155)
-var primes = require(156)
+var Buffer = require(5).Buffer;
+var generatePrime = require(156)
+var primes = require(157)
 
-var DH = require(157)
+var DH = require(158)
 
 function getDiffieHellman (mod) {
   var prime = new Buffer(primes[mod].prime, 'hex')
@@ -19823,13 +19860,13 @@ exports.createDiffieHellman = exports.DiffieHellman = createDiffieHellman
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-sign@4.0.0/browser.js-=@*/
-var Buffer = require(23).Buffer;
-var _algos = require(106)
-var createHash = require(104)
-var inherits = require(84)
-var sign = require(161)
-var stream = require(70)
-var verify = require(162)
+var Buffer = require(5).Buffer;
+var _algos = require(107)
+var createHash = require(105)
+var inherits = require(85)
+var sign = require(162)
+var stream = require(71)
+var verify = require(163)
 
 var algos = {}
 Object.keys(_algos).forEach(function (key) {
@@ -19931,9 +19968,9 @@ module.exports = {
 },
 function(require, exports, module, undefined, global) {
 /*@=-create-ecdh@4.0.0/browser.js-=@*/
-var Buffer = require(23).Buffer;
-var elliptic = require(165);
-var BN = require(158);
+var Buffer = require(5).Buffer;
+var elliptic = require(166);
+var BN = require(159);
 
 module.exports = function createECDH(curve) {
 	return new ECDH(curve);
@@ -20058,8 +20095,8 @@ function formatReturnValue(bn, enc, len) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-public-encrypt@4.0.0/browser.js-=@*/
-exports.publicEncrypt = require(207);
-exports.privateDecrypt = require(208);
+exports.publicEncrypt = require(208);
+exports.privateDecrypt = require(209);
 
 exports.privateEncrypt = function privateEncrypt(key, buf) {
   return exports.publicEncrypt(key, buf, true);
@@ -20081,7 +20118,7 @@ function(require, exports, module, undefined, global) {
  * See http://pajhome.org.uk/crypt/md5 for more info.
  */
 
-var helpers = require(117);
+var helpers = require(118);
 
 /*
  * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -20230,7 +20267,7 @@ module.exports = function md5(buf) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-ripemd160@1.0.1/lib/ripemd160.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*
 CryptoJS v3.1.2
 code.google.com/p/crypto-js
@@ -20454,20 +20491,20 @@ var exports = module.exports = function SHA (algorithm) {
   return new Algorithm()
 }
 
-exports.sha = require(118)
-exports.sha1 = require(119)
-exports.sha224 = require(120)
-exports.sha256 = require(121)
-exports.sha384 = require(122)
-exports.sha512 = require(123)
+exports.sha = require(119)
+exports.sha1 = require(120)
+exports.sha224 = require(121)
+exports.sha256 = require(122)
+exports.sha384 = require(123)
+exports.sha512 = require(124)
 
 },
 function(require, exports, module, undefined, global) {
 /*@=-cipher-base@1.0.2/index.js-=@*/
-var Buffer = require(23).Buffer;
-var Transform = require(70).Transform
-var inherits = require(84)
-var StringDecoder = require(101).StringDecoder
+var Buffer = require(5).Buffer;
+var Transform = require(71).Transform
+var inherits = require(85)
+var StringDecoder = require(102).StringDecoder
 module.exports = CipherBase
 inherits(CipherBase, Transform)
 function CipherBase (hashMode) {
@@ -20559,7 +20596,7 @@ CipherBase.prototype._toString = function (value, enc, final) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-create-hash@1.1.2/helpers.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 'use strict';
 var intSize = 4;
 var zeroBuffer = new Buffer(intSize); zeroBuffer.fill(0);
@@ -20597,7 +20634,7 @@ exports.hash = hash;
 },
 function(require, exports, module, undefined, global) {
 /*@=-sha.js@2.4.5/sha.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-0, as defined
  * in FIPS PUB 180-1
@@ -20606,8 +20643,8 @@ var Buffer = require(23).Buffer;
  * operation was added.
  */
 
-var inherits = require(84)
-var Hash = require(124)
+var inherits = require(85)
+var Hash = require(125)
 
 var K = [
   0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
@@ -20695,7 +20732,7 @@ module.exports = Sha
 },
 function(require, exports, module, undefined, global) {
 /*@=-sha.js@2.4.5/sha1.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
  * in FIPS PUB 180-1
@@ -20705,8 +20742,8 @@ var Buffer = require(23).Buffer;
  * See http://pajhome.org.uk/crypt/md5 for details.
  */
 
-var inherits = require(84)
-var Hash = require(124)
+var inherits = require(85)
+var Hash = require(125)
 
 var K = [
   0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
@@ -20798,7 +20835,7 @@ module.exports = Sha1
 },
 function(require, exports, module, undefined, global) {
 /*@=-sha.js@2.4.5/sha224.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
  * in FIPS 180-2
@@ -20807,9 +20844,9 @@ var Buffer = require(23).Buffer;
  *
  */
 
-var inherits = require(84)
-var Sha256 = require(121)
-var Hash = require(124)
+var inherits = require(85)
+var Sha256 = require(122)
+var Hash = require(125)
 
 var W = new Array(64)
 
@@ -20855,7 +20892,7 @@ module.exports = Sha224
 },
 function(require, exports, module, undefined, global) {
 /*@=-sha.js@2.4.5/sha256.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
  * in FIPS 180-2
@@ -20864,8 +20901,8 @@ var Buffer = require(23).Buffer;
  *
  */
 
-var inherits = require(84)
-var Hash = require(124)
+var inherits = require(85)
+var Hash = require(125)
 
 var K = [
   0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
@@ -20994,10 +21031,10 @@ module.exports = Sha256
 },
 function(require, exports, module, undefined, global) {
 /*@=-sha.js@2.4.5/sha384.js-=@*/
-var Buffer = require(23).Buffer;
-var inherits = require(84)
-var SHA512 = require(123)
-var Hash = require(124)
+var Buffer = require(5).Buffer;
+var inherits = require(85)
+var SHA512 = require(124)
+var Hash = require(125)
 
 var W = new Array(160)
 
@@ -21055,9 +21092,9 @@ module.exports = Sha384
 },
 function(require, exports, module, undefined, global) {
 /*@=-sha.js@2.4.5/sha512.js-=@*/
-var Buffer = require(23).Buffer;
-var inherits = require(84)
-var Hash = require(124)
+var Buffer = require(5).Buffer;
+var inherits = require(85)
+var Hash = require(125)
 
 var K = [
   0x428a2f98, 0xd728ae22, 0x71374491, 0x23ef65cd,
@@ -21319,7 +21356,7 @@ module.exports = Sha512
 },
 function(require, exports, module, undefined, global) {
 /*@=-sha.js@2.4.5/hash.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 // prototype class for hash functions
 function Hash (blockSize, finalSize) {
   this._block = new Buffer(blockSize)
@@ -21393,28 +21430,28 @@ module.exports = Hash
 },
 function(require, exports, module, undefined, global) {
 /*@=-readable-stream@2.1.5/writable.js-=@*/
-module.exports = require(93)
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-readable-stream@2.1.5/duplex.js-=@*/
 module.exports = require(94)
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-readable-stream@2.1.5/transform.js-=@*/
+/*@=-readable-stream@2.1.5/duplex.js-=@*/
 module.exports = require(95)
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-readable-stream@2.1.5/passthrough.js-=@*/
+/*@=-readable-stream@2.1.5/transform.js-=@*/
 module.exports = require(96)
 
 },
 function(require, exports, module, undefined, global) {
+/*@=-readable-stream@2.1.5/passthrough.js-=@*/
+module.exports = require(97)
+
+},
+function(require, exports, module, undefined, global) {
 /*@=-evp_bytestokey@1.0.0/index.js-=@*/
-var Buffer = require(23).Buffer;
-var md5 = require(113)
+var Buffer = require(5).Buffer;
+var md5 = require(114)
 module.exports = EVP_BytesToKey
 function EVP_BytesToKey (password, salt, keyLen, ivLen) {
   if (!Buffer.isBuffer(password)) {
@@ -21486,13 +21523,13 @@ function EVP_BytesToKey (password, salt, keyLen, ivLen) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/browser.js-=@*/
-var ciphers = require(134)
+var ciphers = require(135)
 exports.createCipher = exports.Cipher = ciphers.createCipher
 exports.createCipheriv = exports.Cipheriv = ciphers.createCipheriv
-var deciphers = require(135)
+var deciphers = require(136)
 exports.createDecipher = exports.Decipher = deciphers.createDecipher
 exports.createDecipheriv = exports.Decipheriv = deciphers.createDecipheriv
-var modes = require(133)
+var modes = require(134)
 function getCiphers () {
   return Object.keys(modes)
 }
@@ -21501,10 +21538,10 @@ exports.listCiphers = exports.getCiphers = getCiphers
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-des@1.0.0/index.js-=@*/
-var Buffer = require(23).Buffer;
-var CipherBase = require(116)
-var des = require(148)
-var inherits = require(84)
+var Buffer = require(5).Buffer;
+var CipherBase = require(117)
+var des = require(149)
+var inherits = require(85)
 
 var modes = {
   'des-ede3-cbc': des.CBC.instantiate(des.EDE),
@@ -21752,14 +21789,14 @@ exports['aes-256-gcm'] = {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/encrypter.js-=@*/
-var Buffer = require(23).Buffer;
-var aes = require(136)
-var Transform = require(116)
-var inherits = require(84)
-var modes = require(133)
-var ebtk = require(129)
-var StreamCipher = require(137)
-var AuthCipher = require(138)
+var Buffer = require(5).Buffer;
+var aes = require(137)
+var Transform = require(117)
+var inherits = require(85)
+var modes = require(134)
+var ebtk = require(130)
+var StreamCipher = require(138)
+var AuthCipher = require(139)
 inherits(Cipher, Transform)
 function Cipher (mode, key, iv) {
   if (!(this instanceof Cipher)) {
@@ -21830,14 +21867,14 @@ Splitter.prototype.flush = function () {
   return out
 }
 var modelist = {
-  ECB: require(139),
-  CBC: require(140),
-  CFB: require(141),
-  CFB8: require(142),
-  CFB1: require(143),
-  OFB: require(144),
-  CTR: require(145),
-  GCM: require(145)
+  ECB: require(140),
+  CBC: require(141),
+  CFB: require(142),
+  CFB8: require(143),
+  CFB1: require(144),
+  OFB: require(145),
+  CTR: require(146),
+  GCM: require(146)
 }
 
 function createCipheriv (suite, password, iv) {
@@ -21879,14 +21916,14 @@ exports.createCipher = createCipher
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/decrypter.js-=@*/
-var Buffer = require(23).Buffer;
-var aes = require(136)
-var Transform = require(116)
-var inherits = require(84)
-var modes = require(133)
-var StreamCipher = require(137)
-var AuthCipher = require(138)
-var ebtk = require(129)
+var Buffer = require(5).Buffer;
+var aes = require(137)
+var Transform = require(117)
+var inherits = require(85)
+var modes = require(134)
+var StreamCipher = require(138)
+var AuthCipher = require(139)
+var ebtk = require(130)
 
 inherits(Decipher, Transform)
 function Decipher (mode, key, iv) {
@@ -21972,14 +22009,14 @@ function unpad (last) {
 }
 
 var modelist = {
-  ECB: require(139),
-  CBC: require(140),
-  CFB: require(141),
-  CFB8: require(142),
-  CFB1: require(143),
-  OFB: require(144),
-  CTR: require(145),
-  GCM: require(145)
+  ECB: require(140),
+  CBC: require(141),
+  CFB: require(142),
+  CFB8: require(143),
+  CFB1: require(144),
+  OFB: require(145),
+  CTR: require(146),
+  GCM: require(146)
 }
 
 function createDecipheriv (suite, password, iv) {
@@ -22021,7 +22058,7 @@ exports.createDecipheriv = createDecipheriv
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/aes.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 // based on the aes implimentation in triple sec
 // https://github.com/keybase/triplesec
 
@@ -22203,10 +22240,10 @@ exports.AES = AES
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/streamCipher.js-=@*/
-var Buffer = require(23).Buffer;
-var aes = require(136)
-var Transform = require(116)
-var inherits = require(84)
+var Buffer = require(5).Buffer;
+var aes = require(137)
+var Transform = require(117)
+var inherits = require(85)
 
 inherits(StreamCipher, Transform)
 module.exports = StreamCipher
@@ -22233,12 +22270,12 @@ StreamCipher.prototype._final = function () {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/authCipher.js-=@*/
-var Buffer = require(23).Buffer;
-var aes = require(136)
-var Transform = require(116)
-var inherits = require(84)
-var GHASH = require(146)
-var xor = require(147)
+var Buffer = require(5).Buffer;
+var aes = require(137)
+var Transform = require(117)
+var inherits = require(85)
+var GHASH = require(147)
+var xor = require(148)
 inherits(StreamCipher, Transform)
 module.exports = StreamCipher
 
@@ -22345,7 +22382,7 @@ exports.decrypt = function (self, block) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/modes/cbc.js-=@*/
-var xor = require(147)
+var xor = require(148)
 
 exports.encrypt = function (self, block) {
   var data = xor(block, self._prev)
@@ -22366,8 +22403,8 @@ exports.decrypt = function (self, block) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/modes/cfb.js-=@*/
-var Buffer = require(23).Buffer;
-var xor = require(147)
+var Buffer = require(5).Buffer;
+var xor = require(148)
 
 exports.encrypt = function (self, data, decrypt) {
   var out = new Buffer('')
@@ -22402,7 +22439,7 @@ function encryptStart (self, data, decrypt) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/modes/cfb8.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 function encryptByte (self, byteParam, decrypt) {
   var pad = self._cipher.encryptBlock(self._prev)
   var out = pad[0] ^ byteParam
@@ -22422,7 +22459,7 @@ exports.encrypt = function (self, chunk, decrypt) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/modes/cfb1.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 function encryptByte (self, byteParam, decrypt) {
   var pad
   var i = -1
@@ -22461,8 +22498,8 @@ function shiftIn (buffer, value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/modes/ofb.js-=@*/
-var Buffer = require(23).Buffer;
-var xor = require(147)
+var Buffer = require(5).Buffer;
+var xor = require(148)
 
 function getBlock (self) {
   self._prev = self._cipher.encryptBlock(self._prev)
@@ -22482,8 +22519,8 @@ exports.encrypt = function (self, chunk) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/modes/ctr.js-=@*/
-var Buffer = require(23).Buffer;
-var xor = require(147)
+var Buffer = require(5).Buffer;
+var xor = require(148)
 
 function incr32 (iv) {
   var len = iv.length
@@ -22518,7 +22555,7 @@ exports.encrypt = function (self, chunk) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-aes@1.0.6/ghash.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 var zeros = new Buffer(16)
 zeros.fill(0)
 module.exports = GHASH
@@ -22621,7 +22658,7 @@ function xor (a, b) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-buffer-xor@1.0.3/index.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 module.exports = function xor (a, b) {
   var length = Math.min(a.length, b.length)
   var buffer = new Buffer(length)
@@ -22638,11 +22675,11 @@ function(require, exports, module, undefined, global) {
 /*@=-des.js@1.0.0/lib/des.js-=@*/
 'use strict';
 
-exports.utils = require(149);
-exports.Cipher = require(150);
-exports.DES = require(151);
-exports.CBC = require(152);
-exports.EDE = require(153);
+exports.utils = require(150);
+exports.Cipher = require(151);
+exports.DES = require(152);
+exports.CBC = require(153);
+exports.EDE = require(154);
 
 },
 function(require, exports, module, undefined, global) {
@@ -22907,10 +22944,10 @@ exports.padSplit = function padSplit(num, size, group) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-des.js@1.0.0/lib/des/cipher.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 'use strict';
 
-var assert = require(154);
+var assert = require(155);
 
 function Cipher(options) {
   this.options = options;
@@ -23055,10 +23092,10 @@ function(require, exports, module, undefined, global) {
 /*@=-des.js@1.0.0/lib/des/des.js-=@*/
 'use strict';
 
-var assert = require(154);
-var inherits = require(84);
+var assert = require(155);
+var inherits = require(85);
 
-var des = require(148);
+var des = require(149);
 var utils = des.utils;
 var Cipher = des.Cipher;
 
@@ -23202,8 +23239,8 @@ function(require, exports, module, undefined, global) {
 /*@=-des.js@1.0.0/lib/des/cbc.js-=@*/
 'use strict';
 
-var assert = require(154);
-var inherits = require(84);
+var assert = require(155);
+var inherits = require(85);
 
 var proto = {};
 
@@ -23271,10 +23308,10 @@ function(require, exports, module, undefined, global) {
 /*@=-des.js@1.0.0/lib/des/ede.js-=@*/
 'use strict';
 
-var assert = require(154);
-var inherits = require(84);
+var assert = require(155);
+var inherits = require(85);
 
-var des = require(148);
+var des = require(149);
 var Cipher = des.Cipher;
 var DES = des.DES;
 
@@ -23343,13 +23380,13 @@ assert.equal = function assertEqual(l, r, msg) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-diffie-hellman@5.0.2/lib/generatePrime.js-=@*/
-var randomBytes = require(103);
+var randomBytes = require(104);
 module.exports = findPrime;
 findPrime.simpleSieve = simpleSieve;
 findPrime.fermatTest = fermatTest;
-var BN = require(158);
+var BN = require(159);
 var TWENTYFOUR = new BN(24);
-var MillerRabin = require(159);
+var MillerRabin = require(160);
 var millerRabin = new MillerRabin();
 var ONE = new BN(1);
 var TWO = new BN(2);
@@ -23489,17 +23526,17 @@ module.exports = {
 },
 function(require, exports, module, undefined, global) {
 /*@=-diffie-hellman@5.0.2/lib/dh.js-=@*/
-var Buffer = require(23).Buffer;
-var BN = require(158);
-var MillerRabin = require(159);
+var Buffer = require(5).Buffer;
+var BN = require(159);
+var MillerRabin = require(160);
 var millerRabin = new MillerRabin();
 var TWENTYFOUR = new BN(24);
 var ELEVEN = new BN(11);
 var TEN = new BN(10);
 var THREE = new BN(3);
 var SEVEN = new BN(7);
-var primes = require(155);
-var randomBytes = require(103);
+var primes = require(156);
+var randomBytes = require(104);
 module.exports = DH;
 
 function setPublicKey(pub, enc) {
@@ -23658,7 +23695,7 @@ function formatReturnValue(bn, enc) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-bn.js@4.11.6/lib/bn.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 (function (module, exports) {
   'use strict';
 
@@ -27090,8 +27127,8 @@ var Buffer = require(23).Buffer;
 },
 function(require, exports, module, undefined, global) {
 /*@=-miller-rabin@4.0.0/lib/mr.js-=@*/
-var bn = require(158);
-var brorand = require(160);
+var bn = require(159);
+var brorand = require(161);
 
 function MillerRabin(rand) {
   this.rand = rand || new brorand.Rand();
@@ -27268,15 +27305,15 @@ if (typeof window === 'object') {
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-sign@4.0.0/sign.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var createHmac = require(105)
-var crt = require(163)
-var curves = require(164)
-var elliptic = require(165)
-var parseKeys = require(166)
+var createHmac = require(106)
+var crt = require(164)
+var curves = require(165)
+var elliptic = require(166)
+var parseKeys = require(167)
 
-var BN = require(158)
+var BN = require(159)
 var EC = elliptic.ec
 
 function sign (hash, key, hashType, signType) {
@@ -27458,13 +27495,13 @@ module.exports.makeKey = makeKey
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-sign@4.0.0/verify.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var curves = require(164)
-var elliptic = require(165)
-var parseKeys = require(166)
+var curves = require(165)
+var elliptic = require(166)
+var parseKeys = require(167)
 
-var BN = require(158)
+var BN = require(159)
 var EC = elliptic.ec
 
 function verify (sig, hash, key, signType) {
@@ -27566,9 +27603,9 @@ module.exports = verify
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-rsa@4.0.1/index.js-=@*/
-var Buffer = require(23).Buffer;
-var bn = require(158);
-var randomBytes = require(103);
+var Buffer = require(5).Buffer;
+var bn = require(159);
+var randomBytes = require(104);
 module.exports = crt;
 function blind(priv) {
   var r = getr(priv);
@@ -27631,26 +27668,26 @@ function(require, exports, module, undefined, global) {
 
 var elliptic = exports;
 
-elliptic.version = require(167).version;
-elliptic.utils = require(168);
-elliptic.rand = require(160);
-elliptic.hmacDRBG = require(169);
-elliptic.curve = require(170);
-elliptic.curves = require(171);
+elliptic.version = require(168).version;
+elliptic.utils = require(169);
+elliptic.rand = require(161);
+elliptic.hmacDRBG = require(170);
+elliptic.curve = require(171);
+elliptic.curves = require(172);
 
 // Protocols
-elliptic.ec = require(172);
-elliptic.eddsa = require(173);
+elliptic.ec = require(173);
+elliptic.eddsa = require(174);
 
 },
 function(require, exports, module, undefined, global) {
 /*@=-parse-asn1@5.0.0/index.js-=@*/
-var Buffer = require(23).Buffer;
-var asn1 = require(189)
-var aesid = require(190)
-var fixProc = require(191)
-var ciphers = require(130)
-var compat = require(107)
+var Buffer = require(5).Buffer;
+var asn1 = require(190)
+var aesid = require(191)
+var fixProc = require(192)
+var ciphers = require(131)
+var compat = require(108)
 module.exports = parseKeys
 
 function parseKeys (buffer) {
@@ -27877,7 +27914,7 @@ function(require, exports, module, undefined, global) {
 'use strict';
 
 var utils = exports;
-var BN = require(158);
+var BN = require(159);
 
 utils.assert = function assert(val, msg) {
   if (!val)
@@ -28052,8 +28089,8 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/hmac-drbg.js-=@*/
 'use strict';
 
-var hash = require(174);
-var elliptic = require(165);
+var hash = require(175);
+var elliptic = require(166);
 var utils = elliptic.utils;
 var assert = utils.assert;
 
@@ -28172,10 +28209,10 @@ function(require, exports, module, undefined, global) {
 
 var curve = exports;
 
-curve.base = require(180);
-curve.short = require(181);
-curve.mont = require(182);
-curve.edwards = require(183);
+curve.base = require(181);
+curve.short = require(182);
+curve.mont = require(183);
+curve.edwards = require(184);
 
 },
 function(require, exports, module, undefined, global) {
@@ -28184,8 +28221,8 @@ function(require, exports, module, undefined, global) {
 
 var curves = exports;
 
-var hash = require(174);
-var elliptic = require(165);
+var hash = require(175);
+var elliptic = require(166);
 
 var assert = elliptic.utils.assert;
 
@@ -28349,7 +28386,7 @@ defineCurve('ed25519', {
 
 var pre;
 try {
-  pre = require(184);
+  pre = require(185);
 } catch (e) {
   pre = undefined;
 }
@@ -28391,13 +28428,13 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/ec/index.js-=@*/
 'use strict';
 
-var BN = require(158);
-var elliptic = require(165);
+var BN = require(159);
+var elliptic = require(166);
 var utils = elliptic.utils;
 var assert = utils.assert;
 
-var KeyPair = require(185);
-var Signature = require(186);
+var KeyPair = require(186);
+var Signature = require(187);
 
 function EC(options) {
   if (!(this instanceof EC))
@@ -28631,13 +28668,13 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/eddsa/index.js-=@*/
 'use strict';
 
-var hash = require(174);
-var elliptic = require(165);
+var hash = require(175);
+var elliptic = require(166);
 var utils = elliptic.utils;
 var assert = utils.assert;
 var parseBytes = utils.parseBytes;
-var KeyPair = require(187);
-var Signature = require(188);
+var KeyPair = require(188);
+var Signature = require(189);
 
 function EDDSA(curve) {
   assert(curve === 'ed25519', 'only tested with ed25519 so far');
@@ -28753,11 +28790,11 @@ function(require, exports, module, undefined, global) {
 /*@=-hash.js@1.0.3/lib/hash.js-=@*/
 var hash = exports;
 
-hash.utils = require(175);
-hash.common = require(176);
-hash.sha = require(177);
-hash.ripemd = require(178);
-hash.hmac = require(179);
+hash.utils = require(176);
+hash.common = require(177);
+hash.sha = require(178);
+hash.ripemd = require(179);
+hash.hmac = require(180);
 
 // Proxy hash functions to the main object
 hash.sha1 = hash.sha.sha1;
@@ -28771,7 +28808,7 @@ hash.ripemd160 = hash.ripemd.ripemd160;
 function(require, exports, module, undefined, global) {
 /*@=-hash.js@1.0.3/lib/hash/utils.js-=@*/
 var utils = exports;
-var inherits = require(84);
+var inherits = require(85);
 
 function toArray(msg, enc) {
   if (Array.isArray(msg))
@@ -29031,7 +29068,7 @@ exports.shr64_lo = shr64_lo;
 },
 function(require, exports, module, undefined, global) {
 /*@=-hash.js@1.0.3/lib/hash/common.js-=@*/
-var hash = require(174);
+var hash = require(175);
 var utils = hash.utils;
 var assert = utils.assert;
 
@@ -29126,7 +29163,7 @@ BlockHash.prototype._pad = function pad() {
 },
 function(require, exports, module, undefined, global) {
 /*@=-hash.js@1.0.3/lib/hash/sha.js-=@*/
-var hash = require(174);
+var hash = require(175);
 var utils = hash.utils;
 var assert = utils.assert;
 
@@ -29694,7 +29731,7 @@ function g1_512_lo(xh, xl) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-hash.js@1.0.3/lib/hash/ripemd.js-=@*/
-var hash = require(174);
+var hash = require(175);
 var utils = hash.utils;
 
 var rotl32 = utils.rotl32;
@@ -29844,7 +29881,7 @@ function(require, exports, module, undefined, global) {
 /*@=-hash.js@1.0.3/lib/hash/hmac.js-=@*/
 var hmac = exports;
 
-var hash = require(174);
+var hash = require(175);
 var utils = hash.utils;
 var assert = utils.assert;
 
@@ -29896,8 +29933,8 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/curve/base.js-=@*/
 'use strict';
 
-var BN = require(158);
-var elliptic = require(165);
+var BN = require(159);
+var elliptic = require(166);
 var utils = elliptic.utils;
 var getNAF = utils.getNAF;
 var getJSF = utils.getJSF;
@@ -30275,10 +30312,10 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/curve/short.js-=@*/
 'use strict';
 
-var curve = require(170);
-var elliptic = require(165);
-var BN = require(158);
-var inherits = require(84);
+var curve = require(171);
+var elliptic = require(166);
+var BN = require(159);
+var inherits = require(85);
 var Base = curve.base;
 
 var assert = elliptic.utils.assert;
@@ -31217,12 +31254,12 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/curve/mont.js-=@*/
 'use strict';
 
-var curve = require(170);
-var BN = require(158);
-var inherits = require(84);
+var curve = require(171);
+var BN = require(159);
+var inherits = require(85);
 var Base = curve.base;
 
-var elliptic = require(165);
+var elliptic = require(166);
 var utils = elliptic.utils;
 
 function MontCurve(conf) {
@@ -31401,10 +31438,10 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/curve/edwards.js-=@*/
 'use strict';
 
-var curve = require(170);
-var elliptic = require(165);
-var BN = require(158);
-var inherits = require(84);
+var curve = require(171);
+var elliptic = require(166);
+var BN = require(159);
+var inherits = require(85);
 var Base = curve.base;
 
 var assert = elliptic.utils.assert;
@@ -32622,7 +32659,7 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/ec/key.js-=@*/
 'use strict';
 
-var BN = require(158);
+var BN = require(159);
 
 function KeyPair(ec, options) {
   this.ec = ec;
@@ -32733,9 +32770,9 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/ec/signature.js-=@*/
 'use strict';
 
-var BN = require(158);
+var BN = require(159);
 
-var elliptic = require(165);
+var elliptic = require(166);
 var utils = elliptic.utils;
 var assert = utils.assert;
 
@@ -32872,7 +32909,7 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/eddsa/key.js-=@*/
 'use strict';
 
-var elliptic = require(165);
+var elliptic = require(166);
 var utils = elliptic.utils;
 var assert = utils.assert;
 var parseBytes = utils.parseBytes;
@@ -32972,8 +33009,8 @@ function(require, exports, module, undefined, global) {
 /*@=-elliptic@6.3.1/lib/elliptic/eddsa/signature.js-=@*/
 'use strict';
 
-var BN = require(158);
-var elliptic = require(165);
+var BN = require(159);
+var elliptic = require(166);
 var utils = elliptic.utils;
 var assert = utils.assert;
 var cachedProperty = utils.cachedProperty;
@@ -33043,7 +33080,7 @@ function(require, exports, module, undefined, global) {
 // from https://github.com/indutny/self-signed/blob/gh-pages/lib/asn1.js
 // Fedor, you are amazing.
 
-var asn1 = require(192)
+var asn1 = require(193)
 
 var RSAPrivateKey = asn1.define('RSAPrivateKey', function () {
   this.seq().obj(
@@ -33177,13 +33214,13 @@ module.exports = {"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 },
 function(require, exports, module, undefined, global) {
 /*@=-parse-asn1@5.0.0/fixProc.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 // adapted from https://github.com/apatil/pemstrip
 var findProc = /Proc-Type: 4,ENCRYPTED\r?\nDEK-Info: AES-((?:128)|(?:192)|(?:256))-CBC,([0-9A-H]+)\r?\n\r?\n([0-9A-z\n\r\+\/\=]+)\r?\n/m
 var startRegex = /^-----BEGIN (.*) KEY-----\r?\n/m
 var fullRegex = /^-----BEGIN (.*) KEY-----\r?\n([0-9A-z\n\r\+\/\=]+)\r?\n-----END \1 KEY-----$/m
-var evp = require(129)
-var ciphers = require(130)
+var evp = require(130)
+var ciphers = require(131)
 module.exports = function (okey, password) {
   var key = okey.toString()
   var match = key.match(findProc)
@@ -33214,19 +33251,19 @@ function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1.js-=@*/
 var asn1 = exports;
 
-asn1.bignum = require(158);
+asn1.bignum = require(159);
 
-asn1.define = require(193).define;
-asn1.base = require(194);
-asn1.constants = require(195);
-asn1.decoders = require(196);
-asn1.encoders = require(197);
+asn1.define = require(194).define;
+asn1.base = require(195);
+asn1.constants = require(196);
+asn1.decoders = require(197);
+asn1.encoders = require(198);
 
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/api.js-=@*/
-var asn1 = require(192);
-var inherits = require(84);
+var asn1 = require(193);
+var inherits = require(85);
 
 var api = exports;
 
@@ -33245,7 +33282,7 @@ function Entity(name, body) {
 Entity.prototype._createNamed = function createNamed(base) {
   var named;
   try {
-    named = require(198).runInThisContext(
+    named = require(199).runInThisContext(
       '(function ' + this.name + '(entity) {\n' +
       '  this._initNamed(entity);\n' +
       '})'
@@ -33292,10 +33329,10 @@ function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/base/index.js-=@*/
 var base = exports;
 
-base.Reporter = require(199).Reporter;
-base.DecoderBuffer = require(200).DecoderBuffer;
-base.EncoderBuffer = require(200).EncoderBuffer;
-base.Node = require(201);
+base.Reporter = require(200).Reporter;
+base.DecoderBuffer = require(201).DecoderBuffer;
+base.EncoderBuffer = require(201).EncoderBuffer;
+base.Node = require(202);
 
 },
 function(require, exports, module, undefined, global) {
@@ -33318,28 +33355,28 @@ constants._reverse = function reverse(map) {
   return res;
 };
 
-constants.der = require(202);
+constants.der = require(203);
 
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/decoders/index.js-=@*/
 var decoders = exports;
 
-decoders.der = require(203);
-decoders.pem = require(204);
+decoders.der = require(204);
+decoders.pem = require(205);
 
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/encoders/index.js-=@*/
 var encoders = exports;
 
-encoders.der = require(205);
-encoders.pem = require(206);
+encoders.der = require(206);
+encoders.pem = require(207);
 
 },
 function(require, exports, module, undefined, global) {
 /*@=-vm-browserify@0.0.4/index.js-=@*/
-var indexOf = require(36);
+var indexOf = require(37);
 
 var Object_keys = function (obj) {
     if (Object.keys) return Object.keys(obj)
@@ -33481,7 +33518,7 @@ exports.createContext = Script.createContext = function (context) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/base/reporter.js-=@*/
-var inherits = require(84);
+var inherits = require(85);
 
 function Reporter(options) {
   this._reporterState = {
@@ -33606,10 +33643,10 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/base/buffer.js-=@*/
-var Buffer = require(23).Buffer;
-var inherits = require(84);
-var Reporter = require(194).Reporter;
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
+var inherits = require(85);
+var Reporter = require(195).Reporter;
+var Buffer = require(5).Buffer;
 
 function DecoderBuffer(base, options) {
   Reporter.call(this, options);
@@ -33727,10 +33764,10 @@ EncoderBuffer.prototype.join = function join(out, offset) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/base/node.js-=@*/
-var Reporter = require(194).Reporter;
-var EncoderBuffer = require(194).EncoderBuffer;
-var DecoderBuffer = require(194).DecoderBuffer;
-var assert = require(154);
+var Reporter = require(195).Reporter;
+var EncoderBuffer = require(195).EncoderBuffer;
+var DecoderBuffer = require(195).DecoderBuffer;
+var assert = require(155);
 
 // Supported tags
 var tags = [
@@ -34360,7 +34397,7 @@ Node.prototype._isPrintstr = function isPrintstr(str) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/constants/der.js-=@*/
-var constants = require(195);
+var constants = require(196);
 
 exports.tagClass = {
   0: 'universal',
@@ -34406,9 +34443,9 @@ exports.tagByName = constants._reverse(exports.tag);
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/decoders/der.js-=@*/
-var inherits = require(84);
+var inherits = require(85);
 
-var asn1 = require(192);
+var asn1 = require(193);
 var base = asn1.base;
 var bignum = asn1.bignum;
 
@@ -34732,11 +34769,11 @@ function derDecodeLen(buf, primitive, fail) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/decoders/pem.js-=@*/
-var Buffer = require(23).Buffer;
-var inherits = require(84);
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
+var inherits = require(85);
+var Buffer = require(5).Buffer;
 
-var DERDecoder = require(203);
+var DERDecoder = require(204);
 
 function PEMDecoder(entity) {
   DERDecoder.call(this, entity);
@@ -34786,11 +34823,11 @@ PEMDecoder.prototype.decode = function decode(data, options) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/encoders/der.js-=@*/
-var Buffer = require(23).Buffer;
-var inherits = require(84);
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
+var inherits = require(85);
+var Buffer = require(5).Buffer;
 
-var asn1 = require(192);
+var asn1 = require(193);
 var base = asn1.base;
 
 // Import DER constants
@@ -35084,9 +35121,9 @@ function encodeTag(tag, primitive, cls, reporter) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-asn1.js@4.8.0/lib/asn1/encoders/pem.js-=@*/
-var inherits = require(84);
+var inherits = require(85);
 
-var DEREncoder = require(205);
+var DEREncoder = require(206);
 
 function PEMEncoder(entity) {
   DEREncoder.call(this, entity);
@@ -35109,15 +35146,15 @@ PEMEncoder.prototype.encode = function encode(data, options) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-public-encrypt@4.0.0/publicEncrypt.js-=@*/
-var Buffer = require(23).Buffer;
-var parseKeys = require(166);
-var randomBytes = require(103);
-var createHash = require(104);
-var mgf = require(209);
-var xor = require(210);
-var bn = require(158);
-var withPublic = require(211);
-var crt = require(163);
+var Buffer = require(5).Buffer;
+var parseKeys = require(167);
+var randomBytes = require(104);
+var createHash = require(105);
+var mgf = require(210);
+var xor = require(211);
+var bn = require(159);
+var withPublic = require(212);
+var crt = require(164);
 
 var constants = {
   RSA_PKCS1_OAEP_PADDING: 4,
@@ -35208,14 +35245,14 @@ function nonZero(len, crypto) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-public-encrypt@4.0.0/privateDecrypt.js-=@*/
-var Buffer = require(23).Buffer;
-var parseKeys = require(166);
-var mgf = require(209);
-var xor = require(210);
-var bn = require(158);
-var crt = require(163);
-var createHash = require(104);
-var withPublic = require(211);
+var Buffer = require(5).Buffer;
+var parseKeys = require(167);
+var mgf = require(210);
+var xor = require(211);
+var bn = require(159);
+var crt = require(164);
+var createHash = require(105);
+var withPublic = require(212);
 module.exports = function privateDecrypt(private_key, enc, reverse) {
   var padding;
   if (private_key.padding) {
@@ -35320,8 +35357,8 @@ function compare(a, b){
 },
 function(require, exports, module, undefined, global) {
 /*@=-public-encrypt@4.0.0/mgf.js-=@*/
-var Buffer = require(23).Buffer;
-var createHash = require(104);
+var Buffer = require(5).Buffer;
+var createHash = require(105);
 module.exports = function (seed, len) {
   var t = new Buffer('');
   var  i = 0, c;
@@ -35351,8 +35388,8 @@ module.exports = function xor(a, b) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-public-encrypt@4.0.0/withPublic.js-=@*/
-var Buffer = require(23).Buffer;
-var bn = require(158);
+var Buffer = require(5).Buffer;
+var bn = require(159);
 function withPublic(paddedMsg, key) {
   return new Buffer(paddedMsg
     .toRed(bn.mont(key.modulus))
@@ -35365,7 +35402,6 @@ module.exports = withPublic;
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/node_modules/@nathanfaucett/comn/src/_empty.js-=@*/
-
 
 },
 function(require, exports, module, undefined, global) {
@@ -35406,9 +35442,9 @@ function(require, exports, module, undefined, global) {
  */
 
 try {
-  module.exports = require(215);
-} catch (e) {
   module.exports = require(216);
+} catch (e) {
+  module.exports = require(217);
 }
 
 },
@@ -35417,9 +35453,9 @@ function(require, exports, module, undefined, global) {
 'use strict';
 
 try {
-  module.exports = require(217)('bufferutil');
+  module.exports = require(218)('bufferutil');
 } catch (e) {
-  module.exports = require(218);
+  module.exports = require(219);
 }
 
 },
@@ -35477,14 +35513,14 @@ module.exports.BufferUtil = {
 function(require, exports, module, undefined, global) {
 /*@=-bindings@1.2.1/bindings.js-=@*/
 var __filename = module.id = module.filename = "../../../node_modules/bindings/bindings.js";
-var process = require(5);
+var process = require(6);
 
 /**
  * Module dependencies.
  */
 
-var fs = require(212)
-  , path = require(219)
+var fs = require(213)
+  , path = require(220)
   , join = path.join
   , dirname = path.dirname
   , exists = fs.existsSync || path.existsSync
@@ -35709,7 +35745,7 @@ module.exports.BufferUtil = {
 },
 function(require, exports, module, undefined, global) {
 /*@=-path-browserify@0.0.0/index.js-=@*/
-var process = require(5);
+var process = require(6);
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -35938,8 +35974,8 @@ var substr = 'ab'.substr(-1) === 'b'
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-zlib@0.1.4/src/index.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
+var Buffer = require(5).Buffer;
+var process = require(6);
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -35961,11 +35997,11 @@ var process = require(5);
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var Transform = require(90);
+var Transform = require(91);
 
-var binding = require(221);
-var util = require(66);
-var assert = require(222).ok;
+var binding = require(222);
+var util = require(67);
+var assert = require(223).ok;
 
 // zlib doesn't provide these, so kludge them in following the same
 // const naming scheme zlib uses.
@@ -36554,13 +36590,13 @@ util.inherits(Unzip, Zlib);
 },
 function(require, exports, module, undefined, global) {
 /*@=-browserify-zlib@0.1.4/src/binding.js-=@*/
-var Buffer = require(23).Buffer;
-var process = require(5);
-var msg = require(223);
-var zstream = require(224);
-var zlib_deflate = require(225);
-var zlib_inflate = require(226);
-var constants = require(227);
+var Buffer = require(5).Buffer;
+var process = require(6);
+var msg = require(224);
+var zstream = require(225);
+var zlib_deflate = require(226);
+var zlib_inflate = require(227);
+var constants = require(228);
 
 for (var key in constants) {
   exports[key] = constants[key];
@@ -36823,7 +36859,7 @@ function(require, exports, module, undefined, global) {
 // when used in node, this will actually load the util module we depend on
 // versus loading the builtin util module as happens otherwise
 // this is a bug in node module loading as far as I am concerned
-var util = require(66);
+var util = require(67);
 
 var pSlice = Array.prototype.slice;
 var hasOwn = Object.prototype.hasOwnProperty;
@@ -37209,14 +37245,14 @@ module.exports = ZStream;
 },
 function(require, exports, module, undefined, global) {
 /*@=-pako@0.2.9/lib/zlib/deflate.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 'use strict';
 
-var utils   = require(228);
-var trees   = require(229);
-var adler32 = require(230);
-var crc32   = require(231);
-var msg     = require(223);
+var utils   = require(229);
+var trees   = require(230);
+var adler32 = require(231);
+var crc32   = require(232);
+var msg     = require(224);
 
 /* Public constants ==========================================================*/
 /* ===========================================================================*/
@@ -39072,11 +39108,11 @@ function(require, exports, module, undefined, global) {
 'use strict';
 
 
-var utils         = require(228);
-var adler32       = require(230);
-var crc32         = require(231);
-var inflate_fast  = require(232);
-var inflate_table = require(233);
+var utils         = require(229);
+var adler32       = require(231);
+var crc32         = require(232);
+var inflate_fast  = require(233);
+var inflate_table = require(234);
 
 var CODES = 0;
 var LENS = 1;
@@ -40774,7 +40810,7 @@ function(require, exports, module, undefined, global) {
 'use strict';
 
 
-var utils = require(228);
+var utils = require(229);
 
 /* Public constants ==========================================================*/
 /* ===========================================================================*/
@@ -42388,11 +42424,11 @@ module.exports = function inflate_fast(strm, start) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-pako@0.2.9/lib/zlib/inftrees.js-=@*/
-var process = require(5);
+var process = require(6);
 'use strict';
 
 
-var utils = require(228);
+var utils = require(229);
 
 var MAXBITS = 15;
 var ENOUGH_LENS = 852;
@@ -42729,22 +42765,22 @@ function(require, exports, module, undefined, global) {
  */
 
 try {
-  module.exports = require(236);
-} catch (e) {
   module.exports = require(237);
+} catch (e) {
+  module.exports = require(238);
 }
 
 },
 function(require, exports, module, undefined, global) {
 /*@=-ws@1.0.1/lib/BufferPool.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 /*!
  * ws: a node.js websocket client
  * Copyright(c) 2011 Einar Otto Stangvik <einaros@gmail.com>
  * MIT Licensed
  */
 
-var util = require(66);
+var util = require(67);
 
 function BufferPool(initialSize, growStrategy, shrinkStrategy) {
   if (this instanceof BufferPool === false) {
@@ -42808,9 +42844,9 @@ function(require, exports, module, undefined, global) {
 'use strict';
 
 try {
-  module.exports = require(217)('validation');
+  module.exports = require(218)('validation');
 } catch (e) {
-  module.exports = require(238);
+  module.exports = require(239);
 }
 
 },
@@ -42866,13 +42902,13 @@ function toArray(list, index) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-has-binary@0.1.7/index.js-=@*/
-var Buffer = require(23).Buffer;
+var Buffer = require(5).Buffer;
 
 /*
  * Module requirements.
  */
 
-var isArray = require(25);
+var isArray = require(29);
 
 /**
  * Module exports.
@@ -42930,16 +42966,16 @@ function hasBinary(data) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/renderString.js-=@*/
-var virt = require(244),
+var virt = require(245),
 
-    isFunction = require(7),
-    isString = require(11),
-    isObject = require(6),
-    isNullOrUndefined = require(12),
+    isFunction = require(11),
+    isString = require(16),
+    isObject = require(10),
+    isNullOrUndefined = require(17),
 
-    hyphenateStyleName = require(254),
-    renderMarkup = require(255),
-    DOM_ID_NAME = require(256);
+    hyphenateStyleName = require(255),
+    renderMarkup = require(256),
+    DOM_ID_NAME = require(257);
 
 
 var View = virt.View,
@@ -42970,7 +43006,7 @@ var View = virt.View,
 module.exports = render;
 
 
-var renderChildrenString = require(257);
+var renderChildrenString = require(258);
 
 
 function render(view, parentProps, id) {
@@ -43050,73 +43086,69 @@ function contentTag(type, content, id, props) {
         "</" + type + ">"
     );
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/components.js-=@*/
 var components = exports;
 
 
-components.button = require(315);
-components.img = require(316);
-components.input = require(317);
-components.textarea = require(318);
-
+components.button = require(316);
+components.img = require(317);
+components.input = require(318);
+components.textarea = require(319);
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/handlers.js-=@*/
-var extend = require(274);
+var extend = require(275);
 
 
 extend(
     exports,
-    require(319),
     require(320),
     require(321),
     require(322),
-    require(323)
+    require(323),
+    require(324)
 );
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/index.js-=@*/
-var View = require(258);
+/*@=-@nathanfaucett/virt@0.0.3/src/index.js-=@*/
+var View = require(259);
 
 
 var virt = exports;
 
 
-virt.Root = require(259);
+virt.Root = require(260);
 
-virt.Component = require(260);
+virt.Component = require(261);
 
 virt.View = View;
 virt.cloneView = View.clone;
 virt.createView = View.create;
 virt.createFactory = View.createFactory;
 
-virt.consts = require(261);
+virt.consts = require(262);
 
-virt.getChildKey = require(262);
-virt.getRootIdFromId = require(263);
+virt.getChildKey = require(263);
+virt.getRootIdFromId = require(264);
 
-virt.isAncestorIdOf = require(264);
-virt.traverseAncestors = require(265);
-virt.traverseDescendants = require(266);
-virt.traverseTwoPhase = require(267);
+virt.isAncestorIdOf = require(265);
+virt.traverseAncestors = require(266);
+virt.traverseDescendants = require(267);
+virt.traverseTwoPhase = require(268);
 
-virt.context = require(268);
-virt.owner = require(269);
-
+virt.context = require(269);
+virt.owner = require(270);
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/render.js-=@*/
-var virt = require(244),
-    isNull = require(9),
-    isUndefined = require(14),
-    Adapter = require(345),
-    rootsById = require(346),
-    getRootNodeId = require(347);
+var virt = require(245),
+    isNull = require(14),
+    isUndefined = require(19),
+    Adapter = require(346),
+    rootsById = require(347),
+    getRootNodeId = require(348);
 
 
 var Root = virt.Root;
@@ -43142,13 +43174,12 @@ function render(nextView, containerDOMNode, callback) {
 
     return root;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/unmount.js-=@*/
-var rootsById = require(346),
-    getRootNodeInContainer = require(409),
-    getNodeId = require(408);
+var rootsById = require(347),
+    getRootNodeInContainer = require(410),
+    getNodeId = require(409);
 
 
 module.exports = unmount;
@@ -43164,12 +43195,11 @@ function unmount(containerDOMNode) {
         delete rootsById[id];
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/findDOMNode.js-=@*/
-var isString = require(11),
-    getNodeById = require(331);
+var isString = require(16),
+    getNodeById = require(332);
 
 
 module.exports = findDOMNode;
@@ -43186,13 +43216,12 @@ function findDOMNode(value) {
         return null;
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/findRoot.js-=@*/
-var virt = require(244),
-    isString = require(11),
-    rootsById = require(346);
+var virt = require(245),
+    isString = require(16),
+    rootsById = require(347);
 
 
 var getRootIdFromId = virt.getRootIdFromId;
@@ -43208,13 +43237,12 @@ function findRoot(value) {
         return null;
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/findEventHandler.js-=@*/
-var virt = require(244),
-    isString = require(11),
-    eventHandlersById = require(344);
+var virt = require(245),
+    isString = require(16),
+    eventHandlersById = require(345);
 
 
 var getRootIdFromId = virt.getRootIdFromId;
@@ -43230,22 +43258,21 @@ function findDOMNode(value) {
         return null;
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/worker/createWorkerRender.js-=@*/
-var Messenger = require(348),
-    isNull = require(9),
-    MessengerWorkerAdapter = require(410),
-    eventHandlersById = require(344),
-    nativeDOMHandlers = require(243),
-    eventHandlersById = require(344),
-    getRootNodeId = require(347),
-    registerNativeComponentHandlers = require(352),
-    getWindow = require(350),
-    EventHandler = require(353),
-    applyEvents = require(356),
-    applyPatches = require(357);
+var Messenger = require(349),
+    isNull = require(14),
+    MessengerWorkerAdapter = require(411),
+    eventHandlersById = require(345),
+    nativeDOMHandlers = require(244),
+    eventHandlersById = require(345),
+    getRootNodeId = require(348),
+    registerNativeComponentHandlers = require(353),
+    getWindow = require(351),
+    EventHandler = require(354),
+    applyEvents = require(357),
+    applyPatches = require(358);
 
 
 module.exports = createWorkerRender;
@@ -43291,14 +43318,13 @@ function createWorkerRender(url, containerDOMNode) {
 
     return messenger;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/worker/renderWorker.js-=@*/
-var virt = require(244),
-    isNull = require(9),
-    rootsById = require(346),
-    WorkerAdapter = require(411);
+var virt = require(245),
+    isNull = require(14),
+    rootsById = require(347),
+    WorkerAdapter = require(412);
 
 
 var root = null;
@@ -43324,21 +43350,20 @@ render.unmount = function() {
         root = null;
     }
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/websocket/createWebSocketRender.js-=@*/
-var Messenger = require(348),
-    isNull = require(9),
-    MessengerWebSocketAdapter = require(412),
-    eventHandlersById = require(344),
-    getRootNodeId = require(347),
-    nativeDOMHandlers = require(243),
-    registerNativeComponentHandlers = require(352),
-    getWindow = require(350),
-    EventHandler = require(353),
-    applyEvents = require(356),
-    applyPatches = require(357);
+var Messenger = require(349),
+    isNull = require(14),
+    MessengerWebSocketAdapter = require(413),
+    eventHandlersById = require(345),
+    getRootNodeId = require(348),
+    nativeDOMHandlers = require(244),
+    registerNativeComponentHandlers = require(353),
+    getWindow = require(351),
+    EventHandler = require(354),
+    applyEvents = require(357),
+    applyPatches = require(358);
 
 
 module.exports = createWebSocketRender;
@@ -43384,13 +43409,12 @@ function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMess
 
     return messenger;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/websocket/renderWebSocket.js-=@*/
-var virt = require(244),
-    rootsById = require(346),
-    WebSocketAdapter = require(413);
+var virt = require(245),
+    rootsById = require(347),
+    WebSocketAdapter = require(414);
 
 
 module.exports = render;
@@ -43411,7 +43435,6 @@ render.unmount = function(root) {
         root = null;
     }
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/hyphenateStyleName.js-=@*/
@@ -43425,11 +43448,10 @@ module.exports = hyphenateStyleName;
 function hyphenateStyleName(str) {
     return str.replace(reUppercasePattern, "-$1").toLowerCase().replace(reMS, "-ms-");
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/renderMarkup.js-=@*/
-var escapeTextContent = require(314);
+var escapeTextContent = require(315);
 
 
 module.exports = renderMarkup;
@@ -43442,16 +43464,14 @@ function renderMarkup(markup, props) {
         return markup;
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/DOM_ID_NAME.js-=@*/
 module.exports = "data-virtid";
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/renderChildrenString.js-=@*/
-var virt = require(244);
+var virt = require(245);
 
 
 var getChildKey = virt.getChildKey;
@@ -43460,7 +43480,7 @@ var getChildKey = virt.getChildKey;
 module.exports = renderChildrenString;
 
 
-var renderString = require(241);
+var renderString = require(242);
 
 
 function renderChildrenString(children, parentProps, id) {
@@ -43476,23 +43496,22 @@ function renderChildrenString(children, parentProps, id) {
 
     return out;
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/View.js-=@*/
-var isPrimitive = require(270),
-    isFunction = require(7),
-    isArray = require(271),
-    isString = require(11),
-    isObject = require(6),
-    isNullOrUndefined = require(12),
-    isNumber = require(13),
-    has = require(272),
-    arrayMap = require(273),
-    extend = require(274),
-    propsToJSON = require(275),
-    owner = require(269),
-    context = require(268);
+/*@=-@nathanfaucett/virt@0.0.3/src/View.js-=@*/
+var isPrimitive = require(271),
+    isFunction = require(11),
+    isArray = require(272),
+    isString = require(16),
+    isObject = require(10),
+    isNullOrUndefined = require(17),
+    isNumber = require(18),
+    has = require(273),
+    arrayMap = require(274),
+    extend = require(275),
+    propsToJSON = require(276),
+    owner = require(270),
+    context = require(269);
 
 
 var ViewPrototype;
@@ -43738,16 +43757,15 @@ function ensureValidChildren(children) {
 
     return children;
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Root.js-=@*/
-var isFunction = require(7),
-    isNull = require(9),
-    isUndefined = require(14),
-    emptyFunction = require(282),
-    Transaction = require(283),
-    diffProps = require(284),
+/*@=-@nathanfaucett/virt@0.0.3/src/Root.js-=@*/
+var process = require(6);
+var isFunction = require(11),
+    isNull = require(14),
+    isUndefined = require(19),
+    emptyFunction = require(283),
+    Transaction = require(284),
     shouldUpdate = require(285),
     EventManager = require(286),
     Node = require(287);
@@ -43768,7 +43786,6 @@ function Root() {
     this.eventManager = new EventManager();
 
     this.nativeComponents = {};
-    this.diffProps = diffProps;
     this.adapter = null;
 
     this.__transactions = [];
@@ -43816,13 +43833,14 @@ RootPrototype.__processTransaction = function() {
         callback = transactionCallbacks[0];
 
         this.adapter.messenger.emit("virt.handleTransaction", transaction, function onHandleTransaction() {
+
+            _this.__currentTransaction = null;
+
             transactions.splice(0, 1);
             transactionCallbacks.splice(0, 1);
 
             transaction.queue.notifyAll();
             transaction.destroy();
-
-            _this.__currentTransaction = null;
 
             callback();
 
@@ -43856,12 +43874,35 @@ RootPrototype.unmount = function(callback) {
     }
 };
 
-RootPrototype.update = function(node, callback) {
+RootPrototype.update = function(node, state, callback) {
     var transaction = Transaction.create();
 
-    node.update(node.currentView, transaction);
-
+    node.update(node.currentView, state, transaction);
     this.__enqueueTransaction(transaction, callback);
+};
+
+RootPrototype.forceUpdate = function(node, callback) {
+    var transaction = Transaction.create();
+
+    node.forceUpdate(node.currentView, transaction);
+    this.__enqueueTransaction(transaction, callback);
+};
+
+RootPrototype.enqueueUpdate = function(node, nextState, callback) {
+    var _this = this,
+        transaction = this.__currentTransaction;
+
+    if (!isNull(transaction)) {
+        transaction.queue.enqueue(function onHandleTransaction() {
+            if (!isUndefined(_this.childHash[node.id])) {
+                _this.update(node, nextState, callback);
+            }
+        });
+    } else {
+        process.nextTick(function onNextTick() {
+            _this.update(node, nextState, callback);
+        });
+    }
 };
 
 RootPrototype.render = function(nextView, id, callback) {
@@ -43879,7 +43920,7 @@ RootPrototype.render = function(nextView, id, callback) {
     if (node) {
         if (shouldUpdate(node.currentView, nextView)) {
 
-            node.update(nextView, transaction);
+            node.forceUpdate(nextView, transaction);
             this.__enqueueTransaction(transaction, callback);
 
             return this;
@@ -43901,12 +43942,11 @@ RootPrototype.render = function(nextView, id, callback) {
 
     return this;
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Component.js-=@*/
-var inherits = require(308),
-    extend = require(274),
+/*@=-@nathanfaucett/virt@0.0.3/src/Component.js-=@*/
+var inherits = require(309),
+    extend = require(275),
     componentState = require(303);
 
 
@@ -43919,7 +43959,6 @@ module.exports = Component;
 function Component(props, children, context) {
     this.__node = null;
     this.__mountState = componentState.UNMOUNTED;
-    this.__nextState = null;
     this.props = props;
     this.children = children;
     this.context = context;
@@ -43942,12 +43981,23 @@ ComponentPrototype.render = function() {
 };
 
 ComponentPrototype.setState = function(state, callback) {
-    var node = this.__node;
-
-    this.__nextState = extend({}, this.state, state);
+    var node = this.__node,
+        nextState = extend({}, this.state, state);
 
     if (this.__mountState === componentState.MOUNTED) {
-        node.root.update(node, callback);
+        node.root.update(node, nextState, callback);
+    } else {
+        node.root.enqueueUpdate(node, nextState, callback);
+    }
+};
+
+ComponentPrototype.replaceState = function(state, callback) {
+    var node = this.__node;
+
+    if (this.__mountState === componentState.MOUNTED) {
+        node.root.update(node, state, callback);
+    } else {
+        node.root.enqueueUpdate(node, state, callback);
     }
 };
 
@@ -43955,7 +44005,9 @@ ComponentPrototype.forceUpdate = function(callback) {
     var node = this.__node;
 
     if (this.__mountState === componentState.MOUNTED) {
-        node.root.update(node, callback);
+        node.root.forceUpdate(node, callback);
+    } else {
+        node.root.enqueueUpdate(node, node.component.state, callback);
     }
 };
 
@@ -44016,10 +44068,9 @@ ComponentPrototype.componentWillUpdate = function( /* nextProps, nextChildren, n
 ComponentPrototype.shouldComponentUpdate = function( /* nextProps, nextChildren, nextState, nextContext */ ) {
     return true;
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/consts.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/consts.js-=@*/
 var keyMirror = require(299);
 
 
@@ -44033,11 +44084,10 @@ module.exports = keyMirror([
     "MOUNT",
     "UNMOUNT"
 ]);
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/getChildKey.js-=@*/
-var getViewKey = require(311);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/getChildKey.js-=@*/
+var getViewKey = require(312);
 
 
 module.exports = getChildKey;
@@ -44046,10 +44096,9 @@ module.exports = getChildKey;
 function getChildKey(parentId, child, index) {
     return parentId + "." + getViewKey(child, index);
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/getRootIdFromId.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/getRootIdFromId.js-=@*/
 module.exports = getRootIdFromId;
 
 
@@ -44063,11 +44112,10 @@ function getRootIdFromId(id) {
         return null;
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/isAncestorIdOf.js-=@*/
-var isBoundary = require(312);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/isAncestorIdOf.js-=@*/
+var isBoundary = require(313);
 
 
 module.exports = isAncestorIdOf;
@@ -44079,11 +44127,10 @@ function isAncestorIdOf(ancestorID, descendantID) {
         isBoundary(descendantID, ancestorID.length)
     );
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/traverseAncestors.js-=@*/
-var traversePath = require(313);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/traverseAncestors.js-=@*/
+var traversePath = require(314);
 
 
 module.exports = traverseAncestors;
@@ -44092,11 +44139,10 @@ module.exports = traverseAncestors;
 function traverseAncestors(id, callback) {
     traversePath(id, "", callback, false, true);
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/traverseDescendants.js-=@*/
-var traversePath = require(313);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/traverseDescendants.js-=@*/
+var traversePath = require(314);
 
 
 module.exports = traverseDescendant;
@@ -44105,11 +44151,10 @@ module.exports = traverseDescendant;
 function traverseDescendant(id, callback) {
     traversePath("", id, callback, true, false);
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/traverseTwoPhase.js-=@*/
-var traversePath = require(313);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/traverseTwoPhase.js-=@*/
+var traversePath = require(314);
 
 
 module.exports = traverseTwoPhase;
@@ -44121,27 +44166,24 @@ function traverseTwoPhase(id, callback) {
         traversePath("", id, callback, true, false);
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/context.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/context.js-=@*/
 var context = exports;
 
 
 context.current = null;
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/owner.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/owner.js-=@*/
 var owner = exports;
 
 
 owner.current = null;
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/is_primitive@0.0.1/src/index.js-=@*/
-var isNullOrUndefined = require(12);
+var isNullOrUndefined = require(17);
 
 
 module.exports = isPrimitive;
@@ -44155,9 +44197,9 @@ function isPrimitive(obj) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/is_array@0.0.1/src/index.js-=@*/
-var isNative = require(276),
-    isLength = require(277),
-    isObject = require(6);
+var isNative = require(277),
+    isLength = require(278),
+    isObject = require(10);
 
 
 var objectToString = Object.prototype.toString,
@@ -44183,9 +44225,9 @@ module.exports = isArray;
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/has@0.0.1/src/index.js-=@*/
-var isNative = require(276),
-    getPrototypeOf = require(280),
-    isNullOrUndefined = require(12);
+var isNative = require(277),
+    getPrototypeOf = require(281),
+    isNullOrUndefined = require(17);
 
 
 var nativeHasOwnProp = Object.prototype.hasOwnProperty,
@@ -44245,7 +44287,7 @@ function arrayMap(array, callback) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/extend@0.0.1/src/index.js-=@*/
-var keys = require(281);
+var keys = require(282);
 
 
 module.exports = extend;
@@ -44276,10 +44318,10 @@ function baseExtend(a, b) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/propsToJSON.js-=@*/
-var has = require(272),
-    isNull = require(9),
-    isPrimitive = require(270);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/propsToJSON.js-=@*/
+var has = require(273),
+    isNull = require(14),
+    isPrimitive = require(271);
 
 
 module.exports = propsToJSON;
@@ -44312,13 +44354,12 @@ function toJSON(props, json) {
 
     return json;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/is_native@0.0.2/src/index.js-=@*/
-var isFunction = require(7),
-    isNullOrUndefined = require(12),
-    escapeRegExp = require(278);
+var isFunction = require(11),
+    isNullOrUndefined = require(17),
+    escapeRegExp = require(279);
 
 
 var reHostCtor = /^\[object .+?Constructor\]$/,
@@ -44364,7 +44405,7 @@ isHostObject = function isHostObject(value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/is_length@0.0.1/src/index.js-=@*/
-var isNumber = require(13);
+var isNumber = require(18);
 
 
 var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
@@ -44380,7 +44421,7 @@ function isLength(value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/escape_regexp@0.0.1/src/index.js-=@*/
-var toString = require(279);
+var toString = require(280);
 
 
 var reRegExpChars = /[.*+?\^${}()|\[\]\/\\]/g,
@@ -44402,8 +44443,8 @@ function escapeRegExp(string) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/to_string@0.0.1/src/index.js-=@*/
-var isString = require(11),
-    isNullOrUndefined = require(12);
+var isString = require(16),
+    isNullOrUndefined = require(17);
 
 
 module.exports = toString;
@@ -44422,9 +44463,9 @@ function toString(value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/get_prototype_of@0.0.1/src/index.js-=@*/
-var isObject = require(6),
-    isNative = require(276),
-    isNullOrUndefined = require(12);
+var isObject = require(10),
+    isNative = require(277),
+    isNullOrUndefined = require(17);
 
 
 var nativeGetPrototypeOf = Object.getPrototypeOf,
@@ -44461,10 +44502,10 @@ if (isNative(nativeGetPrototypeOf)) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/keys@0.0.1/src/index.js-=@*/
-var has = require(272),
-    isNative = require(276),
-    isNullOrUndefined = require(12),
-    isObject = require(6);
+var has = require(273),
+    isNative = require(277),
+    isNullOrUndefined = require(17),
+    isObject = require(10);
 
 
 var nativeKeys = Object.keys;
@@ -44525,11 +44566,11 @@ emptyFunction.thatReturnsArgument = function(argument) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/index.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/index.js-=@*/
 var createPool = require(288),
     Queue = require(289),
-    has = require(272),
-    consts = require(261),
+    has = require(273),
+    consts = require(262),
     InsertPatch = require(290),
     MountPatch = require(291),
     UnmountPatch = require(292),
@@ -44676,81 +44717,12 @@ TransactionPrototype.toJSON = function() {
         eventsRemove: this.eventsRemove
     };
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/diffProps.js-=@*/
-var has = require(272),
-    isObject = require(6),
-    getPrototypeOf = require(280),
-    isNull = require(9),
-    isNullOrUndefined = require(12);
-
-
-module.exports = diffProps;
-
-
-function diffProps(id, eventManager, transaction, previous, next) {
-    var result = null,
-        localHas = has,
-        propNameToTopLevel = eventManager.propNameToTopLevel,
-        key, previousValue, nextValue, propsDiff;
-
-    for (key in previous) {
-        nextValue = next[key];
-
-        if (isNullOrUndefined(nextValue)) {
-            result = result || {};
-            result[key] = undefined;
-
-            if (localHas(propNameToTopLevel, key)) {
-                eventManager.off(id, propNameToTopLevel[key], transaction);
-            }
-        } else {
-            previousValue = previous[key];
-
-            if (previousValue === nextValue) {
-                continue;
-            } else if (isObject(previousValue) && isObject(nextValue)) {
-                if (getPrototypeOf(previousValue) !== getPrototypeOf(nextValue)) {
-                    result = result || {};
-                    result[key] = nextValue;
-                } else {
-                    propsDiff = diffProps(id, eventManager, transaction, previousValue, nextValue);
-                    if (!isNull(propsDiff)) {
-                        result = result || {};
-                        result[key] = propsDiff;
-                    }
-                }
-            } else {
-                result = result || {};
-                result[key] = nextValue;
-            }
-        }
-    }
-
-    for (key in next) {
-        if (isNullOrUndefined(previous[key])) {
-            nextValue = next[key];
-
-            result = result || {};
-            result[key] = nextValue;
-
-            if (localHas(propNameToTopLevel, key)) {
-                eventManager.on(id, propNameToTopLevel[key], nextValue, transaction);
-            }
-        }
-    }
-
-    return result;
-}
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/shouldUpdate.js-=@*/
-var isString = require(11),
-    isNumber = require(13),
-    isNullOrUndefined = require(12);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/shouldUpdate.js-=@*/
+var isString = require(16),
+    isNumber = require(18),
+    isNullOrUndefined = require(17);
 
 
 module.exports = shouldUpdate;
@@ -44770,12 +44742,11 @@ function shouldUpdate(previous, next) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/EventManager.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/EventManager.js-=@*/
 var indexOf = require(301),
-    isUndefined = require(14);
+    isUndefined = require(19);
 
 
 var EventManagerPrototype;
@@ -44847,28 +44818,27 @@ EventManagerPrototype.globalAllOff = function() {
         global.length = 0;
     }
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Node.js-=@*/
-var process = require(5);
-var has = require(272),
-    arrayMap = require(273),
+/*@=-@nathanfaucett/virt@0.0.3/src/Node.js-=@*/
+var process = require(6);
+var has = require(273),
+    arrayMap = require(274),
     indexOf = require(301),
-    isNull = require(9),
-    isString = require(11),
-    isArray = require(271),
-    isFunction = require(7),
-    extend = require(274),
-    owner = require(269),
-    context = require(268),
+    isNull = require(14),
+    isString = require(16),
+    isArray = require(272),
+    isFunction = require(11),
+    extend = require(275),
+    owner = require(270),
+    context = require(269),
     shouldUpdate = require(285),
     componentState = require(303),
     getComponentClassForType = require(304),
-    View = require(258),
-    getChildKey = require(262),
+    View = require(259),
+    getChildKey = require(263),
     emptyObject = require(305),
-    diffChildren;
+    diffChildren, diffProps;
 
 
 var NodePrototype,
@@ -44879,6 +44849,7 @@ module.exports = Node;
 
 
 diffChildren = require(306);
+diffProps = require(307);
 
 
 function Node(parentId, id, currentView) {
@@ -44956,7 +44927,7 @@ NodePrototype.mount = function(transaction) {
 };
 
 NodePrototype.__mount = function(transaction) {
-    var component, renderedView, renderedNode;
+    var renderedView, renderedNode, component;
 
     this.context = context.current;
     this.mountComponent();
@@ -45058,17 +45029,22 @@ NodePrototype.__unmountChildren = function(transaction) {
     }
 };
 
-NodePrototype.update = function(nextView, transaction) {
-    this.receiveView(nextView, nextView.__context, transaction);
+NodePrototype.update = function(nextView, nextState, transaction) {
+    this.receiveView(nextView, nextState, nextView.__context, transaction);
 };
 
-NodePrototype.receiveView = function(nextView, nextContext, transaction) {
+NodePrototype.forceUpdate = function(nextView, transaction) {
+    this.receiveView(nextView, this.component.state, nextView.__context, transaction);
+};
+
+NodePrototype.receiveView = function(nextView, nextState, nextContext, transaction) {
     var prevView = this.currentView,
         prevContext = this.context;
 
     this.updateComponent(
         prevView,
         nextView,
+        nextState,
         prevContext,
         nextContext,
         transaction
@@ -45076,15 +45052,12 @@ NodePrototype.receiveView = function(nextView, nextContext, transaction) {
 };
 
 NodePrototype.updateComponent = function(
-    prevParentView, nextParentView, prevUnmaskedContext, nextUnmaskedContext, transaction
+    prevParentView, nextParentView, nextState, prevUnmaskedContext, nextUnmaskedContext, transaction
 ) {
     var component = this.component,
-
         nextProps = component.props,
         nextChildren = component.children,
-        nextContext = component.context,
-
-        nextState;
+        nextContext = component.context;
 
     component.__mountState = componentState.UPDATING;
 
@@ -45098,9 +45071,11 @@ NodePrototype.updateComponent = function(
         }
     }
 
-    nextState = component.__nextState || component.state;
-
-    if (component.shouldComponentUpdate ? component.shouldComponentUpdate(nextProps, nextChildren, nextState, nextContext) : true) {
+    if (
+        component.shouldComponentUpdate ?
+        component.shouldComponentUpdate(nextProps, nextChildren, nextState, nextContext) :
+        true
+    ) {
         this.__updateComponent(
             nextParentView, nextProps, nextChildren, nextState, nextContext, nextUnmaskedContext, transaction
         );
@@ -45113,7 +45088,6 @@ NodePrototype.updateComponent = function(
         component.state = nextState;
         component.context = nextContext;
 
-        component.__nextState = null;
         component.__mountState = componentState.MOUNTED;
     }
 };
@@ -45138,8 +45112,6 @@ NodePrototype.__updateComponent = function(
     component.children = nextChildren;
     component.state = nextState;
     component.context = nextContext;
-
-    component.__nextState = null;
 
     this.context = unmaskedContext;
 
@@ -45167,7 +45139,7 @@ NodePrototype.__updateRenderedNode = function(context, transaction) {
         renderedNode;
 
     if (shouldUpdate(prevRenderedView, nextRenderedView)) {
-        prevNode.receiveView(nextRenderedView, this.__processChildContext(context), transaction);
+        prevNode.receiveView(nextRenderedView, this.component.state, this.__processChildContext(context), transaction);
     } else {
         prevNode.__unmount(transaction);
 
@@ -45183,9 +45155,14 @@ NodePrototype.__updateRenderedNode = function(context, transaction) {
 
 NodePrototype.__updateRenderedView = function(prevRenderedView, context, transaction) {
     var id = this.id,
-        root = this.root,
         nextRenderedView = this.renderView(),
-        propsDiff = root.diffProps(id, root.eventManager, transaction, prevRenderedView.props, nextRenderedView.props);
+        propsDiff = diffProps(
+            id,
+            this.root.eventManager,
+            transaction,
+            prevRenderedView.props,
+            nextRenderedView.props
+        );
 
     if (!isNull(propsDiff)) {
         transaction.props(id, prevRenderedView.props, propsDiff);
@@ -45388,12 +45365,11 @@ function mountEvents(id, props, eventManager, transaction) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/create_pool@0.0.1/src/index.js-=@*/
-var isFunction = require(7),
-    isNumber = require(13),
+var isFunction = require(11),
+    isNumber = require(18),
     defineProperty = require(298);
 
 
@@ -45618,9 +45594,9 @@ Queue.prototype.reset = Queue.prototype.destructor;
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/InsertPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/InsertPatch.js-=@*/
 var createPool = require(288),
-    consts = require(261);
+    consts = require(262);
 
 
 var InsertPatchPrototype;
@@ -45659,12 +45635,11 @@ InsertPatchPrototype.destructor = function() {
 InsertPatchPrototype.destroy = function() {
     return InsertPatch.release(this);
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/MountPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/MountPatch.js-=@*/
 var createPool = require(288),
-    consts = require(261);
+    consts = require(262);
 
 
 var MountPatchPrototype;
@@ -45697,12 +45672,11 @@ MountPatchPrototype.destructor = function() {
 MountPatchPrototype.destroy = function() {
     return MountPatch.release(this);
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/UnmountPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/UnmountPatch.js-=@*/
 var createPool = require(288),
-    consts = require(261);
+    consts = require(262);
 
 
 var UnmountPatchPrototype;
@@ -45732,12 +45706,11 @@ UnmountPatchPrototype.destructor = function() {
 UnmountPatchPrototype.destroy = function() {
     return UnmountPatch.release(this);
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/OrderPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/OrderPatch.js-=@*/
 var createPool = require(288),
-    consts = require(261);
+    consts = require(262);
 
 
 var OrderPatchPrototype;
@@ -45770,12 +45743,11 @@ OrderPatchPrototype.destructor = function() {
 OrderPatchPrototype.destroy = function() {
     return OrderPatch.release(this);
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/PropsPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/PropsPatch.js-=@*/
 var createPool = require(288),
-    consts = require(261);
+    consts = require(262);
 
 
 var PropsPatchPrototype;
@@ -45811,12 +45783,11 @@ PropsPatchPrototype.destructor = function() {
 PropsPatchPrototype.destroy = function() {
     return PropsPatch.release(this);
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/RemovePatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/RemovePatch.js-=@*/
 var createPool = require(288),
-    consts = require(261);
+    consts = require(262);
 
 
 var RemovePatchPrototype;
@@ -45852,12 +45823,11 @@ RemovePatchPrototype.destructor = function() {
 RemovePatchPrototype.destroy = function() {
     return RemovePatch.release(this);
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/ReplacePatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/ReplacePatch.js-=@*/
 var createPool = require(288),
-    consts = require(261);
+    consts = require(262);
 
 
 var ReplacePatchPrototype;
@@ -45896,13 +45866,12 @@ ReplacePatchPrototype.destructor = function() {
 ReplacePatchPrototype.destroy = function() {
     return ReplacePatch.release(this);
 };
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/Transaction/TextPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/Transaction/TextPatch.js-=@*/
 var createPool = require(288),
-    propsToJSON = require(275),
-    consts = require(261);
+    propsToJSON = require(276),
+    consts = require(262);
 
 
 var TextPatchPrototype;
@@ -45951,15 +45920,14 @@ TextPatchPrototype.toJSON = function() {
         props: propsToJSON(this.props)
     };
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/define_property@0.0.1/src/index.js-=@*/
-var isObject = require(6),
-    isFunction = require(7),
-    isPrimitive = require(270),
-    isNative = require(276),
-    has = require(272);
+var isObject = require(10),
+    isFunction = require(11),
+    isPrimitive = require(271),
+    isNative = require(277),
+    has = require(273);
 
 
 var nativeDefineProperty = Object.defineProperty;
@@ -46013,7 +45981,7 @@ if (!isNative(nativeDefineProperty) || !(function() {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/key_mirror@0.0.1/src/index.js-=@*/
-var keys = require(281),
+var keys = require(282),
     isArrayLike = require(300);
 
 
@@ -46055,9 +46023,9 @@ function keyMirrorObject(object) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/is_array_like@0.0.2/src/index.js-=@*/
-var isLength = require(277),
-    isFunction = require(7),
-    isObject = require(6);
+var isLength = require(278),
+    isFunction = require(11),
+    isObject = require(10);
 
 
 module.exports = isArrayLike;
@@ -46101,7 +46069,7 @@ function isEqual(a, b) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/componentState.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/componentState.js-=@*/
 var keyMirror = require(299);
 
 
@@ -46112,11 +46080,10 @@ module.exports = keyMirror([
     "UNMOUNTING",
     "UNMOUNTED"
 ]);
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/getComponentClassForType.js-=@*/
-var createNativeComponentForType = require(307);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/getComponentClassForType.js-=@*/
+var createNativeComponentForType = require(308);
 
 
 module.exports = getComponentClassForType;
@@ -46133,21 +46100,19 @@ function getComponentClassForType(type, rootNativeComponents) {
         return Class;
     }
 }
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/emptyObject.js-=@*/
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/emptyObject.js-=@*/
-
-
-},
-function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/diffChildren.js-=@*/
-var isNull = require(9),
-    isUndefined = require(14),
-    isNullOrUndefined = require(12),
-    getChildKey = require(262),
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/diffChildren.js-=@*/
+var isNull = require(14),
+    isUndefined = require(19),
+    isNullOrUndefined = require(17),
+    getChildKey = require(263),
     shouldUpdate = require(285),
-    View = require(258),
+    View = require(259),
     Node;
 
 
@@ -46219,7 +46184,7 @@ function diffChild(root, parentNode, previous, next, previousChild, nextChild, p
 
                 if (node) {
                     if (shouldUpdate(previousChild, nextChild)) {
-                        node.update(nextChild, transaction);
+                        node.forceUpdate(nextChild, transaction);
                     } else {
                         node.__unmount(transaction);
                         parentNode.removeNode(node);
@@ -46341,12 +46306,78 @@ function keyIndex(children) {
 
     return keys;
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/createNativeComponentForType.js-=@*/
-var View = require(258),
-    Component = require(260);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/diffProps.js-=@*/
+var has = require(273),
+    isObject = require(10),
+    getPrototypeOf = require(281),
+    isNull = require(14),
+    isNullOrUndefined = require(17);
+
+
+module.exports = diffProps;
+
+
+function diffProps(id, eventManager, transaction, previous, next) {
+    var result = null,
+        localHas = has,
+        propNameToTopLevel = eventManager.propNameToTopLevel,
+        key, previousValue, nextValue, propsDiff;
+
+    for (key in previous) {
+        nextValue = next[key];
+
+        if (isNullOrUndefined(nextValue)) {
+            result = result || {};
+            result[key] = undefined;
+
+            if (localHas(propNameToTopLevel, key)) {
+                eventManager.off(id, propNameToTopLevel[key], transaction);
+            }
+        } else {
+            previousValue = previous[key];
+
+            if (previousValue === nextValue) {
+                continue;
+            } else if (isObject(previousValue) && isObject(nextValue)) {
+                if (getPrototypeOf(previousValue) !== getPrototypeOf(nextValue)) {
+                    result = result || {};
+                    result[key] = nextValue;
+                } else {
+                    propsDiff = diffProps(id, eventManager, transaction, previousValue, nextValue);
+                    if (!isNull(propsDiff)) {
+                        result = result || {};
+                        result[key] = propsDiff;
+                    }
+                }
+            } else {
+                result = result || {};
+                result[key] = nextValue;
+            }
+        }
+    }
+
+    for (key in next) {
+        if (isNullOrUndefined(previous[key])) {
+            nextValue = next[key];
+
+            result = result || {};
+            result[key] = nextValue;
+
+            if (localHas(propNameToTopLevel, key)) {
+                eventManager.on(id, propNameToTopLevel[key], nextValue, transaction);
+            }
+        }
+    }
+
+    return result;
+}
+},
+function(require, exports, module, undefined, global) {
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/createNativeComponentForType.js-=@*/
+var View = require(259),
+    Component = require(261);
 
 
 module.exports = createNativeComponentForType;
@@ -46365,13 +46396,12 @@ function createNativeComponentForType(type) {
 
     return NativeComponent;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/inherits@0.0.1/src/index.js-=@*/
-var create = require(309),
-    extend = require(274),
-    mixin = require(310),
+var create = require(310),
+    extend = require(275),
+    mixin = require(311),
     defineProperty = require(298);
 
 
@@ -46419,9 +46449,9 @@ function defineStatic(name, value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/create@0.0.1/src/index.js-=@*/
-var isNull = require(9),
-    isNative = require(276),
-    isPrimitive = require(270);
+var isNull = require(14),
+    isNative = require(277),
+    isPrimitive = require(271);
 
 
 var nativeCreate = Object.create;
@@ -46461,8 +46491,8 @@ module.exports = create;
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/mixin@0.0.1/src/index.js-=@*/
-var keys = require(281),
-    isNullOrUndefined = require(12);
+var keys = require(282),
+    isNullOrUndefined = require(17);
 
 
 module.exports = mixin;
@@ -46496,8 +46526,8 @@ function baseMixin(a, b) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/getViewKey.js-=@*/
-var isNullOrUndefined = require(12);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/getViewKey.js-=@*/
+var isNullOrUndefined = require(17);
 
 
 var reEscape = /[=.:]/g;
@@ -46519,22 +46549,20 @@ function getViewKey(view, index) {
 function escapeKey(key) {
     return (key + "").replace(reEscape, "$");
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/isBoundary.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/isBoundary.js-=@*/
 module.exports = isBoundary;
 
 
 function isBoundary(id, index) {
     return id.charAt(index) === "." || index === id.length;
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.2/src/utils/traversePath.js-=@*/
-var isBoundary = require(312),
-    isAncestorIdOf = require(264);
+/*@=-@nathanfaucett/virt@0.0.3/src/utils/traversePath.js-=@*/
+var isBoundary = require(313),
+    isAncestorIdOf = require(265);
 
 
 module.exports = traversePath;
@@ -46581,7 +46609,6 @@ function getNextDescendantID(ancestorID, destinationID) {
 function getParentID(id) {
     return id ? id.substr(0, id.lastIndexOf(".")) : "";
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/escape_text_content@0.0.1/src/index.js-=@*/
@@ -46615,9 +46642,9 @@ function escaper(match) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/Button.js-=@*/
-var virt = require(244),
+var virt = require(245),
     indexOf = require(301),
-    has = require(272);
+    has = require(273);
 
 
 var View = virt.View,
@@ -46698,14 +46725,13 @@ ButtonPrototype.__getRenderProps = function() {
 ButtonPrototype.render = function() {
     return new View("button", null, null, this.__getRenderProps(), this.children, null, null);
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/Image.js-=@*/
-var process = require(5);
-var virt = require(244),
-    has = require(272),
-    emptyFunction = require(282);
+var process = require(6);
+var virt = require(245),
+    has = require(273),
+    emptyFunction = require(283);
 
 
 var View = virt.View,
@@ -46778,15 +46804,14 @@ function getProps(props) {
 
     return renderProps;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/Input.js-=@*/
-var process = require(5);
-var virt = require(244),
-    has = require(272),
-    isFunction = require(7),
-    isNullOrUndefined = require(12);
+var process = require(6);
+var virt = require(245),
+    has = require(273),
+    isFunction = require(11),
+    isNullOrUndefined = require(17);
 
 
 var View = virt.View,
@@ -47016,14 +47041,13 @@ InputPrototype.__getRenderProps = function() {
 InputPrototype.render = function() {
     return new View("input", null, null, this.__getRenderProps(), this.children, null, null);
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/TextArea.js-=@*/
-var process = require(5);
-var virt = require(244),
-    has = require(272),
-    isFunction = require(7);
+var process = require(6);
+var virt = require(245),
+    has = require(273),
+    isFunction = require(11);
 
 
 var View = virt.View,
@@ -47181,12 +47205,11 @@ TextAreaPrototype.__getRenderProps = function() {
 TextAreaPrototype.render = function() {
     return new View("textarea", null, null, this.__getRenderProps(), this.children, null, null);
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/nodeHandlers.js-=@*/
-var domDimensions = require(324),
-    findDOMNode = require(247);
+var domDimensions = require(325),
+    findDOMNode = require(248);
 
 
 var nodeHandlers = exports;
@@ -47297,11 +47320,10 @@ nodeHandlers["virt.setViewStyleProperty"] = function(data, callback) {
         callback(new Error("getViewDimensions: No DOM node found with id " + data.id));
     }
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/buttonHandlers.js-=@*/
-var sharedHandlers = require(333);
+var sharedHandlers = require(334);
 
 
 var buttonHandlers = exports;
@@ -47309,13 +47331,12 @@ var buttonHandlers = exports;
 
 buttonHandlers["virt.dom.Button.focus"] = sharedHandlers.focus;
 buttonHandlers["virt.dom.Button.blur"] = sharedHandlers.blur;
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/imageHandlers.js-=@*/
-var consts = require(340),
-    findEventHandler = require(249),
-    findDOMNode = require(247);
+var consts = require(341),
+    findEventHandler = require(250),
+    findDOMNode = require(248);
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -47360,12 +47381,11 @@ imageHandlers["virt.dom.Image.setSrc"] = function(data, callback) {
         callback(new Error("setSrc: No DOM node found with id " + data.id));
     }
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/inputHandlers.js-=@*/
-var findDOMNode = require(247),
-    sharedHandlers = require(333);
+var findDOMNode = require(248),
+    sharedHandlers = require(334);
 
 
 var inputHandlers = exports;
@@ -47395,11 +47415,10 @@ inputHandlers["virt.dom.Input.setChecked"] = function(data, callback) {
         callback(new Error("setChecked: No DOM node found with id " + data.id));
     }
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/textareaHandlers.js-=@*/
-var sharedHandlers = require(333);
+var sharedHandlers = require(334);
 
 
 var textareaHandlers = exports;
@@ -47411,12 +47430,11 @@ textareaHandlers["virt.dom.TextArea.getSelection"] = sharedHandlers.getSelection
 textareaHandlers["virt.dom.TextArea.setSelection"] = sharedHandlers.setSelection;
 textareaHandlers["virt.dom.TextArea.focus"] = sharedHandlers.focus;
 textareaHandlers["virt.dom.TextArea.blur"] = sharedHandlers.blur;
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/dom_dimensions@0.0.1/src/index.js-=@*/
-var getCurrentStyle = require(325),
-    isElement = require(326);
+var getCurrentStyle = require(326),
+    isElement = require(327);
 
 
 module.exports = domDimensions;
@@ -47550,11 +47568,11 @@ domDimensions.outerHeight = function(node) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/get_current_style@0.0.1/src/index.js-=@*/
-var supports = require(327),
-    environment = require(1),
-    isElement = require(326),
-    isString = require(11),
-    camelize = require(328);
+var supports = require(328),
+    environment = require(12),
+    isElement = require(327),
+    isString = require(16),
+    camelize = require(329);
 
 
 var baseGetCurrentStyles;
@@ -47596,7 +47614,7 @@ if (supports.dom && environment.document.defaultView) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/is_element@0.0.1/src/index.js-=@*/
-var isNode = require(10);
+var isNode = require(15);
 
 
 module.exports = isElement;
@@ -47609,7 +47627,7 @@ function isElement(value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/supports@0.0.1/src/index.js-=@*/
-var environment = require(1);
+var environment = require(12);
 
 
 var supports = module.exports;
@@ -47627,8 +47645,8 @@ supports.touch = supports.dom && "ontouchstart" in environment.window;
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/camelize@0.0.1/src/index.js-=@*/
-var reInflect = require(329),
-    capitalizeString = require(330);
+var reInflect = require(330),
+    capitalizeString = require(331);
 
 
 module.exports = camelize;
@@ -47671,7 +47689,7 @@ function capitalizeString(string) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/getNodeById.js-=@*/
-var nodeCache = require(332);
+var nodeCache = require(333);
 
 
 module.exports = getNodeById;
@@ -47680,19 +47698,17 @@ module.exports = getNodeById;
 function getNodeById(id) {
     return nodeCache[id];
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/nodeCache.js-=@*/
 
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/nativeDOM/sharedHandlers.js-=@*/
-var domCaret = require(334),
-    blurNode = require(335),
-    focusNode = require(336),
-    findDOMNode = require(247);
+var domCaret = require(335),
+    blurNode = require(336),
+    focusNode = require(337),
+    findDOMNode = require(248);
 
 
 var sharedInputHandlers = exports;
@@ -47783,14 +47799,13 @@ sharedInputHandlers.blur = function(data, callback) {
         callback(new Error("blur: No DOM node found with id " + data.id));
     }
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/dom_caret@0.0.1/src/index.js-=@*/
-var environment = require(1),
-    focusNode = require(336),
-    getActiveElement = require(337),
-    isTextInputElement = require(338);
+var environment = require(12),
+    focusNode = require(337),
+    getActiveElement = require(338),
+    isTextInputElement = require(339);
 
 
 var domCaret = exports,
@@ -47884,7 +47899,7 @@ if (!!window.getSelection) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/blur_node@0.0.1/src/index.js-=@*/
-var isNode = require(10);
+var isNode = require(15);
 
 
 module.exports = blurNode;
@@ -47901,7 +47916,7 @@ function blurNode(node) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/focus_node@0.0.1/src/index.js-=@*/
-var isNode = require(10);
+var isNode = require(15);
 
 
 module.exports = focusNode;
@@ -47918,8 +47933,8 @@ function focusNode(node) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/get_active_element@0.0.1/src/index.js-=@*/
-var isDocument = require(339),
-    environment = require(1);
+var isDocument = require(340),
+    environment = require(12);
 
 
 var document = environment.document;
@@ -47941,7 +47956,7 @@ function getActiveElement(ownerDocument) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/is_text_input_element@0.0.1/src/index.js-=@*/
-var isNullOrUndefined = require(12);
+var isNullOrUndefined = require(17);
 
 
 var reIsSupportedInputType = new RegExp("^\\b(" + [
@@ -47963,7 +47978,7 @@ function isTextInputElement(value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/is_document@0.0.1/src/index.js-=@*/
-var isNode = require(10);
+var isNode = require(15);
 
 
 module.exports = isDocument;
@@ -47976,11 +47991,11 @@ function isDocument(value) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/consts.js-=@*/
-var arrayMap = require(273),
-    arrayForEach = require(341),
+var arrayMap = require(274),
+    arrayForEach = require(342),
     keyMirror = require(299),
-    removeTop = require(342),
-    replaceTopWithOn = require(343);
+    removeTop = require(343),
+    replaceTopWithOn = require(344);
 
 
 var consts = exports,
@@ -48079,7 +48094,6 @@ arrayForEach(eventTypes, function(string) {
 arrayForEach(eventTypes, function(string) {
     topLevelToEvent[string] = removeTop(string).toLowerCase();
 });
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/array-for_each@0.0.1/src/index.js-=@*/
@@ -48108,7 +48122,6 @@ module.exports = removeTop;
 function removeTop(str) {
     return str.replace(/^top/, "");
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/replaceTopWithOn.js-=@*/
@@ -48118,30 +48131,28 @@ module.exports = replaceTopWithOn;
 function replaceTopWithOn(string) {
     return string.replace(/^top/, "on");
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/eventHandlersById.js-=@*/
 
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/Adapter.js-=@*/
-var extend = require(274),
-    Messenger = require(348),
-    createMessengerAdapter = require(349),
-    eventHandlersById = require(344),
-    getWindow = require(350),
-    nativeDOMComponents = require(242),
-    nativeDOMHandlers = require(243),
-    registerNativeComponents = require(351),
-    registerNativeComponentHandlers = require(352),
-    consts = require(340),
-    EventHandler = require(353),
-    eventClassMap = require(354),
-    handleEventDispatch = require(355),
-    applyEvents = require(356),
-    applyPatches = require(357);
+var extend = require(275),
+    Messenger = require(349),
+    createMessengerAdapter = require(350),
+    eventHandlersById = require(345),
+    getWindow = require(351),
+    nativeDOMComponents = require(243),
+    nativeDOMHandlers = require(244),
+    registerNativeComponents = require(352),
+    registerNativeComponentHandlers = require(353),
+    consts = require(341),
+    EventHandler = require(354),
+    eventClassMap = require(355),
+    handleEventDispatch = require(356),
+    applyEvents = require(357),
+    applyPatches = require(358);
 
 
 module.exports = Adapter;
@@ -48213,17 +48224,15 @@ function Adapter(root, containerDOMNode) {
     registerNativeComponents(root, nativeDOMComponents);
     registerNativeComponentHandlers(messengerClient, nativeDOMHandlers);
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/rootsById.js-=@*/
 
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/getRootNodeId.js-=@*/
-var getRootNodeInContainer = require(409),
-    getNodeId = require(408);
+var getRootNodeInContainer = require(410),
+    getNodeId = require(409);
 
 
 module.exports = getRootNodeId;
@@ -48232,7 +48241,6 @@ module.exports = getRootNodeId;
 function getRootNodeId(containerDOMNode) {
     return getNodeId(getRootNodeInContainer(containerDOMNode));
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/messenger@0.0.1/src/index.js-=@*/
@@ -48430,11 +48438,10 @@ function getWindow(document) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/registerNativeComponents.js-=@*/
-var has = require(272);
+var has = require(273);
 
 
 module.exports = registerNativeComponents;
@@ -48450,11 +48457,10 @@ function registerNativeComponents(root, nativeDOMComponents) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/registerNativeComponentHandlers.js-=@*/
-var has = require(272);
+var has = require(273);
 
 
 module.exports = registerNativeComponentHandlers;
@@ -48470,21 +48476,20 @@ function registerNativeComponentHandlers(messenger, nativeDOMHandlers) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/EventHandler.js-=@*/
-var has = require(272),
+var has = require(273),
     eventListener = require(2),
-    consts = require(340),
-    getWindowWidth = require(358),
-    getWindowHeight = require(359),
-    getEventTarget = require(360),
-    getNodeAttributeId = require(361),
-    nativeEventToJSON = require(362),
-    isEventSupported = require(363),
-    ChangePlugin = require(364),
-    TapPlugin = require(365);
+    consts = require(341),
+    getWindowWidth = require(359),
+    getWindowHeight = require(360),
+    getEventTarget = require(361),
+    getNodeAttributeId = require(362),
+    nativeEventToJSON = require(363),
+    isEventSupported = require(364),
+    ChangePlugin = require(365),
+    TapPlugin = require(366);
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -48727,23 +48732,22 @@ EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
         targetId: targetId
     });
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/eventClassMap.js-=@*/
-var SyntheticAnimationEvent = require(375),
-    SyntheticTransitionEvent = require(376),
-    SyntheticClipboardEvent = require(377),
-    SyntheticCompositionEvent = require(378),
-    SyntheticDragEvent = require(379),
-    SyntheticEvent = require(369),
-    SyntheticFocusEvent = require(380),
-    SyntheticInputEvent = require(367),
-    SyntheticKeyboardEvent = require(381),
-    SyntheticMouseEvent = require(382),
-    SyntheticTouchEvent = require(383),
-    SyntheticUIEvent = require(373),
-    SyntheticWheelEvent = require(384);
+var SyntheticAnimationEvent = require(376),
+    SyntheticTransitionEvent = require(377),
+    SyntheticClipboardEvent = require(378),
+    SyntheticCompositionEvent = require(379),
+    SyntheticDragEvent = require(380),
+    SyntheticEvent = require(370),
+    SyntheticFocusEvent = require(381),
+    SyntheticInputEvent = require(368),
+    SyntheticKeyboardEvent = require(382),
+    SyntheticMouseEvent = require(383),
+    SyntheticTouchEvent = require(384),
+    SyntheticUIEvent = require(374),
+    SyntheticWheelEvent = require(385);
 
 
 module.exports = {
@@ -48848,13 +48852,12 @@ module.exports = {
 
     topWheel: SyntheticWheelEvent
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/handleEventDispatch.js-=@*/
-var virt = require(244),
-    isNullOrUndefined = require(12),
-    getNodeById = require(331);
+var virt = require(245),
+    isNullOrUndefined = require(17),
+    getNodeById = require(332);
 
 
 var traverseAncestors = virt.traverseAncestors;
@@ -48908,11 +48911,10 @@ function handleEventDispatch(childHash, events, topLevelType, targetId, event) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/applyEvents.js-=@*/
-var has = require(272);
+var has = require(273);
 
 
 module.exports = applyEvents;
@@ -48934,12 +48936,11 @@ function applyEvents(events, eventHandler) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/applyPatches.js-=@*/
-var getNodeById = require(331),
-    applyPatch = require(402);
+var getNodeById = require(332),
+    applyPatch = require(403);
 
 
 module.exports = applyPatches;
@@ -48963,7 +48964,6 @@ function applyPatchIndices(DOMNode, patchArray, id, document, rootDOMNode) {
         applyPatch(patchArray[i], DOMNode, id, document, rootDOMNode);
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getWindowWidth.js-=@*/
@@ -48973,7 +48973,6 @@ module.exports = getWindowWidth;
 function getWindowWidth(window, document, documentElement) {
     return window.innerWidth || document.clientWidth || documentElement.clientWidth;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getWindowHeight.js-=@*/
@@ -48983,7 +48982,6 @@ module.exports = getWindowHeight;
 function getWindowHeight(window, document, documentElement) {
     return window.innerHeight || document.clientHeight || documentElement.clientHeight;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getEventTarget.js-=@*/
@@ -48994,11 +48992,10 @@ function getEventTarget(nativeEvent, window) {
     var target = nativeEvent.target || nativeEvent.srcElement || window;
     return target.nodeType === 3 ? target.parentNode : target;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/getNodeAttributeId.js-=@*/
-var DOM_ID_NAME = require(256);
+var DOM_ID_NAME = require(257);
 
 
 module.exports = getNodeAttributeId;
@@ -49007,14 +49004,13 @@ module.exports = getNodeAttributeId;
 function getNodeAttributeId(node) {
     return node && node.getAttribute && node.getAttribute(DOM_ID_NAME) || "";
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/nativeEventToJSON.js-=@*/
 var indexOf = require(301),
-    isNode = require(10),
-    isFunction = require(7),
-    ignoreNativeEventProp = require(366);
+    isNode = require(15),
+    isFunction = require(11),
+    ignoreNativeEventProp = require(367);
 
 
 module.exports = nativeEventToJSON;
@@ -49034,14 +49030,13 @@ function nativeEventToJSON(nativeEvent) {
 
     return json;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/isEventSupported.js-=@*/
-var isFunction = require(7),
-    isNullOrUndefined = require(12),
-    has = require(272),
-    supports = require(327),
+var isFunction = require(11),
+    isNullOrUndefined = require(17),
+    has = require(273),
+    supports = require(328),
     environment = require(1);
 
 
@@ -49079,14 +49074,13 @@ function isEventSupported(eventNameSuffix, capture) {
         return isSupported;
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/plugins/ChangePlugin.js-=@*/
 var environment = require(1),
-    getEventTarget = require(360),
-    SyntheticInputEvent = require(367),
-    consts = require(340);
+    getEventTarget = require(361),
+    SyntheticInputEvent = require(368),
+    consts = require(341);
 
 
 var document = environment.document,
@@ -49220,14 +49214,13 @@ function ChangePlugin_onPropertyChange(_this, nativeEvent) {
 function hasInputCapabilities(element) {
     return element.nodeName === "INPUT" || element.nodeName === "TEXTAREA";
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/plugins/TapPlugin.js-=@*/
-var now = require(372),
+var now = require(373),
     indexOf = require(301),
-    SyntheticUIEvent = require(373),
-    consts = require(340);
+    SyntheticUIEvent = require(374),
+    consts = require(341);
 
 
 var topLevelTypes = consts.topLevelTypes,
@@ -49367,7 +49360,6 @@ function isEndish(topLevelType) {
         topLevelType === topLevelTypes.topTouchCancel
     );
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/ignoreNativeEventProp.js-=@*/
@@ -49378,12 +49370,11 @@ module.exports = [
     "MOUSEOVER", "MOUSEOUT", "MOUSEMOVE", "MOUSEDRAG", "CLICK", "DBLCLICK", "KEYDOWN",
     "KEYUP", "KEYPRESS", "DRAGDROP", "FOCUS", "BLUR", "SELECT", "CHANGE"
 ];
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticInputEvent.js-=@*/
-var getInputEvent = require(368),
-    SyntheticEvent = require(369);
+var getInputEvent = require(369),
+    SyntheticEvent = require(370);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -49417,7 +49408,6 @@ SyntheticInputEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getInputEvent.js-=@*/
@@ -49427,14 +49417,13 @@ module.exports = getInputEvent;
 function getInputEvent(obj, nativeEvent) {
     obj.data = nativeEvent.data;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticEvent.js-=@*/
-var inherits = require(308),
+var inherits = require(309),
     createPool = require(288),
-    nativeEventToJSON = require(362),
-    getEvent = require(370);
+    nativeEventToJSON = require(363),
+    getEvent = require(371);
 
 
 var SyntheticEventPrototype;
@@ -49533,12 +49522,11 @@ SyntheticEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getEvent.js-=@*/
-var getEventTarget = require(360),
-    getPath = require(371);
+var getEventTarget = require(361),
+    getPath = require(372);
 
 
 module.exports = getEvent;
@@ -49561,13 +49549,12 @@ function getEvent(obj, nativeEvent, eventHandler) {
     obj.returnValue = nativeEvent.returnValue;
     obj.isTrusted = nativeEvent.isTrusted;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getPath.js-=@*/
-var isArray = require(271),
-    isDocument = require(339),
-    getEventTarget = require(360);
+var isArray = require(272),
+    isDocument = require(340),
+    getEventTarget = require(361);
 
 
 module.exports = getPath;
@@ -49592,10 +49579,9 @@ function getPath(nativeEvent, window) {
 
     return path;
 }
-
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/now@0.0.2/src/browser.js-=@*/
+/*@=-@nathanfaucett/now@0.0.3/src/browser.js-=@*/
 var Date_now = Date.now || function Date_now() {
         return (new Date()).getTime();
     },
@@ -49626,6 +49612,24 @@ now.stamp = function stamp() {
     return START_TIME + now();
 };
 
+now.hrtime = function hrtime(previousTimestamp) {
+    var clocktime = now() * 1e-3,
+        seconds = Math.floor(clocktime),
+        nanoseconds = Math.floor((clocktime % 1) * 1e9);
+
+    if (previousTimestamp) {
+        seconds = seconds - previousTimestamp[0];
+        nanoseconds = nanoseconds - previousTimestamp[1];
+
+        if (nanoseconds < 0) {
+            seconds--;
+            nanoseconds += 1e9;
+        }
+    }
+
+    return [seconds, nanoseconds];
+};
+
 
 START_TIME -= now();
 
@@ -49635,8 +49639,8 @@ module.exports = now;
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticUIEvent.js-=@*/
-var getUIEvent = require(374),
-    SyntheticEvent = require(369);
+var getUIEvent = require(375),
+    SyntheticEvent = require(370);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -49672,12 +49676,11 @@ SyntheticUIEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getUIEvent.js-=@*/
-var getWindow = require(350),
-    getEventTarget = require(360);
+var getWindow = require(351),
+    getEventTarget = require(361);
 
 
 module.exports = getUIEvent;
@@ -49709,12 +49712,11 @@ function getView(nativeEvent, eventHandler) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticAnimationEvent.js-=@*/
-var getAnimationEvent = require(385),
-    SyntheticEvent = require(369);
+var getAnimationEvent = require(386),
+    SyntheticEvent = require(370);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -49751,12 +49753,11 @@ SyntheticAnimationEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticTransitionEvent.js-=@*/
-var getTransitionEvent = require(386),
-    SyntheticEvent = require(369);
+var getTransitionEvent = require(387),
+    SyntheticEvent = require(370);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -49793,12 +49794,11 @@ SyntheticTransitionEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticClipboardEvent.js-=@*/
-var getClipboardEvent = require(387),
-    SyntheticEvent = require(369);
+var getClipboardEvent = require(388),
+    SyntheticEvent = require(370);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -49832,12 +49832,11 @@ SyntheticClipboardEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticCompositionEvent.js-=@*/
-var getCompositionEvent = require(388),
-    SyntheticEvent = require(369);
+var getCompositionEvent = require(389),
+    SyntheticEvent = require(370);
 
 
 var SyntheticEventPrototype = SyntheticEvent.prototype,
@@ -49871,12 +49870,11 @@ SyntheticCompositionEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticDragEvent.js-=@*/
-var getDragEvent = require(389),
-    SyntheticMouseEvent = require(382);
+var getDragEvent = require(390),
+    SyntheticMouseEvent = require(383);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -49910,12 +49908,11 @@ SyntheticDragEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticFocusEvent.js-=@*/
-var getFocusEvent = require(394),
-    SyntheticUIEvent = require(373);
+var getFocusEvent = require(395),
+    SyntheticUIEvent = require(374);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -49949,12 +49946,11 @@ SyntheticFocusEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticKeyboardEvent.js-=@*/
-var getKeyboardEvent = require(395),
-    SyntheticUIEvent = require(373);
+var getKeyboardEvent = require(396),
+    SyntheticUIEvent = require(374);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -49973,7 +49969,7 @@ function SynthetiKeyboardEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SynthetiKeyboardEvent);
 SynthetiKeyboardEventPrototype = SynthetiKeyboardEvent.prototype;
 
-SynthetiKeyboardEventPrototype.getModifierState = require(391);
+SynthetiKeyboardEventPrototype.getModifierState = require(392);
 
 SynthetiKeyboardEventPrototype.destructor = function() {
 
@@ -50010,12 +50006,11 @@ SynthetiKeyboardEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticMouseEvent.js-=@*/
-var getMouseEvent = require(390),
-    SyntheticUIEvent = require(373);
+var getMouseEvent = require(391),
+    SyntheticUIEvent = require(374);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -50034,7 +50029,7 @@ function SyntheticMouseEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticMouseEvent);
 SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype;
 
-SyntheticMouseEventPrototype.getModifierState = require(391);
+SyntheticMouseEventPrototype.getModifierState = require(392);
 
 SyntheticMouseEventPrototype.destructor = function() {
 
@@ -50075,13 +50070,12 @@ SyntheticMouseEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticTouchEvent.js-=@*/
-var getTouchEvent = require(398),
-    SyntheticUIEvent = require(373),
-    SyntheticTouch = require(399);
+var getTouchEvent = require(399),
+    SyntheticUIEvent = require(374),
+    SyntheticTouch = require(400);
 
 
 var SyntheticUIEventPrototype = SyntheticUIEvent.prototype,
@@ -50104,7 +50098,7 @@ function SyntheticTouchEvent(nativeEvent, eventHandler) {
 SyntheticUIEvent.extend(SyntheticTouchEvent);
 SyntheticTouchEventPrototype = SyntheticTouchEvent.prototype;
 
-SyntheticTouchEventPrototype.getModifierState = require(391);
+SyntheticTouchEventPrototype.getModifierState = require(392);
 
 SyntheticTouchEventPrototype.destructor = function() {
 
@@ -50156,12 +50150,11 @@ function destroyTouches(touches) {
 
     return touches;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticWheelEvent.js-=@*/
-var getWheelEvent = require(401),
-    SyntheticMouseEvent = require(382);
+var getWheelEvent = require(402),
+    SyntheticMouseEvent = require(383);
 
 
 var SyntheticMouseEventPrototype = SyntheticMouseEvent.prototype,
@@ -50201,7 +50194,6 @@ SyntheticWheelEventPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getAnimationEvent.js-=@*/
@@ -50213,7 +50205,6 @@ function getAnimationEvent(obj, nativeEvent) {
     obj.elapsedTime = nativeEvent.elapsedTime;
     obj.pseudoElement = nativeEvent.pseudoElement;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getTransitionEvent.js-=@*/
@@ -50225,7 +50216,6 @@ function getTransitionEvent(obj, nativeEvent) {
     obj.elapsedTime = nativeEvent.elapsedTime;
     obj.pseudoElement = nativeEvent.pseudoElement;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getClipboardEvent.js-=@*/
@@ -50239,7 +50229,6 @@ function getClipboardEvent(obj, nativeEvent, eventHandler) {
 function getClipboardData(nativeEvent, window) {
     return nativeEvent.clipboardData != null ? nativeEvent.clipboardData : window.clipboardData;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getCompositionEvent.js-=@*/
@@ -50249,7 +50238,6 @@ module.exports = getCompositionEvent;
 function getCompositionEvent(obj, nativeEvent) {
     obj.data = nativeEvent.data;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getDragEvent.js-=@*/
@@ -50259,12 +50247,11 @@ module.exports = getDragEvent;
 function getDragEvent(obj, nativeEvent) {
     obj.dataTransfer = nativeEvent.dataTransfer;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getMouseEvent.js-=@*/
-var getPageX = require(392),
-    getPageY = require(393);
+var getPageX = require(393),
+    getPageY = require(394);
 
 
 module.exports = getMouseEvent;
@@ -50301,7 +50288,6 @@ function getButton(nativeEvent) {
         )
     );
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getEventModifierState.js-=@*/
@@ -50327,7 +50313,6 @@ function getEventModifierState(keyArg) {
         return keyProp ? !!nativeEvent[keyProp] : false;
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getPageX.js-=@*/
@@ -50337,7 +50322,6 @@ module.exports = getPageX;
 function getPageX(nativeEvent, viewport) {
     return nativeEvent.pageX != null ? nativeEvent.pageX : nativeEvent.clientX + viewport.currentScrollLeft;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getPageY.js-=@*/
@@ -50347,7 +50331,6 @@ module.exports = getPageY;
 function getPageY(nativeEvent, viewport) {
     return nativeEvent.pageY != null ? nativeEvent.pageY : nativeEvent.clientY + viewport.currentScrollTop;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getFocusEvent.js-=@*/
@@ -50357,12 +50340,11 @@ module.exports = getFocusEvent;
 function getFocusEvent(obj, nativeEvent) {
     obj.relatedTarget = nativeEvent.relatedTarget;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getKeyboardEvent.js-=@*/
-var getEventKey = require(396),
-    getEventCharCode = require(397);
+var getEventKey = require(397),
+    getEventCharCode = require(398);
 
 
 module.exports = getKeyboardEvent;
@@ -50399,11 +50381,10 @@ function getWhich(nativeEvent) {
         type === "keydown" || type === "keyup" ? nativeEvent.keyCode : 0
     );
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/get_event_key@0.0.1/src/index.js-=@*/
-var getEventCharCode = require(397);
+var getEventCharCode = require(398);
 
 
 var normalizeKey, translateToKey;
@@ -50529,12 +50510,11 @@ function getTouchEvent(obj, nativeEvent) {
     obj.ctrlKey = nativeEvent.ctrlKey;
     obj.shiftKey = nativeEvent.shiftKey;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/syntheticEvents/SyntheticTouch.js-=@*/
-var getTouch = require(400),
-    nativeEventToJSON = require(362),
+var getTouch = require(401),
+    nativeEventToJSON = require(363),
     createPool = require(288);
 
 
@@ -50593,7 +50573,6 @@ SyntheticTouchPrototype.toJSON = function(json) {
 
     return json;
 };
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getTouch.js-=@*/
@@ -50667,7 +50646,6 @@ function getForce(nativeTouch) {
         1
     );
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/events/getters/getWheelEvent.js-=@*/
@@ -50694,23 +50672,22 @@ function getDeltaY(nativeEvent) {
         )
     );
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/applyPatch.js-=@*/
-var virt = require(244),
-    isNull = require(9),
-    isUndefined = require(14),
-    isNullOrUndefined = require(12),
-    createDOMElement = require(403),
-    renderMarkup = require(255),
-    renderString = require(241),
-    renderChildrenString = require(257),
-    addDOMNodes = require(404),
-    removeDOMNode = require(405),
-    removeDOMNodes = require(406),
-    getNodeById = require(331),
-    applyProperties = require(407);
+var virt = require(245),
+    isNull = require(14),
+    isUndefined = require(19),
+    isNullOrUndefined = require(17),
+    createDOMElement = require(404),
+    renderMarkup = require(256),
+    renderString = require(242),
+    renderChildrenString = require(258),
+    addDOMNodes = require(405),
+    removeDOMNode = require(406),
+    removeDOMNodes = require(407),
+    getNodeById = require(332),
+    applyProperties = require(408);
 
 
 var consts = virt.consts;
@@ -50848,17 +50825,16 @@ function order(parentNode, orderIndex) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/createDOMElement.js-=@*/
-var virt = require(244),
-    isString = require(11),
+var virt = require(245),
+    isString = require(16),
 
-    DOM_ID_NAME = require(256),
-    nodeCache = require(332),
+    DOM_ID_NAME = require(257),
+    nodeCache = require(333),
 
-    applyProperties = require(407);
+    applyProperties = require(408);
 
 
 var View = virt.View,
@@ -50886,12 +50862,11 @@ function createDOMElement(view, id, document) {
         throw new TypeError("Arguments is not a valid view");
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/addDOMNodes.js-=@*/
-var isElement = require(326),
-    getNodeId = require(408);
+var isElement = require(327),
+    getNodeId = require(409);
 
 
 module.exports = addDOMNodes;
@@ -50912,19 +50887,18 @@ function addDOMNode(node) {
         addDOMNodes(node.childNodes);
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/removeDOMNode.js-=@*/
-var isElement = require(326),
-    nodeCache = require(332),
-    getNodeAttributeId = require(361);
+var isElement = require(327),
+    nodeCache = require(333),
+    getNodeAttributeId = require(362);
 
 
 module.exports = removeDOMNode;
 
 
-var removeDOMNodes = require(406);
+var removeDOMNodes = require(407);
 
 
 function removeDOMNode(node) {
@@ -50933,14 +50907,13 @@ function removeDOMNode(node) {
         removeDOMNodes(node.childNodes);
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/removeDOMNodes.js-=@*/
 module.exports = removeDOMNodes;
 
 
-var removeDOMNode = require(405);
+var removeDOMNode = require(406);
 
 
 function removeDOMNodes(nodes) {
@@ -50951,16 +50924,15 @@ function removeDOMNodes(nodes) {
         removeDOMNode(nodes[i]);
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/applyProperties.js-=@*/
-var isString = require(11),
-    isObject = require(6),
-    isFunction = require(7),
-    isUndefined = require(14),
-    isNullOrUndefined = require(12),
-    getPrototypeOf = require(280);
+var isString = require(16),
+    isObject = require(10),
+    isFunction = require(11),
+    isUndefined = require(19),
+    isNullOrUndefined = require(17),
+    getPrototypeOf = require(281);
 
 
 module.exports = applyProperties;
@@ -51060,13 +51032,12 @@ function applyObject(node, previous, propKey, propValues) {
         nodeProps[key] = isUndefined(value) ? replacer : value;
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/getNodeId.js-=@*/
-var has = require(272),
-    nodeCache = require(332),
-    getNodeAttributeId = require(361);
+var has = require(273),
+    nodeCache = require(333),
+    getNodeAttributeId = require(362);
 
 
 module.exports = getNodeId;
@@ -51096,7 +51067,6 @@ function getId(node) {
 
     return id;
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/utils/getRootNodeInContainer.js-=@*/
@@ -51114,12 +51084,11 @@ function getRootNodeInContainer(containerNode) {
         }
     }
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/messenger_worker_adapter@0.0.1/src/index.js-=@*/
-var isString = require(11),
-    environment = require(1);
+var isString = require(16),
+    environment = require(12);
 
 
 var MessengerWorkerAdapterPrototype,
@@ -51152,14 +51121,14 @@ MessengerWorkerAdapterPrototype.postMessage = function(data) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/worker/WorkerAdapter.js-=@*/
-var extend = require(274),
-    Messenger = require(348),
-    MessengerWorkerAdapter = require(410),
-    handleEventDispatch = require(355),
-    nativeDOMComponents = require(242),
-    registerNativeComponents = require(351),
-    consts = require(340),
-    eventClassMap = require(354);
+var extend = require(275),
+    Messenger = require(349),
+    MessengerWorkerAdapter = require(411),
+    handleEventDispatch = require(356),
+    nativeDOMComponents = require(243),
+    registerNativeComponents = require(352),
+    consts = require(341),
+    eventClassMap = require(355);
 
 
 module.exports = WorkerAdapter;
@@ -51204,7 +51173,6 @@ function WorkerAdapter(root) {
 
     registerNativeComponents(root, nativeDOMComponents);
 }
-
 },
 function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/messenger_websocket_adapter@0.0.1/src/index.js-=@*/
@@ -51243,14 +51211,14 @@ function defaultSendMessage(socket, data) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/websocket/WebSocketAdapter.js-=@*/
-var extend = require(274),
-    Messenger = require(348),
-    MessengerWebSocketAdapter = require(412),
-    handleEventDispatch = require(355),
-    nativeDOMComponents = require(242),
-    registerNativeComponents = require(351),
-    consts = require(340),
-    eventClassMap = require(354);
+var extend = require(275),
+    Messenger = require(349),
+    MessengerWebSocketAdapter = require(413),
+    handleEventDispatch = require(356),
+    nativeDOMComponents = require(243),
+    registerNativeComponents = require(352),
+    consts = require(341),
+    eventClassMap = require(355);
 
 
 module.exports = WebSocketAdapter;
@@ -51298,5 +51266,4 @@ function WebSocketAdapter(root, socket, attachMessage, sendMessage) {
 
     registerNativeComponents(root, nativeDOMComponents);
 }
-
 }], {}, void(0), (new Function("return this;"))()));

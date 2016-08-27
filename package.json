@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/virt-dom",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "virt DOM is a render adapter for virt",
   "repository": {
     "type": "git",
@@ -14,7 +14,6 @@
     "virt-dom.js"
   ],
   "scripts": {
-    "virt-dom": "comn -f ./src/index.js -o ./dist/virt-dom.js -e virtDOM && grunt envify && grunt uglify",
     "input_events": "comn -f ./examples/input_events/src/index.js -o ./examples/input_events/index.js",
     "simple": "comn -f ./examples/simple/src/index.js -o ./examples/simple/index.js",
     "replace": "comn -f ./examples/replace/src/index.js -o ./examples/replace/index.js",
@@ -22,25 +21,30 @@
     "workers": "comn -f ./examples/workers/src/index.js -o ./examples/workers/index.js && comn -f ./examples/workers/src/worker.js -o ./examples/workers/worker.js",
     "worker_form": "comn -f ./examples/worker_form/src/index.js -o ./examples/worker_form/index.js && comn -f ./examples/worker_form/src/worker.js -o examples/worker_form/worker.js",
     "websocket_form": "comn -f ./examples/websocket_form/src/index.js -o ./examples/websocket_form/index.js",
-    "examples": "npm run simple && npm run replace && npm run components && npm run workers && npm run worker_form && npm run websocket_form"
+    "examples": "npm run simple && npm run replace && npm run components && npm run workers && npm run worker_form && npm run websocket_form",
+
+    "build": "task && task dist && npm run examples"
   },
   "author": "Nathan Faucett",
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "@nathanfaucett/comn": "0.0.7",
+    "@nathanfaucett/comn": "^0.0.11",
     "@nathanfaucett/event_emitter": "^0.0.1",
+    "@nathanfaucett/file_path": "0.0.3",
     "@nathanfaucett/parallel": "^0.0.1",
     "@nathanfaucett/prop_types": "^0.0.1",
     "@nathanfaucett/request_animation_frame": "^0.0.2",
+    "@nathanfaucett/task": "^0.0.5",
     "@nathanfaucett/values": "^0.0.1",
     "bufferutil": "^1.2.1",
-    "grunt": "^1.0.1",
-    "grunt-contrib-jshint": "^1.0.0",
-    "grunt-contrib-uglify": "^1.0.1",
-    "grunt-env": "^0.4.4",
-    "grunt-envify": "^0.0.3",
-    "grunt-jsbeautifier": "^0.2.13",
+    "gulp-envify": "^1.0.0",
+    "gulp-jsbeautifier": "^2.0.3",
+    "gulp-jshint": "^2.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.0.0",
+    "jshint": "^2.9.3",
+    "pump": "^1.0.1",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",
     "utf-8-validate": "^1.2.1"
@@ -53,7 +57,7 @@
     "@nathanfaucett/dom_caret": "^0.0.1",
     "@nathanfaucett/dom_dimensions": "^0.0.1",
     "@nathanfaucett/empty_function": "^0.0.1",
-    "@nathanfaucett/environment": "^0.0.1",
+    "@nathanfaucett/environment": "^0.0.2",
     "@nathanfaucett/escape_text_content": "^0.0.1",
     "@nathanfaucett/event_listener": "^0.0.1",
     "@nathanfaucett/extend": "^0.0.1",
@@ -79,8 +83,8 @@
     "@nathanfaucett/messenger_adapter": "^0.0.1",
     "@nathanfaucett/messenger_websocket_adapter": "^0.0.1",
     "@nathanfaucett/messenger_worker_adapter": "^0.0.1",
-    "@nathanfaucett/now": "^0.0.2",
+    "@nathanfaucett/now": "^0.0.3",
     "@nathanfaucett/supports": "^0.0.1",
-    "@nathanfaucett/virt": "^0.0.2"
+    "@nathanfaucett/virt": "^0.0.3"
   }
 }

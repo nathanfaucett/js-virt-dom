@@ -1,4 +1,4 @@
-virt DOM
+virt DOM [![Build Status](https://travis-ci.org/nathanfaucett/virt-dom.svg?branch=master)](https://travis-ci.org/nathanfaucett/virt-dom)
 =======
 
 virt DOM is a render adapter for the [virt](https://github.com/nathanfaucett/virt) library, virt was created after reading facebook's [React](https://github.com/facebook/react) source code. The main difference is [virt](https://github.com/nathanfaucett/virt) creates changes as JSON that an adapter like virt-dom uses to render to some view system, in this case the DOM.
