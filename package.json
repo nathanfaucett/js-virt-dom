@@ -79,12 +79,12 @@
     "@nathanfaucett/is_string": "^0.0.1",
     "@nathanfaucett/is_undefined": "^0.0.1",
     "@nathanfaucett/key_mirror": "^0.0.1",
-    "@nathanfaucett/messenger": "^0.0.1",
+    "@nathanfaucett/messenger": "^0.0.2",
     "@nathanfaucett/messenger_adapter": "^0.0.1",
     "@nathanfaucett/messenger_websocket_adapter": "^0.0.1",
     "@nathanfaucett/messenger_worker_adapter": "^0.0.1",
     "@nathanfaucett/now": "^0.0.3",
     "@nathanfaucett/supports": "^0.0.1",
-    "@nathanfaucett/virt": "^0.0.3"
+    "@nathanfaucett/virt": "^0.0.4"
   }
 }
