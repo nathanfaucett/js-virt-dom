@@ -2,11 +2,12 @@ var virt = require("@nathanfaucett/virt"),
     isNull = require("@nathanfaucett/is_null"),
     isUndefined = require("@nathanfaucett/is_undefined"),
     isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined"),
+    arrayForEach = require("@nathanfaucett/array-for_each"),
     createDOMElement = require("./utils/createDOMElement"),
     renderMarkup = require("./utils/renderMarkup"),
     renderString = require("./utils/renderString"),
     renderChildrenString = require("./utils/renderChildrenString"),
-    addDOMNodes = require("./utils/addDOMNodes"),
+    addDOMNode = require("./utils/addDOMNode"),
     removeDOMNode = require("./utils/removeDOMNode"),
     removeDOMNodes = require("./utils/removeDOMNodes"),
     getNodeById = require("./utils/getNodeById"),
@@ -63,7 +64,7 @@ function remove(parentNode, id, index) {
 
 function mount(rootDOMNode, view, id) {
     rootDOMNode.innerHTML = renderString(view, null, id);
-    addDOMNodes(rootDOMNode.childNodes);
+    arrayForEach(rootDOMNode.childNodes, addDOMNode);
 }
 
 function unmount(rootDOMNode) {
@@ -76,7 +77,7 @@ function insert(parentNode, id, index, view, document) {
 
     if (view.children) {
         node.innerHTML = renderChildrenString(view.children, view.props, id);
-        addDOMNodes(node.childNodes);
+        arrayForEach(node.childNodes, addDOMNode);
     }
 
     parentNode.appendChild(node);
@@ -99,7 +100,7 @@ function replace(parentNode, id, index, view, document) {
 
     if (view.children) {
         node.innerHTML = renderChildrenString(view.children, view.props, id);
-        addDOMNodes(node.childNodes);
+        arrayForEach(node.childNodes, addDOMNode);
     }
 
     parentNode.replaceChild(node, parentNode.childNodes[index]);

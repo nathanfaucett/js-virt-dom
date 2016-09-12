@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/virt-dom",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "virt DOM is a render adapter for virt",
   "repository": {
     "type": "git",
@@ -14,15 +14,14 @@
     "virt-dom.js"
   ],
   "scripts": {
-    "input_events": "comn -f ./examples/input_events/src/index.js -o ./examples/input_events/index.js",
-    "simple": "comn -f ./examples/simple/src/index.js -o ./examples/simple/index.js",
-    "replace": "comn -f ./examples/replace/src/index.js -o ./examples/replace/index.js",
-    "components": "comn -f ./examples/components/src/index.js -o ./examples/components/index.js",
-    "workers": "comn -f ./examples/workers/src/index.js -o ./examples/workers/index.js && comn -f ./examples/workers/src/worker.js -o ./examples/workers/worker.js",
-    "worker_form": "comn -f ./examples/worker_form/src/index.js -o ./examples/worker_form/index.js && comn -f ./examples/worker_form/src/worker.js -o examples/worker_form/worker.js",
-    "websocket_form": "comn -f ./examples/websocket_form/src/index.js -o ./examples/websocket_form/index.js",
+    "input_events": "comn -f ./examples/input_events/src/index.js -o ./examples/input_events/index.min.js",
+    "simple": "comn -f ./examples/simple/src/index.js -o ./examples/simple/index.min.js",
+    "replace": "comn -f ./examples/replace/src/index.js -o ./examples/replace/index.min.js",
+    "components": "comn -f ./examples/components/src/index.js -o ./examples/components/index.min.js",
+    "workers": "comn -f ./examples/workers/src/index.js -o ./examples/workers/index.min.js && comn -f ./examples/workers/src/worker.js -o ./examples/workers/worker.min.js",
+    "worker_form": "comn -f ./examples/worker_form/src/index.js -o ./examples/worker_form/index.min.js && comn -f ./examples/worker_form/src/worker.js -o examples/worker_form/worker.min.js",
+    "websocket_form": "comn -f ./examples/websocket_form/src/index.js -o ./examples/websocket_form/index.min.js",
     "examples": "npm run simple && npm run replace && npm run components && npm run workers && npm run worker_form && npm run websocket_form",
-
     "build": "task && task dist && npm run examples"
   },
   "author": "Nathan Faucett",
@@ -50,7 +49,7 @@
     "utf-8-validate": "^1.2.1"
   },
   "dependencies": {
-    "@nathanfaucett/array-for_each": "^0.0.1",
+    "@nathanfaucett/array-for_each": "0.0.1",
     "@nathanfaucett/array-map": "^0.0.1",
     "@nathanfaucett/blur_node": "^0.0.1",
     "@nathanfaucett/create_pool": "^0.0.1",
@@ -85,6 +84,6 @@
     "@nathanfaucett/messenger_worker_adapter": "^0.0.1",
     "@nathanfaucett/now": "^0.0.3",
     "@nathanfaucett/supports": "^0.0.1",
-    "@nathanfaucett/virt": "^0.0.4"
+    "@nathanfaucett/virt": "^0.0.5"
   }
 }

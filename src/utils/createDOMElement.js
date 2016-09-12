@@ -29,6 +29,6 @@ function createDOMElement(view, id, document) {
 
         return node;
     } else {
-        throw new TypeError("Arguments is not a valid view");
+        throw new TypeError("Arguments do not describe a valid view");
     }
 }
