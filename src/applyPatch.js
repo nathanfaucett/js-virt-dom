@@ -3,6 +3,7 @@ var virt = require("@nathanfaucett/virt"),
     isUndefined = require("@nathanfaucett/is_undefined"),
     isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined"),
     arrayForEach = require("@nathanfaucett/array-for_each"),
+    getNodeById = require("./utils/getNodeById"),
     createDOMElement = require("./utils/createDOMElement"),
     renderMarkup = require("./utils/renderMarkup"),
     renderString = require("./utils/renderString"),
@@ -20,7 +21,7 @@ var consts = virt.consts;
 module.exports = applyPatch;
 
 
-function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
+function applyPatch(patch, id, document, rootDOMNode) {
     switch (patch.type) {
         case consts.MOUNT:
             mount(rootDOMNode, patch.next, id);
@@ -29,22 +30,22 @@ function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
             unmount(rootDOMNode);
             break;
         case consts.INSERT:
-            insert(DOMNode, patch.childId, patch.index, patch.next, document);
+            insert(getNodeById(id), patch.childId, patch.index, patch.next, document);
             break;
         case consts.REMOVE:
-            remove(DOMNode, patch.childId, patch.index);
+            remove(getNodeById(id), patch.childId, patch.index);
             break;
         case consts.REPLACE:
-            replace(DOMNode, patch.childId, patch.index, patch.next, document);
+            replace(getNodeById(id), patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
-            text(DOMNode, patch.index, patch.next, patch.props);
+            text(getNodeById(id), patch.index, patch.next, patch.props);
             break;
         case consts.ORDER:
-            order(DOMNode, patch.order);
+            order(getNodeById(id), patch.order);
             break;
         case consts.PROPS:
-            applyProperties(DOMNode, patch.id, patch.next, patch.previous);
+            applyProperties(getNodeById(id), patch.id, patch.next, patch.previous);
             break;
     }
 }

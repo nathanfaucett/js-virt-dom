@@ -76,7 +76,7 @@
         }
     };
 
-    global["y1eLVtYX-heoz-41Zw-yI3v-X7zMI8ceo9VHV"] = function(asyncDependencies) {
+    global["SAZ5fuZ9-ognw-48xV-hq4L-rBgnyVynh8cDi"] = function(asyncDependencies) {
         var i = -1,
             il = asyncDependencies.length - 1,
             dependency, index;
@@ -1440,7 +1440,7 @@ var owner = exports;
 owner.current = null;
 },
 function(require, exports, module, undefined, global) {
-/*@=-process@0.11.8/browser.js-=@*/
+/*@=-process@0.11.9/browser.js-=@*/
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -1452,25 +1452,40 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
 (function () {
     try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
     }
     try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
         }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -1491,6 +1506,11 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {
@@ -6213,7 +6233,7 @@ function applyEvents(events, eventHandler) {
 },
 function(require, exports, module, undefined, global) {
 /*@=-/var/www/html/node/_virt/virt-dom/src/applyPatches.js-=@*/
-var getNodeById = require(101),
+var has = require(38),
     applyPatch = require(202);
 
 
@@ -6221,21 +6241,22 @@ module.exports = applyPatches;
 
 
 function applyPatches(hash, rootDOMNode, document) {
-    var id;
+    var localHas = has,
+        id;
 
     for (id in hash) {
-        if (hash[id] !== undefined) {
-            applyPatchIndices(getNodeById(id), hash[id], id, document, rootDOMNode);
+        if (localHas(hash, id)) {
+            applyPatchIndices(hash[id], id, document, rootDOMNode);
         }
     }
 }
 
-function applyPatchIndices(DOMNode, patchArray, id, document, rootDOMNode) {
+function applyPatchIndices(patchArray, id, document, rootDOMNode) {
     var i = -1,
         length = patchArray.length - 1;
 
     while (i++ < length) {
-        applyPatch(patchArray[i], DOMNode, id, document, rootDOMNode);
+        applyPatch(patchArray[i], id, document, rootDOMNode);
     }
 }
 },
@@ -11174,6 +11195,7 @@ var virt = require(4),
     isUndefined = require(43),
     isNullOrUndefined = require(17),
     arrayForEach = require(111),
+    getNodeById = require(101),
     createDOMElement = require(203),
     renderMarkup = require(19),
     renderString = require(1),
@@ -11191,7 +11213,7 @@ var consts = virt.consts;
 module.exports = applyPatch;
 
 
-function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
+function applyPatch(patch, id, document, rootDOMNode) {
     switch (patch.type) {
         case consts.MOUNT:
             mount(rootDOMNode, patch.next, id);
@@ -11200,22 +11222,22 @@ function applyPatch(patch, DOMNode, id, document, rootDOMNode) {
             unmount(rootDOMNode);
             break;
         case consts.INSERT:
-            insert(DOMNode, patch.childId, patch.index, patch.next, document);
+            insert(getNodeById(id), patch.childId, patch.index, patch.next, document);
             break;
         case consts.REMOVE:
-            remove(DOMNode, patch.childId, patch.index);
+            remove(getNodeById(id), patch.childId, patch.index);
             break;
         case consts.REPLACE:
-            replace(DOMNode, patch.childId, patch.index, patch.next, document);
+            replace(getNodeById(id), patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
-            text(DOMNode, patch.index, patch.next, patch.props);
+            text(getNodeById(id), patch.index, patch.next, patch.props);
             break;
         case consts.ORDER:
-            order(DOMNode, patch.order);
+            order(getNodeById(id), patch.order);
             break;
         case consts.PROPS:
-            applyProperties(DOMNode, patch.id, patch.next, patch.previous);
+            applyProperties(getNodeById(id), patch.id, patch.next, patch.previous);
             break;
     }
 }
