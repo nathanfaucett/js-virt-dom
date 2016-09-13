@@ -76,7 +76,7 @@
         }
     };
 
-    global["W5kfjy43-N1DF-4KBa-d8U7-XuAmqZETMZRR5"] = function(asyncDependencies) {
+    global["y1eLVtYX-heoz-41Zw-yI3v-X7zMI8ceo9VHV"] = function(asyncDependencies) {
         var i = -1,
             il = asyncDependencies.length - 1,
             dependency, index;
@@ -289,7 +289,7 @@ extend(
 );
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/index.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/index.js-=@*/
 var View = require(22);
 
 
@@ -749,7 +749,7 @@ function renderChildrenString(children, parentProps, id) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/View.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/View.js-=@*/
 var process = require(34);
 var isPrimitive = require(35),
     isFunction = require(14),
@@ -811,30 +811,23 @@ View.isViewJSON = isViewJSON;
 View.toJSON = toJSON;
 
 View.clone = function(view, config, children) {
-    var localHas = has,
-        props = extend({}, view.props),
+    var props = extend({}, view.props),
         key = view.key,
         ref = view.ref,
         viewOwner = view.__owner,
         childrenLength = arguments.length - 2,
-        propName, childArray, i, il;
+        childArray, i, il;
 
     if (config) {
-        if (config.ref) {
+        if (!isNullOrUndefined(config.ref)) {
             ref = config.ref;
             viewOwner = owner.current;
         }
-        if (config.key) {
+        if (!isNullOrUndefined(config.key)) {
             key = config.key;
         }
 
-        for (propName in config) {
-            if (localHas(config, propName)) {
-                if (!(propName === "key" || propName === "ref")) {
-                    props[propName] = config[propName];
-                }
-            }
-        }
+        extractConfig(props, config);
     }
 
     if (childrenLength === 1 && !isArray(children)) {
@@ -851,7 +844,9 @@ View.clone = function(view, config, children) {
         children = view.children;
     }
 
-    ensureValidChildren(children);
+    if (process.env.NODE_ENV !== "production") {
+        ensureValidChildren(children);
+    }
 
     return new View(view.type, key, ref, props, children, viewOwner, context.current);
 };
@@ -860,7 +855,7 @@ View.create = function(type, config, children) {
     var isConfigArray = isArray(config),
         argumentsLength = arguments.length;
 
-    if (isChild(config) || isConfigArray) {
+    if (isConfigArray || isChild(config)) {
         if (isConfigArray) {
             children = config;
         } else if (argumentsLength > 1) {
@@ -885,7 +880,7 @@ View.createFactory = function(type) {
         var isConfigArray = isArray(config),
             argumentsLength = arguments.length;
 
-        if (isChild(config) || isConfigArray) {
+        if (isConfigArray || isChild(config)) {
             if (isConfigArray) {
                 children = config;
             } else if (config && argumentsLength > 0) {
@@ -905,40 +900,53 @@ View.createFactory = function(type) {
 };
 
 function construct(type, config, children) {
-    var localHas = has,
-        props = {},
+    var props = {},
         key = null,
-        ref = null,
-        propName, defaultProps;
+        ref = null;
 
     if (config) {
-        key = config.key != null ? config.key : null;
-        ref = config.ref != null ? config.ref : null;
-
-        for (propName in config) {
-            if (localHas(config, propName)) {
-                if (!(propName === "key" || propName === "ref")) {
-                    props[propName] = config[propName];
-                }
-            }
+        if (!isNullOrUndefined(config.key)) {
+            key = config.key;
         }
+        if (!isNullOrUndefined(config.ref)) {
+            ref = config.ref;
+        }
+        extractConfig(props, config);
     }
-
     if (type && type.defaultProps) {
-        defaultProps = type.defaultProps;
-
-        for (propName in defaultProps) {
-            if (localHas(defaultProps, propName)) {
-                if (isNullOrUndefined(props[propName])) {
-                    props[propName] = defaultProps[propName];
-                }
-            }
-        }
+        extractDefaults(props, type.defaultProps);
     }
-
-    ensureValidChildren(children);
+    if (process.env.NODE_ENV !== "production") {
+        ensureValidChildren(children);
+    }
 
     return new View(type, key, ref, props, children, owner.current, context.current);
+}
+
+function extractConfig(props, config) {
+    var localHas = has,
+        propName;
+
+    for (propName in config) {
+        if (localHas(config, propName)) {
+            if (!(propName === "key" || propName === "ref")) {
+                props[propName] = config[propName];
+            }
+        }
+    }
+}
+
+function extractDefaults(props, defaultProps) {
+    var localHas = has,
+        propName;
+
+    for (propName in defaultProps) {
+        if (localHas(defaultProps, propName)) {
+            if (isNullOrUndefined(props[propName])) {
+                props[propName] = defaultProps[propName];
+            }
+        }
+    }
 }
 
 function toJSON(view) {
@@ -999,22 +1007,18 @@ function extractChildren(args, offset) {
 }
 
 function ensureValidChildren(children) {
-    var i, il;
+    var i = -1;
+    il = children.length - 1;
 
-    if (process.env.NODE_ENV !== "production") {
-        i = -1;
-        il = children.length - 1;
-
-        while (i++ < il) {
-            if (!isChild(children[i])) {
-                throw new TypeError("child of a View must be a String, Number or a View");
-            }
+    while (i++ < il) {
+        if (!isChild(children[i])) {
+            throw new TypeError("child of a View must be a String, Number or a View");
         }
     }
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Root.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Root.js-=@*/
 var process = require(34);
 var isFunction = require(14),
     isNull = require(42),
@@ -1198,7 +1202,7 @@ RootPrototype.render = function(nextView, id, callback) {
 };
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Component.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Component.js-=@*/
 var inherits = require(76),
     extend = require(40),
     componentState = require(70);
@@ -1324,7 +1328,7 @@ ComponentPrototype.shouldComponentUpdate = function( /* nextProps, nextChildren,
 };
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/consts.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/consts.js-=@*/
 var keyMirror = require(66);
 
 
@@ -1340,7 +1344,7 @@ module.exports = keyMirror([
 ]);
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/getChildKey.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/getChildKey.js-=@*/
 var getViewKey = require(79);
 
 
@@ -1352,7 +1356,7 @@ function getChildKey(parentId, child, index) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/getRootIdFromId.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/getRootIdFromId.js-=@*/
 module.exports = getRootIdFromId;
 
 
@@ -1368,7 +1372,7 @@ function getRootIdFromId(id) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/isAncestorIdOf.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/isAncestorIdOf.js-=@*/
 var isBoundary = require(80);
 
 
@@ -1383,7 +1387,7 @@ function isAncestorIdOf(ancestorID, descendantID) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/traverseAncestors.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/traverseAncestors.js-=@*/
 var traversePath = require(81);
 
 
@@ -1395,7 +1399,7 @@ function traverseAncestors(id, callback) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/traverseDescendants.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/traverseDescendants.js-=@*/
 var traversePath = require(81);
 
 
@@ -1407,7 +1411,7 @@ function traverseDescendant(id, callback) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/traverseTwoPhase.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/traverseTwoPhase.js-=@*/
 var traversePath = require(81);
 
 
@@ -1422,14 +1426,14 @@ function traverseTwoPhase(id, callback) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/context.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/context.js-=@*/
 var context = exports;
 
 
 context.current = null;
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/owner.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/owner.js-=@*/
 var owner = exports;
 
 
@@ -1746,7 +1750,7 @@ function baseExtend(a, b) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/propsToJSON.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/propsToJSON.js-=@*/
 var has = require(38),
     isNull = require(42),
     isPrimitive = require(35);
@@ -2014,7 +2018,7 @@ emptyFunction.thatReturnsArgument = function(argument) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/index.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/index.js-=@*/
 var Queue = require(55),
     consts = require(25),
     InsertPatch = require(56),
@@ -2118,7 +2122,7 @@ TransactionPrototype.toJSON = function() {
 };
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/shouldUpdate.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/shouldUpdate.js-=@*/
 var isString = require(15),
     isNumber = require(37),
     isNullOrUndefined = require(17);
@@ -2143,7 +2147,7 @@ function shouldUpdate(previous, next) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/EventManager.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/EventManager.js-=@*/
 var indexOf = require(68),
     isUndefined = require(43);
 
@@ -2219,7 +2223,7 @@ EventManagerPrototype.globalAllOff = function() {
 };
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Node.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Node.js-=@*/
 var process = require(34);
 var has = require(38),
     arrayMap = require(39),
@@ -2810,7 +2814,7 @@ Queue.prototype.reset = Queue.prototype.destructor;
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/InsertPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/InsertPatch.js-=@*/
 var consts = require(25);
 
 
@@ -2826,7 +2830,7 @@ function InsertPatch(id, childId, index, next) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/MountPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/MountPatch.js-=@*/
 var consts = require(25);
 
 
@@ -2840,7 +2844,7 @@ function MountPatch(id, next) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/UnmountPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/UnmountPatch.js-=@*/
 var consts = require(25);
 
 
@@ -2853,7 +2857,7 @@ function UnmountPatch(id) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/OrderPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/OrderPatch.js-=@*/
 var consts = require(25);
 
 
@@ -2867,7 +2871,7 @@ function OrderPatch(id, order) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/PropsPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/PropsPatch.js-=@*/
 var consts = require(25);
 
 
@@ -2882,7 +2886,7 @@ function PropsPatch(id, previous, next) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/RemovePatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/RemovePatch.js-=@*/
 var consts = require(25);
 
 
@@ -2897,7 +2901,7 @@ function RemovePatch(id, childId, index) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/ReplacePatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/ReplacePatch.js-=@*/
 var consts = require(25);
 
 
@@ -2913,7 +2917,7 @@ function ReplacePatch(id, childId, index, next) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/Transaction/TextPatch.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/Transaction/TextPatch.js-=@*/
 var propsToJSON = require(41),
     consts = require(25);
 
@@ -3277,7 +3281,7 @@ function isEqual(a, b) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/componentState.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/componentState.js-=@*/
 var keyMirror = require(66);
 
 
@@ -3290,7 +3294,7 @@ module.exports = keyMirror([
 ]);
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/getComponentClassForType.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/getComponentClassForType.js-=@*/
 var createNativeComponentForType = require(75);
 
 
@@ -3310,11 +3314,11 @@ function getComponentClassForType(type, rootNativeComponents) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/emptyObject.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/emptyObject.js-=@*/
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/diffChildren.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/diffChildren.js-=@*/
 var isNull = require(42),
     isUndefined = require(43),
     isNullOrUndefined = require(17),
@@ -3516,7 +3520,7 @@ function keyIndex(children) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/diffProps.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/diffProps.js-=@*/
 var has = require(38),
     isObject = require(16),
     getPrototypeOf = require(48),
@@ -3583,7 +3587,7 @@ function diffProps(id, eventManager, transaction, previous, next) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/createNativeComponentForType.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/createNativeComponentForType.js-=@*/
 var View = require(22),
     Component = require(24);
 
@@ -3734,7 +3738,7 @@ function baseMixin(a, b) {
 
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/getViewKey.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/getViewKey.js-=@*/
 var isNullOrUndefined = require(17);
 
 
@@ -3759,7 +3763,7 @@ function escapeKey(key) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/isBoundary.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/isBoundary.js-=@*/
 module.exports = isBoundary;
 
 
@@ -3768,7 +3772,7 @@ function isBoundary(id, index) {
 }
 },
 function(require, exports, module, undefined, global) {
-/*@=-@nathanfaucett/virt@0.0.4/src/utils/traversePath.js-=@*/
+/*@=-@nathanfaucett/virt@0.0.5/src/utils/traversePath.js-=@*/
 var isBoundary = require(80),
     isAncestorIdOf = require(28);
 
