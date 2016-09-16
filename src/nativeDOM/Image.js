@@ -20,6 +20,7 @@ function Image(props, children, context) {
 
     Component.call(this, getProps(props), children, context);
 
+    this.__lastSrc = null;
     this.__originalProps = props;
     this.__hasEvents = !!(props.onLoad || props.onError);
 }
@@ -27,9 +28,12 @@ Component.extend(Image, "img");
 ImagePrototype = Image.prototype;
 
 ImagePrototype.componentDidMount = function() {
+    var src = this.__originalProps.src;
+
+    this.__lastSrc = src;
     this.emitMessage("virt.dom.Image.mount", {
         id: this.getInternalId(),
-        src: this.__originalProps.src
+        src: src
     });
 };
 
@@ -38,13 +42,19 @@ ImagePrototype.componentWillReceiveProps = function(nextProps) {
 };
 
 ImagePrototype.componentDidUpdate = function() {
+    var src;
 
     Image_onProps(this, this.__originalProps);
+    src = this.__originalProps.src;
 
-    this.emitMessage("virt.dom.Image.setSrc", {
-        id: this.getInternalId(),
-        src: this.__originalProps.src
-    });
+    if (this.__lastSrc !== src) {
+        this.__lastSrc = src;
+
+        this.emitMessage("virt.dom.Image.setSrc", {
+            id: this.getInternalId(),
+            src: src
+        });
+    }
 };
 
 ImagePrototype.render = function() {

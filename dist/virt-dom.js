@@ -76,7 +76,7 @@
         }
     };
 
-    global["3zxeVts8-f0RA-4nQR-SFVj-eSbsE60d5nPXH"] = function(asyncDependencies) {
+    global["kaCsLrgm-GCoj-4d5b-qLnD-t5n8J3Ydrunio"] = function(asyncDependencies) {
         var i = -1,
             il = asyncDependencies.length - 1,
             dependency, index;
@@ -1206,6 +1206,7 @@ function(require, exports, module, undefined, global) {
 /*@=-@nathanfaucett/virt@0.0.5/src/Component.js-=@*/
 var inherits = require(77),
     extend = require(40),
+    isNull = require(42),
     componentState = require(71);
 
 
@@ -1245,7 +1246,7 @@ ComponentPrototype.setState = function(state, callback) {
 
     if (this.__mountState === componentState.MOUNTED) {
         node.root.update(node, nextState, callback);
-    } else {
+    } else if (!isNull(node.root)) {
         node.root.enqueueUpdate(node, nextState, callback);
     }
 };
@@ -1255,7 +1256,7 @@ ComponentPrototype.replaceState = function(state, callback) {
 
     if (this.__mountState === componentState.MOUNTED) {
         node.root.update(node, state, callback);
-    } else {
+    } else if (!isNull(node.root)) {
         node.root.enqueueUpdate(node, state, callback);
     }
 };
@@ -1265,7 +1266,7 @@ ComponentPrototype.forceUpdate = function(callback) {
 
     if (this.__mountState === componentState.MOUNTED) {
         node.root.forceUpdate(node, callback);
-    } else {
+    } else if (!isNull(node.root)) {
         node.root.enqueueUpdate(node, node.component.state, callback);
     }
 };
@@ -4217,6 +4218,7 @@ function Image(props, children, context) {
 
     Component.call(this, getProps(props), children, context);
 
+    this.__lastSrc = null;
     this.__originalProps = props;
     this.__hasEvents = !!(props.onLoad || props.onError);
 }
@@ -4224,9 +4226,12 @@ Component.extend(Image, "img");
 ImagePrototype = Image.prototype;
 
 ImagePrototype.componentDidMount = function() {
+    var src = this.__originalProps.src;
+
+    this.__lastSrc = src;
     this.emitMessage("virt.dom.Image.mount", {
         id: this.getInternalId(),
-        src: this.__originalProps.src
+        src: src
     });
 };
 
@@ -4235,13 +4240,19 @@ ImagePrototype.componentWillReceiveProps = function(nextProps) {
 };
 
 ImagePrototype.componentDidUpdate = function() {
+    var src;
 
     Image_onProps(this, this.__originalProps);
+    src = this.__originalProps.src;
 
-    this.emitMessage("virt.dom.Image.setSrc", {
-        id: this.getInternalId(),
-        src: this.__originalProps.src
-    });
+    if (this.__lastSrc !== src) {
+        this.__lastSrc = src;
+
+        this.emitMessage("virt.dom.Image.setSrc", {
+            id: this.getInternalId(),
+            src: src
+        });
+    }
 };
 
 ImagePrototype.render = function() {
@@ -4807,7 +4818,6 @@ var consts = require(111),
 
 var topLevelTypes = consts.topLevelTypes,
     topLevelToEvent = consts.topLevelToEvent,
-    GLOBAL_IMAGE = typeof(Image) !== "undefined" ? new Image() : {},
     imageHandlers = exports;
 
 
@@ -4819,7 +4829,6 @@ imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
     if (eventHandler && node) {
         eventHandler.addBubbledEvent(topLevelTypes.topLoad, topLevelToEvent.topLoad, node);
         eventHandler.addBubbledEvent(topLevelTypes.topError, topLevelToEvent.topError, node);
-
         node.src = data.src;
         callback();
     } else {
@@ -4829,19 +4838,10 @@ imageHandlers["virt.dom.Image.mount"] = function(data, callback) {
 
 imageHandlers["virt.dom.Image.setSrc"] = function(data, callback) {
     var id = data.id,
-        node = findDOMNode(id),
-        localImage = GLOBAL_IMAGE,
-        src;
+        node = findDOMNode(id);
 
     if (node) {
-        src = data.src;
-        localImage.src = src;
-        originalSrc = localImage.src;
-
-        if (src !== originalSrc) {
-            node.src = src;
-        }
-
+        node.src = data.src;
         callback();
     } else {
         callback(new Error("setSrc: No DOM node found with id " + data.id));
@@ -11729,31 +11729,28 @@ function applyObject(node, previous, propKey, propValues) {
                 node.setAttribute(key, value);
             }
         }
+    } else {
+        previousValue = previous ? previous[propKey] : void(0);
 
-        return;
-    }
+        if (!isNullOrUndefined(previousValue) &&
+            isObject(previousValue) &&
+            getPrototypeOf(previousValue) !== getPrototypeOf(propValues)
+        ) {
+            node[propKey] = propValues;
+        } else {
+            nodeProps = node[propKey];
 
-    previousValue = previous ? previous[propKey] : void(0);
+            if (!isObject(nodeProps)) {
+                nodeProps = node[propKey] = {};
+            }
 
-    if (!isNullOrUndefined(previousValue) &&
-        isObject(previousValue) &&
-        getPrototypeOf(previousValue) !== getPrototypeOf(propValues)
-    ) {
-        node[propKey] = propValues;
-        return;
-    }
+            replacer = propKey === "style" ? "" : void(0);
 
-    nodeProps = node[propKey];
-
-    if (!isObject(nodeProps)) {
-        nodeProps = node[propKey] = {};
-    }
-
-    replacer = propKey === "style" ? "" : void(0);
-
-    for (key in propValues) {
-        value = propValues[key];
-        nodeProps[key] = isUndefined(value) ? replacer : value;
+            for (key in propValues) {
+                value = propValues[key];
+                nodeProps[key] = isUndefined(value) ? replacer : value;
+            }
+        }
     }
 }
 },

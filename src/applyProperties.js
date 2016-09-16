@@ -76,30 +76,27 @@ function applyObject(node, previous, propKey, propValues) {
                 node.setAttribute(key, value);
             }
         }
+    } else {
+        previousValue = previous ? previous[propKey] : void(0);
 
-        return;
-    }
+        if (!isNullOrUndefined(previousValue) &&
+            isObject(previousValue) &&
+            getPrototypeOf(previousValue) !== getPrototypeOf(propValues)
+        ) {
+            node[propKey] = propValues;
+        } else {
+            nodeProps = node[propKey];
 
-    previousValue = previous ? previous[propKey] : void(0);
+            if (!isObject(nodeProps)) {
+                nodeProps = node[propKey] = {};
+            }
 
-    if (!isNullOrUndefined(previousValue) &&
-        isObject(previousValue) &&
-        getPrototypeOf(previousValue) !== getPrototypeOf(propValues)
-    ) {
-        node[propKey] = propValues;
-        return;
-    }
+            replacer = propKey === "style" ? "" : void(0);
 
-    nodeProps = node[propKey];
-
-    if (!isObject(nodeProps)) {
-        nodeProps = node[propKey] = {};
-    }
-
-    replacer = propKey === "style" ? "" : void(0);
-
-    for (key in propValues) {
-        value = propValues[key];
-        nodeProps[key] = isUndefined(value) ? replacer : value;
+            for (key in propValues) {
+                value = propValues[key];
+                nodeProps[key] = isUndefined(value) ? replacer : value;
+            }
+        }
     }
 }
