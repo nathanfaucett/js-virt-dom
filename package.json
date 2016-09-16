@@ -84,6 +84,6 @@
     "@nathanfaucett/messenger_worker_adapter": "^0.0.1",
     "@nathanfaucett/now": "^0.0.3",
     "@nathanfaucett/supports": "^0.0.1",
-    "@nathanfaucett/virt": "^0.0.5"
+    "@nathanfaucett/virt": "^0.0.6"
   }
 }
