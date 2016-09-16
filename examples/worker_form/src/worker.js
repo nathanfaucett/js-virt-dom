@@ -1,6 +1,6 @@
-var virt = require("@nathanfaucett/virt"),
-    virtDOM = require("../../../src/index"),
+var virtDOM = require("../../../src/worker/server"),
+    virt = require("@nathanfaucett/virt"),
     App = require("./app");
 
 
-virtDOM.renderWorker(virt.createView(App));
+virtDOM.render(virt.createView(App));

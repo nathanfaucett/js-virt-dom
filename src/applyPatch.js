@@ -21,7 +21,7 @@ var consts = virt.consts;
 module.exports = applyPatch;
 
 
-function applyPatch(patch, id, document, rootDOMNode) {
+function applyPatch(patch, id, rootDOMNode, document) {
     switch (patch.type) {
         case consts.MOUNT:
             mount(rootDOMNode, patch.next, id);

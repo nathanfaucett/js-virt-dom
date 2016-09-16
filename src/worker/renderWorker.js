@@ -16,8 +16,8 @@ function render(nextView, callback) {
         root.adapter = new WorkerAdapter(root);
         rootsById[root.id] = root;
     }
-
     root.render(nextView, callback);
+    return root;
 }
 
 render.unmount = function() {

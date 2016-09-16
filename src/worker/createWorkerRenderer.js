@@ -12,10 +12,10 @@ var Messenger = require("@nathanfaucett/messenger"),
     applyPatches = require("../applyPatches");
 
 
-module.exports = createWorkerRender;
+module.exports = createWorkerRenderer;
 
 
-function createWorkerRender(url, containerDOMNode) {
+function createWorkerRenderer(url, containerDOMNode) {
     var document = containerDOMNode.ownerDocument,
         window = getWindow(document),
 

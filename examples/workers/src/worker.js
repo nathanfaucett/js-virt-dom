@@ -1,5 +1,5 @@
 var virt = require("@nathanfaucett/virt"),
-    virtDOM = require("../../../src/index"),
+    virtDOM = require("../../../src/worker/server"),
     requestAnimationFrame = require("@nathanfaucett/request_animation_frame");
 
 
@@ -50,7 +50,7 @@ function render() {
 
     count += dir;
 
-    virtDOM.renderWorker(renderCounter(count));
+    virtDOM.render(renderCounter(count));
     requestAnimationFrame(render);
 }
 

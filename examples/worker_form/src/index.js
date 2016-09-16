@@ -1,11 +1,11 @@
 var environment = require("@nathanfaucett/environment"),
     eventListener = require("@nathanfaucett/event_listener"),
-    virtDOM = require("../../../src/index");
+    virtDOM = require("../../../src/worker/client");
 
 
 virtDOM.addNativeHandler("worker_form.App.getHeight", function(data, callback) {
     var node = virtDOM.findDOMNode(data.id);
-    
+
     if (node) {
         callback(undefined, {
             height: node.offsetHeight
@@ -17,7 +17,5 @@ virtDOM.addNativeHandler("worker_form.App.getHeight", function(data, callback) {
 
 
 eventListener.on(environment.window, "load", function() {
-    virtDOM.createWorkerRender("worker.js", document.getElementById("app"));
+    virtDOM.createRenderer("worker.min.js", document.getElementById("app"));
 });
-
-

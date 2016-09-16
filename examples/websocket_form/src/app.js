@@ -1,6 +1,6 @@
 var virt = require("@nathanfaucett/virt"),
-    TodoList = require("./todo_list"),
-    TodoForm = require("./todo_form");
+    TodoList = require("../../todo/todo_list"),
+    TodoForm = require("../../todo/todo_form");
 
 
 var AppPrototype;

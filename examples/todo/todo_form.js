@@ -24,8 +24,8 @@ function TodoForm(props, children, context) {
         return _this.__onSubmit(e);
     };
 
-    this.onInput = function(e, callback) {
-        return _this.__onInput(e, callback);
+    this.onChange = function(e) {
+        return _this.__onChange(e);
     };
 }
 virt.Component.extend(TodoForm, "TodoForm");
@@ -58,7 +58,7 @@ TodoFormPrototype.__onSubmit = function(e) {
     });
 };
 
-TodoFormPrototype.__onInput = function(e) {
+TodoFormPrototype.__onChange = function() {
     var _this = this;
 
     this.refs.name.getValue(function(error, value) {
@@ -85,13 +85,12 @@ TodoFormPrototype.render = function() {
                     ref: "name",
                     placeholder: "Todo",
                     value: this.state.name,
-                    onInput: this.onInput
+                    onChange: this.onChange
                 }),
                 virt.createView("input", {
                     type: "submit",
                     name: "submit",
-                    value: "submit",
-                    onClick: this.onSubmit
+                    value: "submit"
                 })
             )
         )

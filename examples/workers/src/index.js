@@ -1,4 +1,4 @@
-var virtDOM = require("../../../src/index");
+var virtDOM = require("../../../src/worker/client");
 
 
-virtDOM.createWorkerRender("worker.min.js", document.getElementById("app"));
+virtDOM.createRenderer("worker.min.js", document.getElementById("app"));

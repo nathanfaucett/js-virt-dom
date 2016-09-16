@@ -236,7 +236,7 @@ EventHandlerPrototype.dispatchEvent = function(topLevelType, nativeEvent) {
         i = -1,
         il = plugins.length - 1;
 
-    if (!isClient && targetId) {
+    if (!isClient && targetId && topLevelType === topLevelTypes.topSubmit) {
         nativeEvent.preventDefault();
     }
 

@@ -1,7 +1,7 @@
 var environment = require("@nathanfaucett/environment"),
     eventListener = require("@nathanfaucett/event_listener"),
     io = require("socket.io-client"),
-    virtDOM = require("../../../src/index");
+    virtDOM = require("../../../src/websocket/client");
 
 
 eventListener.on(environment.window, "load", function() {
@@ -15,7 +15,7 @@ eventListener.on(environment.window, "load", function() {
             id = socket.id;
         }
 
-        virtDOM.createWebSocketRender(
+        virtDOM.createRenderer(
             document.getElementById("app"),
             socket,
             function attachMessage(socket, callback) {
@@ -28,6 +28,6 @@ eventListener.on(environment.window, "load", function() {
     });
 
     socket.on("error", function(error) {
-        throw error;
+        console.log(error);
     });
 });

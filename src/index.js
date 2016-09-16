@@ -25,9 +25,3 @@ virtDOM.renderString = function(view, id) {
 virtDOM.findDOMNode = require("./utils/findDOMNode");
 virtDOM.findRoot = require("./utils/findRoot");
 virtDOM.findEventHandler = require("./utils/findEventHandler");
-
-virtDOM.createWorkerRender = require("./worker/createWorkerRender");
-virtDOM.renderWorker = require("./worker/renderWorker");
-
-virtDOM.createWebSocketRender = require("./websocket/createWebSocketRender");
-virtDOM.renderWebSocket = require("./websocket/renderWebSocket");

@@ -11,10 +11,10 @@ var Messenger = require("@nathanfaucett/messenger"),
     applyPatches = require("../applyPatches");
 
 
-module.exports = createWebSocketRender;
+module.exports = createWebSocketRenderer;
 
 
-function createWebSocketRender(containerDOMNode, socket, attachMessage, sendMessage) {
+function createWebSocketRenderer(containerDOMNode, socket, attachMessage, sendMessage) {
     var document = containerDOMNode.ownerDocument,
         window = getWindow(document),
 

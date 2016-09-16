@@ -11,16 +11,16 @@ function applyPatches(hash, rootDOMNode, document) {
 
     for (id in hash) {
         if (localHas(hash, id)) {
-            applyPatchIndices(hash[id], id, document, rootDOMNode);
+            applyPatchIndices(hash[id], id, rootDOMNode, document);
         }
     }
 }
 
-function applyPatchIndices(patchArray, id, document, rootDOMNode) {
+function applyPatchIndices(patchArray, id, rootDOMNode, document) {
     var i = -1,
         length = patchArray.length - 1;
 
     while (i++ < length) {
-        applyPatch(patchArray[i], id, document, rootDOMNode);
+        applyPatch(patchArray[i], id, rootDOMNode, document);
     }
 }
