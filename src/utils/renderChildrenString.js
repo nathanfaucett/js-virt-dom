@@ -11,14 +11,16 @@ var renderString = require("./renderString");
 
 
 function renderChildrenString(children, parentProps, id) {
-    var out = "",
+    var localRenderString = renderString,
+        localGetChildKey = getChildKey,
+        out = "",
         i = -1,
         il = children.length - 1,
         child;
 
     while (i++ < il) {
         child = children[i];
-        out += renderString(child, parentProps, getChildKey(id, child, i));
+        out += localRenderString(child, parentProps, localGetChildKey(id, child, i));
     }
 
     return out;

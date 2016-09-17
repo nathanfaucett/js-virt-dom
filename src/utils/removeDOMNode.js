@@ -1,4 +1,5 @@
 var isElement = require("@nathanfaucett/is_element"),
+    arrayForEach = require("@nathanfaucett/array-for_each"),
     nodeCache = require("./nodeCache"),
     getNodeAttributeId = require("./getNodeAttributeId");
 
@@ -6,12 +7,11 @@ var isElement = require("@nathanfaucett/is_element"),
 module.exports = removeDOMNode;
 
 
-var removeDOMNodes = require("./removeDOMNodes");
-
-
 function removeDOMNode(node) {
-    if (isElement(node)) {
-        delete nodeCache[getNodeAttributeId(node)];
-        removeDOMNodes(node.childNodes);
+    var id = getNodeAttributeId(node);
+
+    if (id) {
+        delete nodeCache[id];
+        arrayForEach(node.childNodes, removeDOMNode);
     }
 }

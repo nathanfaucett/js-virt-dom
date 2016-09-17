@@ -10,7 +10,6 @@ var virt = require("@nathanfaucett/virt"),
     renderChildrenString = require("./utils/renderChildrenString"),
     addDOMNode = require("./utils/addDOMNode"),
     removeDOMNode = require("./utils/removeDOMNode"),
-    removeDOMNodes = require("./utils/removeDOMNodes"),
     getNodeById = require("./utils/getNodeById"),
     applyProperties = require("./applyProperties");
 
@@ -69,7 +68,7 @@ function mount(rootDOMNode, view, id) {
 }
 
 function unmount(rootDOMNode) {
-    removeDOMNodes(rootDOMNode.childNodes);
+    arrayForEach(rootDOMNode.childNodes, removeDOMNode);
     rootDOMNode.innerHTML = "";
 }
 

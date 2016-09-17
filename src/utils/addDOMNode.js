@@ -1,5 +1,4 @@
-var isElement = require("@nathanfaucett/is_element"),
-    arrayForEach = require("@nathanfaucett/array-for_each"),
+var arrayForEach = require("@nathanfaucett/array-for_each"),
     getNodeId = require("./getNodeId");
 
 
@@ -7,8 +6,9 @@ module.exports = addDOMNode;
 
 
 function addDOMNode(node) {
-    if (isElement(node)) {
-        getNodeId(node);
+    var id = getNodeId(node);
+
+    if (id) {
         arrayForEach(node.childNodes, addDOMNode);
     }
 }

@@ -114,7 +114,7 @@ function closedTag(type, id, props) {
 function contentTag(type, content, id, props) {
     return (
         "<" + type + (isObject(props) ? tagOptions(id, props) : "") + dataId(id) + ">" +
-        (isString(content) ? content : "") +
+        content +
         "</" + type + ">"
     );
 }
