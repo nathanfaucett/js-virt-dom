@@ -1,5 +1,4 @@
-var has = require("@nathanfaucett/has"),
-    nodeCache = require("./nodeCache"),
+var nodeCache = require("./nodeCache"),
     getNodeAttributeId = require("./getNodeAttributeId");
 
 
@@ -7,24 +6,13 @@ module.exports = getNodeId;
 
 
 function getNodeId(node) {
-    return node && getId(node);
-}
+    var id;
 
-function getId(node) {
-    var id = getNodeAttributeId(node),
-        localNodeCache, cached;
+    if (node) {
+        id = getNodeAttributeId(node);
 
-    if (id) {
-        localNodeCache = nodeCache;
-
-        if (has(localNodeCache, id)) {
-            cached = localNodeCache[id];
-
-            if (cached !== node) {
-                localNodeCache[id] = node;
-            }
-        } else {
-            localNodeCache[id] = node;
+        if (id) {
+            nodeCache[id] = node;
         }
     }
 

@@ -16,7 +16,7 @@ virt.Component.extend(TodoItem, "TodoItem");
 TodoItemPrototype = TodoItem.prototype;
 
 TodoItem.propTypes = {
-    id: propTypes.number.isRequired,
+    id: propTypes.string.isRequired,
     onDestroy: propTypes.func.isRequired,
     text: propTypes.string.isRequired
 };
@@ -31,7 +31,7 @@ TodoItemPrototype.render = function() {
                     dangerouslySetInnerHTML: true
                 },
                 "<span>" + this.props.text + "</span>",
-                virt.createView("span", {
+                virt.createView("button", {
                     onClick: this.props.onDestroy
                 }, " x ")
             )

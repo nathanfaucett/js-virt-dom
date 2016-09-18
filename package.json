@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/virt-dom",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "virt DOM is a render adapter for virt",
   "repository": {
     "type": "git",
@@ -64,6 +64,7 @@
     "@nathanfaucett/get_event_char_code": "^0.0.1",
     "@nathanfaucett/get_event_key": "^0.0.1",
     "@nathanfaucett/get_prototype_of": "^0.0.1",
+    "@nathanfaucett/get_window": "0.0.1",
     "@nathanfaucett/has": "^0.0.1",
     "@nathanfaucett/index_of": "^0.0.1",
     "@nathanfaucett/inherits": "^0.0.2",
@@ -78,12 +79,12 @@
     "@nathanfaucett/is_string": "^0.0.1",
     "@nathanfaucett/is_undefined": "^0.0.1",
     "@nathanfaucett/key_mirror": "^0.0.1",
-    "@nathanfaucett/messenger": "^0.0.2",
+    "@nathanfaucett/messenger": "^0.0.3",
     "@nathanfaucett/messenger_adapter": "^0.0.1",
     "@nathanfaucett/messenger_websocket_adapter": "^0.0.1",
     "@nathanfaucett/messenger_worker_adapter": "^0.0.1",
     "@nathanfaucett/now": "^0.0.3",
     "@nathanfaucett/supports": "^0.0.1",
-    "@nathanfaucett/virt": "^0.0.8"
+    "@nathanfaucett/virt": "^0.0.9"
   }
 }

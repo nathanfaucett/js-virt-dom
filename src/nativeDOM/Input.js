@@ -67,7 +67,9 @@ InputPrototype.componentDidMount = function() {
     if (props.autoFocus) {
         this.__focus();
     }
+
     if (props.type === "radio" && props.checked) {
+        this.__setChecked(props.checked);
         Input_uncheckSiblings(this, this.__node.parent.renderedChildren);
     }
 };

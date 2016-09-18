@@ -38,7 +38,7 @@ TodoListPrototype.onDestroy = function(id) {
 TodoListPrototype.__onChange = function() {
     var _this = this;
 
-    TodoStore.all(function(err, todos) {
+    TodoStore.all(function(error, todos) {
         _this.setState({
             list: todos
         });

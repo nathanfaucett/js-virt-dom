@@ -8,8 +8,8 @@ var virtDOM = exports;
 
 virtDOM.virt = require("@nathanfaucett/virt");
 
-virtDOM.addNativeComponent = function(type, constructor) {
-    nativeDOMComponents[type] = constructor;
+virtDOM.addNativeComponent = function(type, constructorFn) {
+    nativeDOMComponents[type] = constructorFn;
 };
 virtDOM.addNativeHandler = function(name, fn) {
     nativeDOMHandlers[name] = fn;

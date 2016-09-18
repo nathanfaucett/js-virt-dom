@@ -69,6 +69,12 @@ AppPrototype.render = function() {
                 ref: "input",
                 value: null
             }),
+
+            virt.createView("input", {
+                type: "checkbox",
+                checked: true
+            }),
+
             virt.createView("input", {
                 type: "checkbox",
                 checked: false

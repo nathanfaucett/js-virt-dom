@@ -1,14 +1,19 @@
 var arrayForEach = require("@nathanfaucett/array-for_each"),
-    getNodeId = require("./getNodeId");
+    isElement = require("@nathanfaucett/is_element"),
+    getNodeId = require("./getNodeId"),
+    isDOMChildrenSupported = require("./isDOMChildrenSupported");
 
 
-module.exports = addDOMNode;
-
-
-function addDOMNode(node) {
-    var id = getNodeId(node);
-
-    if (id) {
-        arrayForEach(node.childNodes, addDOMNode);
-    }
+if (isDOMChildrenSupported) {
+    module.exports = function addDOMNode(node) {
+        getNodeId(node);
+        arrayForEach(node.children, addDOMNode);
+    };
+} else {
+    module.exports = function addDOMNode(node) {
+        if (isElement(node)) {
+            getNodeId(node);
+            arrayForEach(node.childNodes, addDOMNode);
+        }
+    };
 }

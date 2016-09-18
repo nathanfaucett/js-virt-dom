@@ -1,17 +1,21 @@
-var isElement = require("@nathanfaucett/is_element"),
-    arrayForEach = require("@nathanfaucett/array-for_each"),
+var arrayForEach = require("@nathanfaucett/array-for_each"),
+    isElement = require("@nathanfaucett/is_element"),
     nodeCache = require("./nodeCache"),
-    getNodeAttributeId = require("./getNodeAttributeId");
+    getNodeAttributeId = require("./getNodeAttributeId"),
+    isDOMChildrenSupported = require("./isDOMChildrenSupported");
 
 
-module.exports = removeDOMNode;
-
-
-function removeDOMNode(node) {
-    var id = getNodeAttributeId(node);
-
-    if (id) {
+if (isDOMChildrenSupported) {
+    module.exports = function removeDOMNode(node) {
+        var id = getNodeAttributeId(node);
         delete nodeCache[id];
-        arrayForEach(node.childNodes, removeDOMNode);
-    }
+        arrayForEach(node.children, removeDOMNode);
+    };
+} else {
+    module.exports = function addDOMNode(node) {
+        if (isElement(node)) {
+            delete nodeCache[getNodeAttributeId(node)];
+            arrayForEach(node.childNodes, removeDOMNode);
+        }
+    };
 }

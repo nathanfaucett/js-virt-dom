@@ -1,12 +1,12 @@
 var Messenger = require("@nathanfaucett/messenger"),
     isNull = require("@nathanfaucett/is_null"),
     MessengerWorkerAdapter = require("@nathanfaucett/messenger_worker_adapter"),
+    getWindow = require("@nathanfaucett/get_window"),
     eventHandlersById = require("../eventHandlersById"),
     nativeDOMHandlers = require("../nativeDOM/handlers"),
     eventHandlersById = require("../eventHandlersById"),
     getRootNodeId = require("../utils/getRootNodeId"),
     registerNativeComponentHandlers = require("../utils/registerNativeComponentHandlers"),
-    getWindow = require("../utils/getWindow"),
     EventHandler = require("../events/EventHandler"),
     applyEvents = require("../applyEvents"),
     applyPatches = require("../applyPatches");
