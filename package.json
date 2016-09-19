@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/virt-dom",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "virt DOM is a render adapter for virt",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "@nathanfaucett/file_path": "0.0.3",
     "@nathanfaucett/parallel": "^0.0.1",
     "@nathanfaucett/prop_types": "^0.0.1",
-    "@nathanfaucett/request_animation_frame": "^0.0.2",
+    "@nathanfaucett/request_animation_frame": "^0.0.4",
     "@nathanfaucett/task": "^0.0.6",
     "@nathanfaucett/values": "^0.0.1",
     "bufferutil": "^1.2.1",
@@ -85,6 +85,6 @@
     "@nathanfaucett/messenger_worker_adapter": "^0.0.1",
     "@nathanfaucett/now": "^0.0.3",
     "@nathanfaucett/supports": "^0.0.1",
-    "@nathanfaucett/virt": "^0.0.9"
+    "@nathanfaucett/virt": "^0.0.10"
   }
 }
