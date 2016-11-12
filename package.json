@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/virt-dom",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "virt DOM is a render adapter for virt",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "@nathanfaucett/comn": "^0.0.12",
+    "@nathanfaucett/comn": "^0.0.13",
     "@nathanfaucett/event_emitter": "^0.0.3",
     "@nathanfaucett/file_path": "^0.0.4",
     "@nathanfaucett/parallel": "^0.0.2",
@@ -85,6 +85,6 @@
     "@nathanfaucett/messenger_worker_adapter": "^0.0.1",
     "@nathanfaucett/now": "^0.0.3",
     "@nathanfaucett/supports": "^0.0.2",
-    "@nathanfaucett/virt": "^0.0.12"
+    "@nathanfaucett/virt": "^0.0.13"
   }
 }
