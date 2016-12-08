@@ -2,9 +2,9 @@ var virt = require("@nathanfaucett/virt"),
     isNull = require("@nathanfaucett/is_null"),
     isUndefined = require("@nathanfaucett/is_undefined"),
     isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined"),
+    escapeTextContent = require("@nathanfaucett/escape_text_content"),
     getNodeById = require("./utils/getNodeById"),
     createDOMElement = require("./utils/createDOMElement"),
-    renderMarkup = require("./utils/renderMarkup"),
     renderString = require("./utils/renderString"),
     renderChildrenString = require("./utils/renderChildrenString"),
     addDOMNodes = require("./utils/addDOMNodes"),
@@ -29,7 +29,7 @@ function applyPatch(patch, id, rootDOMNode, document) {
             unmount(rootDOMNode);
             break;
         case consts.INSERT:
-            insert(getNodeById(id), patch.childId, patch.index, patch.next, document);
+            insert(getNodeById(id), patch.childId, patch.index, patch.parentProps, patch.next, document);
             break;
         case consts.REMOVE:
             remove(getNodeById(id), patch.childId, patch.index);
@@ -38,7 +38,7 @@ function applyPatch(patch, id, rootDOMNode, document) {
             replace(getNodeById(id), patch.childId, patch.index, patch.next, document);
             break;
         case consts.TEXT:
-            text(getNodeById(id), patch.index, patch.next, patch.props);
+            text(getNodeById(id), patch.index, patch.next);
             break;
         case consts.ORDER:
             order(getNodeById(id), patch.order);
@@ -72,7 +72,7 @@ function unmount(rootDOMNode) {
     rootDOMNode.innerHTML = "";
 }
 
-function insert(parentNode, id, index, view, document) {
+function insert(parentNode, id, index, parentProps, view, document) {
     var node = createDOMElement(view, id, document);
 
     if (view.children) {
@@ -83,14 +83,14 @@ function insert(parentNode, id, index, view, document) {
     parentNode.appendChild(node);
 }
 
-function text(parentNode, index, value, props) {
+function text(parentNode, index, value) {
     var textNode = parentNode.childNodes[index];
 
     if (textNode) {
         if (textNode.nodeType === 3) {
             textNode.nodeValue = value;
         } else {
-            textNode.innerHTML = renderMarkup(value, props);
+            textNode.innerHTML = escapeTextContent(value);
         }
     }
 }

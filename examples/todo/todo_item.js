@@ -28,13 +28,11 @@ TodoItemPrototype.render = function() {
                 className: "todo-item"
             },
             virt.createView("p", {
-                    dangerouslySetInnerHTML: true
-                },
-                "<span>" + this.props.text + "</span>",
-                virt.createView("button", {
-                    onClick: this.props.onDestroy
-                }, " x ")
-            )
+                dangerouslySetInnerHTML: "<span>" + this.props.text + "</span>"
+            }),
+            virt.createView("button", {
+                onClick: this.props.onDestroy
+            }, " x ")
         )
     );
 };

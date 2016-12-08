@@ -25,7 +25,9 @@ function applyProperties(node, id, props, previous) {
 }
 
 function applyProperty(node, id, propKey, propValue) {
-    if (propKey !== "className" && node.setAttribute) {
+    if (propKey === "dangerouslySetInnerHTML") {
+        node.innerHTML = propValue;
+    } else if (propKey !== "className" && node.setAttribute) {
         node.setAttribute(propKey, propValue);
     } else {
         node[propKey] = propValue;
@@ -36,7 +38,9 @@ function removeProperty(node, id, previous, propKey) {
     var canRemoveAttribute = !!node.removeAttribute,
         previousValue = previous[propKey];
 
-    if (propKey === "attributes") {
+    if (propKey === "dangerouslySetInnerHTML") {
+        node.innerHTML = "";
+    } else if (propKey === "attributes") {
         removeAttributes(node, previousValue, canRemoveAttribute);
     } else if (propKey === "style") {
         removeStyles(node, previousValue);

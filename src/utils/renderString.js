@@ -4,9 +4,9 @@ var virt = require("@nathanfaucett/virt"),
     isString = require("@nathanfaucett/is_string"),
     isObject = require("@nathanfaucett/is_object"),
     isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined"),
+    escapeTextContent = require("@nathanfaucett/escape_text_content"),
 
     hyphenateStyleName = require("./hyphenateStyleName"),
-    renderMarkup = require("./renderMarkup"),
     DOM_ID_NAME = require("../DOM_ID_NAME");
 
 
@@ -45,16 +45,24 @@ function render(view, parentProps, id) {
     var type, props;
 
     if (isPrimitiveView(view)) {
-        return isString(view) ? renderMarkup(view, parentProps) : view + "";
+        return isString(view) ? escapeTextContent(view) : view + "";
     } else {
         type = view.type;
         props = view.props;
 
         return (
             closedTags[type] !== true ?
-            contentTag(type, renderChildrenString(view.children, props, id), id, props) :
+            contentTag(type, renderContent(view, props, id), id, props) :
             closedTag(type, id, view.props)
         );
+    }
+}
+
+function renderContent(view, props, id) {
+    if (props && isString(props.dangerouslySetInnerHTML)) {
+        return props.dangerouslySetInnerHTML;
+    } else {
+        return renderChildrenString(view.children, props, id);
     }
 }
 
