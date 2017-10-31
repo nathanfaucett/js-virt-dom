@@ -13,7 +13,9 @@ $ yarn add @nathanfaucett/virt-dom --save
 ```
 
 ### Real World Example
-Full site example here [http://bomontfii.com](http://bomontfii.com)
+Full site example here [http://bomontfii.com](http://bomontfii.com).
+github [repo](https://github.com/nathanfaucett/js-bomont_flooring) for virt views and application logic.
+github [repo](https://github.com/nathanfaucett/js-bomont_flooring-dom) for building and starting application.
 
 ### Simple Example Usage
 
