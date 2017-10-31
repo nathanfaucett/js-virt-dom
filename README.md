@@ -167,37 +167,37 @@ io.listen(9999);
 ## API
 
 #### virtDOM.addNativeComponent(type: String, constructor: Function)
-Adds a new native component to virt-dom. Used by virt-dom to implement native elements like img, button, etc... needs to be called before rendering.
+    Adds a new native component to virt-dom. Used by virt-dom to implement native elements like img, button, etc... needs to be called before rendering.
 
 #### virtDOM.addNativeHandler(type: String, fn: Function)
-Adds a new native handler component to virt-dom. Used by virt-dom to implement native messages accross the messenger api.
+    Adds a new native handler component to virt-dom. Used by virt-dom to implement native messages accross the messenger api.
 
 #### virtDOM.render(view: View, containerDOMNode: DOMElement, [, callback: Function])
-Renders the view to the dom element and calls the callback when it is done.
+    Renders the view to the dom element and calls the callback when it is done.
 
 #### virtDOM.unmount(containerDOMNode: DOMElement)
-Removes all data associated with the parent element given and removes it from the DOM.
+    Removes all data associated with the parent element given and removes it from the DOM.
 
 #### virtDOM.renderString(view: View[, id: String]) -> String
-Render view to string using the id given as the root id of the DOM elements, defaults to 0.
+    Render view to string using the id given as the root id of the DOM elements, defaults to 0.
 
 #### virtDOM.findDOMNode(value: View|String) -> DOMElement
-Returns the DOMElement associated with the view or id givent by value.
+    Returns the DOMElement associated with the view or id givent by value.
 
 #### virtDOM.findRoot(value: String) -> virt.Root
-Returns the virt.Root associated with the id
+    Returns the virt.Root associated with the id
 
 #### virtDOM.findEventHandler(value: String) -> virt.EventHandler
-Returns the virt.EventHandler associated with the id
+    Returns the virt.EventHandler associated with the id
 
 #### virtDOM.createWorkerRender(url: String, containerDOMNode: DOMElement) -> Messenger
-Returns the Messenger created to communicate with the workers view component. used on the client side
+    Returns the Messenger created to communicate with the workers view component. used on the client side
 
 #### virtDOM.renderWorker(view: View[, callback: Function])
-Creates a diff from the view and the last view, then sends it over the messenager api to the client created with virtDOM.createWorkerRender. Used on the server side.
+    Creates a diff from the view and the last view, then sends it over the messenager api to the client created with virtDOM.createWorkerRender. Used on the server side.
 
 #### virtDOM.createWebSocketRender(containerDOMNode: DOMElement, socket: WebSocket[, attachMessage: Function], [sendMessage: Function]) -> Messenger
-Returns the Messenger created to communicate over the web socket to the view side. used on the client side
+    Returns the Messenger created to communicate over the web socket to the view side. used on the client side
 
 #### virtDOM.renderWebSocket(view: View, socket: WebSocket[, attachMessage: Function][, sendMessage: Function] [, callback: Function])
-Creates a diff from the view and the last view, then sends it over the messenager api to the client created with virtDOM.createWebSocketRender. Used on the server side.
+    Creates a diff from the view and the last view, then sends it over the messenager api to the client created with virtDOM.createWebSocketRender. Used on the server side.
