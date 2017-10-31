@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/virt-dom",
-  "version": "0.0.16",
+  "version": "0.0.15",
   "description": "virt DOM is a render adapter for virt",
   "repository": {
     "type": "git",
@@ -9,6 +9,7 @@
   "main": "src/index.js",
   "keywords": [
     "virt",
+    "dom",
     "adapter",
     "virt-dom",
     "virt-dom.js"
