@@ -1,11 +1,11 @@
-var environment = require("environment"),
-    eventListener = require("event_listener"),
+var environment = require("@nathanfaucett/environment"),
+    eventListener = require("@nathanfaucett/event_listener"),
     io = require("socket.io-client"),
-    virtDOM = require("../../../src/index");
+    virtDOM = require("../../../src/websocket/client");
 
 
 eventListener.on(environment.window, "load", function() {
-    var socket = io("localhost:8888"),
+    var socket = io("localhost:9999"),
         id;
 
     socket.on("connect", function onConnect() {
@@ -15,7 +15,7 @@ eventListener.on(environment.window, "load", function() {
             id = socket.id;
         }
 
-        virtDOM.createWebSocketRender(
+        virtDOM.createRenderer(
             document.getElementById("app"),
             socket,
             function attachMessage(socket, callback) {
@@ -28,6 +28,6 @@ eventListener.on(environment.window, "load", function() {
     });
 
     socket.on("error", function(error) {
-        throw error;
+        console.log(error);
     });
 });

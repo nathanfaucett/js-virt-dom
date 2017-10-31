@@ -1,7 +1,6 @@
-var virt = require("virt"),
-    propTypes = require("prop_types"),
-    TodoList = require("./todo_list"),
-    TodoForm = require("./todo_form");
+var virt = require("@nathanfaucett/virt"),
+    TodoList = require("../../todo/todo_list"),
+    TodoForm = require("../../todo/todo_form");
 
 
 var AppPrototype;
@@ -15,18 +14,6 @@ function App(props, children, context) {
 }
 virt.Component.extend(App, "App");
 AppPrototype = App.prototype;
-
-App.childContextTypes = {
-    ctx: propTypes.object
-};
-
-AppPrototype.getChildContext = function() {
-    return {
-        ctx: {
-            pathname: location.pathname
-        }
-    };
-};
 
 AppPrototype.render = function() {
     return (

@@ -1,14 +1,15 @@
-var virt = require("virt"),
-    virtDOM = require("../../../src/index"),
+var virtDOM = require("../../../src/websocket/server"),
+    virt = require("@nathanfaucett/virt"),
     socket_io = require("socket.io"),
     App = require("./app");
 
 
-var io = socket_io();
+var io = socket_io(),
+    root = null;
 
 
 io.on("connection", function(socket) {
-    virtDOM.renderWebSocket(
+    virtDOM.render(
         virt.createView(App),
         socket,
         function attachMessage(socket, callback) {
@@ -21,4 +22,5 @@ io.on("connection", function(socket) {
 });
 
 
-io.listen(8888);
+console.log("listening on port 9999");
+io.listen(9999);

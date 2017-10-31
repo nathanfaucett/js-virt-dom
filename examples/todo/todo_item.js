@@ -1,5 +1,5 @@
-var virt = require("virt"),
-    propTypes = require("prop_types");
+var virt = require("@nathanfaucett/virt"),
+    propTypes = require("@nathanfaucett/prop_types");
 
 
 var TodoItemPrototype;
@@ -16,7 +16,7 @@ virt.Component.extend(TodoItem, "TodoItem");
 TodoItemPrototype = TodoItem.prototype;
 
 TodoItem.propTypes = {
-    id: propTypes.number.isRequired,
+    id: propTypes.string.isRequired,
     onDestroy: propTypes.func.isRequired,
     text: propTypes.string.isRequired
 };
@@ -28,13 +28,11 @@ TodoItemPrototype.render = function() {
                 className: "todo-item"
             },
             virt.createView("p", {
-                    dangerouslySetInnerHTML: true
-                },
-                "<span>" + this.props.text + "</span>",
-                virt.createView("span", {
-                    onClick: this.props.onDestroy
-                }, " x ")
-            )
+                dangerouslySetInnerHTML: "<span>" + this.props.text + "</span>"
+            }),
+            virt.createView("button", {
+                onClick: this.props.onDestroy
+            }, " x ")
         )
     );
 };

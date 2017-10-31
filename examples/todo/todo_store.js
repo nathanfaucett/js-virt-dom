@@ -1,5 +1,5 @@
-var EventEmitter = require("event_emitter"),
-    values = require("values"),
+var EventEmitter = require("@nathanfaucett/event_emitter"),
+    values = require("@nathanfaucett/values"),
     dispatcher = require("./dispatcher");
 
 
@@ -14,23 +14,24 @@ TodoStore.consts = {
 };
 
 
-var _todoId = 1,
-    _todos = {
-        0: {
-            id: 0,
-            text: "Im a Todo Item"
-        }
-    };
+var _id = 0,
+    _todos = {};
 
 
+
+createTodo("This is a Todo item");
+
+
+function createTodo(text) {
+    var id = (_id++).toString(36);
+
+    return (_todos[id] = {
+        id: id,
+        text: text
+    });
+}
 function create(text, callback) {
-    var id = _todoId++,
-        todo = _todos[id] = {
-            id: id,
-            text: text
-        };
-
-    callback(undefined, todo);
+    callback(undefined, createTodo(text));
 }
 
 function update(id, text, callback) {

@@ -36,14 +36,176 @@
 
     <p>virt DOM is an adapter for the virt library, virt is a React like library that emits views as JSON that an adapter can use to render to some view system, in this case the DOM.</p>
 
-        <ul>
-          <li><a href="http://nathanfaucett.github.io/virt-dom/examples/components">Components</a></li>
-          <li><a href="http://nathanfaucett.github.io/virt-dom/examples/input_events">Input Events</a></li>
-          <li><a href="http://nathanfaucett.github.io/virt-dom/examples/replace">Replace</a></li>
-          <li><a href="http://nathanfaucett.github.io/virt-dom/examples/simple">Simple Test</a></li>
-          <li><a href="http://nathanfaucett.github.io/virt-dom/examples/worker_form">Components with Workers</a></li>
-          <li><a href="http://nathanfaucett.github.io/virt-dom/examples/workers">Simple Test with Workers</a></li>
-        </ul>
+          <h2>Install using npm</h2>
+<pre class="code bash">
+$ npm install @nathanfaucett/virt-dom --save
+</pre>
+          <h2>Install using yarn</h2>
+<pre class="code bash">
+$ yarn add @nathanfaucett/virt-dom --save
+</pre>
+
+          <h3>Real World Example</h3>
+          <p>
+            Full site example here <a href="http://bomontfii.com" target="_blank">http://bomontfii.com</a>.
+            github <a href="https://github.com/nathanfaucett/js-bomont_flooring" target="_blank">repo</a> for virt views and application logic.
+            github <a href="https://github.com/nathanfaucett/js-bomont_flooring-dom" target="_blank">repo</a> for building and starting application.
+          </p>
+
+          <h3>Some technical examples</h3>
+          <ul>
+            <li><a href="http://nathanfaucett.github.io/virt-dom/examples/components" target="_blank">Components</a></li>
+            <li><a href="http://nathanfaucett.github.io/virt-dom/examples/input_events" target="_blank">Input Events</a></li>
+            <li><a href="http://nathanfaucett.github.io/virt-dom/examples/replace" target="_blank">Replace</a></li>
+            <li><a href="http://nathanfaucett.github.io/virt-dom/examples/simple" target="_blank">Simple Example</a></li>
+            <li><a href="http://nathanfaucett.github.io/virt-dom/examples/worker_form" target="_blank">Components with Workers</a></li>
+            <li><a href="http://nathanfaucett.github.io/virt-dom/examples/workers" target="_blank">Simple Example with Workers</a></li>
+          </ul>
+
+          <h3>Simple Example Usage</h3>
+
+          <p>The best way to use virt is to create custom components that inherit from the virt.Component class.</p>
+
+          <pre class="code javascript">
+var virt = require("@nathanfaucett/virt"),
+    virtDOM = require("@nathanfaucett/virt-dom");
+
+
+function List(props, children, context) {
+    virt.Component.call(this, props, children, context);
+
+    this.state = {
+        items: [
+            {id: 0, text: "Item 1"},
+            {id: 1, text: "Item 2"}
+        ]
+    };
+}
+// same as
+// List.prototype = Object.create(virt.Component.prototype);
+// List.prototype.displayName = "List";
+virt.Component.extend(List, "List");
+
+List.prototype.onClick = function(id) {
+    var _this = this;
+
+    this.state.items.forEach(function(value, index, array) {
+        if (value.id === id) {
+            array.splice(index, 1);
+            _this.setState({
+                items: array
+            });
+            return false;
+        }
+    });
+};
+
+List.prototype.render = function() {
+    var _this = this;
+
+    return (
+        virt.createView("ul", this.state.items.map(function(item) {
+            return virt.createView(Item, {
+                key: item.id,
+                onClick: function onClick() {
+                    _this.onClick(item.id);
+                },
+                text: item.text
+            });
+        }));
+    );
+};
+
+function Item(props, children, context) {
+    virt.Component.call(this, props, children, context);
+}
+virt.Component.extend(Item, "Item");
+
+Item.prototype.render = function() {
+    return (
+        virt.createView("li", {
+            onClick: this.props.onClick
+        }, this.props.text);
+    );
+};
+
+
+virtDOM.render(virt.createView(List), document.getElementById("app"));
+        </pre>
+
+          <h3>Main thread</h3>
+<pre class="code javascript">
+var virtDOM = require("@nathanfaucett/virt-dom/src/worker/client");
+
+
+virtDOM.createRenderer("path-to-worker-script.js", document.getElementById("app"));
+</pre>
+
+          <h3>Web Worker Script</h3>
+<pre class="code javascript">
+var virt = require("@nathanfaucett/virt"),
+    virtDOM = require("@nathanfaucett/virt-dom/src/worker/server");
+
+
+virtDOM.render(virt.createView("p", "Hello, world!"));
+</pre>
+
+          <h1>WebSocket Example</h1>
+
+          <h3>Client</h3>
+<pre class="code javascript">
+var io = require("socket.io-client"),
+    virtDOM = require("@nathanfaucett/virt-dom/src/websocket/client");
+
+
+var socket = io("localhost:9999");
+
+
+socket.on("connect", function onConnect() {
+    virtDOM.createRenderer(
+        document.getElementById("app"),
+        socket,
+        function attachMessage(socket, callback) {
+            socket.on("server-message", callback);
+        },
+        function sendMessage(socket, data) {
+            socket.emit("client-message", data);
+        }
+    );
+});
+
+socket.on("error", function(error) {
+    console.log(error);
+});
+</pre>
+
+          <h3>Server</h3>
+  <pre class="code javascript">
+  var virt = require("@nathanfaucett/virt"),
+      virtDOM = require("@nathanfaucett/virt-dom/src/websocket/server"),
+      socket_io = require("socket.io");
+
+
+  var io = socket_io(),
+      root = null;
+
+
+  io.on("connection", function(socket) {
+      virtDOM.render(
+          virt.createView(virt.createView("p", "Hello, world!")),
+          socket,
+          function attachMessage(socket, callback) {
+              socket.on("client-message", callback);
+          },
+          function sendMessage(socket, data) {
+              socket.emit("server-message", data);
+          }
+      );
+  });
+
+  console.log("listening on port 9999");
+  io.listen(9999);
+</pre>
 
       </section>
     </div>

@@ -1,6 +1,6 @@
-var virt = require("virt"),
-    virtDOM = require("../../../src/index"),
-    requestAnimationFrame = require("request_animation_frame");
+var virt = require("@nathanfaucett/virt"),
+    virtDOM = require("../../../src/worker/server"),
+    requestAnimationFrame = require("@nathanfaucett/request_animation_frame");
 
 
 function renderSpan(content) {
@@ -50,7 +50,7 @@ function render() {
 
     count += dir;
 
-    virtDOM.renderWorker(renderCounter(count));
+    virtDOM.render(renderCounter(count));
     requestAnimationFrame(render);
 }
 
