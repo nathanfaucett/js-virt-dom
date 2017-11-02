@@ -9,6 +9,9 @@
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>virt DOM</title>
+
+      <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script async="" src="javascripts/main.js" type="text/javascript" charset="utf-8"></script>
   </head>
 
   <body>
@@ -18,8 +21,8 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/nathanfaucett/virt-dom">View on GitHub</a>
 
-          <h1 id="project_title">virt DOM</h1>
-          <h2 id="project_tagline">virt DOM for the browser and node.js</h2>
+          <h1 id="project_title">virt</h1>
+          <h2 id="project_tagline">a tool for creating interactive UIs</h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/nathanfaucett/virt-dom/zipball/master">Download this project as a .zip file</a>
@@ -31,19 +34,26 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>
-<a id="virt-dom" class="anchor" href="#virt-dom" aria-hidden="true"><span class="octicon octicon-link"></span></a>virt DOM</h1>
 
-    <p>virt DOM is an adapter for the <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a> library, <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a> is a React like library that emits views as JSON that an adapter can use to render to some view system, in this case the DOM.</p>
+      <p>
+        <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>
+        is a tool for creating interactive UIs. Use views for each state in your
+        application, and virt will find the differences and create a Transaction
+        JSON object for the changes.
+      </p>
+      <p>
+        virt DOM is a render adapter for the <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>
+        library, virt was created after reading facebook's <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>
+        source code. The difference is <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>  creates
+        changes as JSON that an adapter like virt-dom uses to render to some view system, in this case the DOM.
+      </p>
 
           <h2>Install using npm</h2>
-<pre class="code bash">
-$ npm install @nathanfaucett/virt-dom --save
-</pre>
+<div class="ace-editor code bash">$ npm install @nathanfaucett/virt --save
+$ npm install @nathanfaucett/virt-dom --save</div>
           <h2>Install using yarn</h2>
-<pre class="code bash">
-$ yarn add @nathanfaucett/virt-dom --save
-</pre>
+<div class="ace-editor code bash">$ yarn add @nathanfaucett/virt --save
+$ yarn add @nathanfaucett/virt-dom --save</div>
 
           <h3>Real World Example</h3>
           <p>
@@ -66,8 +76,7 @@ $ yarn add @nathanfaucett/virt-dom --save
 
           <p>The best way to use virt is to create custom components that inherit from the virt.Component class.</p>
 
-          <pre class="code javascript">
-var virt = require("@nathanfaucett/virt"),
+          <div class="ace-editor code javascript">var virt = require("@nathanfaucett/virt"),
     virtDOM = require("@nathanfaucett/virt-dom");
 
 
@@ -112,7 +121,7 @@ List.prototype.render = function() {
                 },
                 text: item.text
             });
-        }));
+        }))
     );
 };
 
@@ -125,38 +134,35 @@ Item.prototype.render = function() {
     return (
         virt.createView("li", {
             onClick: this.props.onClick
-        }, this.props.text);
+        }, this.props.text)
     );
 };
 
 
 virtDOM.render(virt.createView(List), document.getElementById("app"));
-        </pre>
+</div>
 
           <h3>Web Worker Example</h3>
 
           <h3>Main thread</h3>
-<pre class="code javascript">
-var virtDOM = require("@nathanfaucett/virt-dom/src/worker/client");
+<div class="ace-editor code javascript">var virtDOM = require("@nathanfaucett/virt-dom/src/worker/client");
 
 
 virtDOM.createRenderer("path-to-worker-script.js", document.getElementById("app"));
-</pre>
+</div>
 
           <h3>Web Worker Script</h3>
-<pre class="code javascript">
-var virt = require("@nathanfaucett/virt"),
+<div class="ace-editor code javascript">var virt = require("@nathanfaucett/virt"),
     virtDOM = require("@nathanfaucett/virt-dom/src/worker/server");
 
 
 virtDOM.render(virt.createView("p", "Hello, world!"));
-</pre>
+</div>
 
           <h1>WebSocket Example</h1>
 
           <h3>Client</h3>
-<pre class="code javascript">
-var io = require("socket.io-client"),
+<div class="ace-editor code javascript">var io = require("socket.io-client"),
     virtDOM = require("@nathanfaucett/virt-dom/src/websocket/client");
 
 
@@ -179,36 +185,36 @@ socket.on("connect", function onConnect() {
 socket.on("error", function(error) {
     console.log(error);
 });
-</pre>
+</div>
 
           <h3>Server</h3>
-  <pre class="code javascript">
-  var virt = require("@nathanfaucett/virt"),
-      virtDOM = require("@nathanfaucett/virt-dom/src/websocket/server"),
-      socket_io = require("socket.io");
+  <div class="ace-editor code javascript">var virt = require("@nathanfaucett/virt"),
+    virtDOM = require("@nathanfaucett/virt-dom/src/websocket/server"),
+    socket_io = require("socket.io");
 
 
-  var io = socket_io(),
-      root = null;
+var io = socket_io(),
+    root = null;
 
 
-  io.on("connection", function(socket) {
-      virtDOM.render(
-          virt.createView(virt.createView("p", "Hello, world!")),
-          socket,
-          function attachMessage(socket, callback) {
-              socket.on("client-message", callback);
-          },
-          function sendMessage(socket, data) {
-              socket.emit("server-message", data);
-          }
-      );
-  });
+io.on("connection", function(socket) {
+    virtDOM.render(
+        virt.createView(virt.createView("p", "Hello, world!")),
+        socket,
+        function attachMessage(socket, callback) {
+            socket.on("client-message", callback);
+        },
+        function sendMessage(socket, data) {
+            socket.emit("server-message", data);
+        }
+    );
+});
 
-  console.log("listening on port 9999");
-  io.listen(9999);
-</pre>
-
+console.log("listening on port 9999");
+io.listen(9999);
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
       </section>
     </div>
 
@@ -219,8 +225,6 @@ socket.on("error", function(error) {
         <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-
-
 
   </body>
 </html>
