@@ -43,7 +43,9 @@ task("jshint", "run jshint", function() {
 });
 
 task("comn", function(done) {
-    var out = comn("./"),
+    var out = comn("./", {
+            exportName: "virtDOM"
+        }),
         entry = out.entry();
 
     fs.writeFile(filePath.join(__dirname, "./dist/virt-dom.js"), entry.source, done);

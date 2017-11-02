@@ -76,7 +76,7 @@
         }
     };
 
-    global["edm8VYgp-fDi1-4Cw1-1VFl-9MdALQyHv4ZEM"] = function(asyncDependencies) {
+    global["zRjiIaYp-Mtk5-4lQT-I4O4-7FRaZEFMuYqTu"] = function(asyncDependencies) {
         var i = -1,
             il = asyncDependencies.length - 1,
             dependency, index;
@@ -101,7 +101,7 @@
         module.exports = require(0);
     } else {
         
-        require(0);
+        global.virtDOM = require(0);
         
     }
 }([
