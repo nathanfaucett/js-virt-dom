@@ -37,23 +37,29 @@
 
       <p>
         <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>
-        is a tool for creating interactive UIs. Use views for each state in your
-        application, and virt will find the differences and create a Transaction
-        JSON object for the changes.
+        is a tool for creating interactive UIs where you use abstract views for each state in your
+        application, and virt will find the differences and create a Transaction.
+        virt was created after reading facebook's <a href="https://github.com/facebook/react" target="_blank">React</a>
+        source code. The difference is <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>
+        creates JSON Transactions that an adapter like <a href="https://github.com/nathanfaucett/js-virt-dom" target="_blank">virt-dom</a>
+        uses to render to some native view system, in <a href="https://github.com/nathanfaucett/js-virt-dom" target="_blank">virt-dom's</a>
+        case the DOM.
       </p>
       <p>
-        virt DOM is a render adapter for the <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>
-        library, virt was created after reading facebook's <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>
-        source code. The difference is <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>  creates
-        changes as JSON that an adapter like virt-dom uses to render to some view system, in this case the DOM.
+        <a href="https://github.com/nathanfaucett/js-virt-dom" target="_blank">virt-dom</a>
+        provides adapters to render <a href="https://github.com/nathanfaucett/js-virt" target="_blank">virt</a>
+        changes to the DOM over a WebSocket, a WebWorker or from the main javascript thread.
+        Examples of all three are below.
       </p>
 
           <h2>Install using npm</h2>
 <div class="ace-editor code bash">$ npm install @nathanfaucett/virt --save
-$ npm install @nathanfaucett/virt-dom --save</div>
+$ npm install @nathanfaucett/virt-dom --save
+</div>
           <h2>Install using yarn</h2>
 <div class="ace-editor code bash">$ yarn add @nathanfaucett/virt --save
-$ yarn add @nathanfaucett/virt-dom --save</div>
+$ yarn add @nathanfaucett/virt-dom --save
+</div>
 
           <h3>Real World Example</h3>
           <p>
@@ -72,7 +78,7 @@ $ yarn add @nathanfaucett/virt-dom --save</div>
             <li><a href="http://nathanfaucett.github.io/js-virt-dom/examples/workers" target="_blank">Simple Example with Workers</a></li>
           </ul>
 
-          <h3>Simple Example Usage</h3>
+          <h1>Simple Example Usage</h1>
 
           <p>The best way to use virt is to create custom components that inherit from the virt.Component class.</p>
 
@@ -142,24 +148,129 @@ Item.prototype.render = function() {
 virtDOM.render(virt.createView(List), document.getElementById("app"));
 </div>
 
-          <h3>Web Worker Example</h3>
+<h1>Messeger</h1>
 
-          <h3>Main thread</h3>
-<div class="ace-editor code javascript">var virtDOM = require("@nathanfaucett/virt-dom/src/worker/client");
+<p>
+  A <a href="https://github.com/nathanfaucett/js-messenger" target="_blank">messeger</a>
+  is how all data is sent and received between the views and the renderer. This is used
+  internally to fix inconsistencies in native DOM elements.
+  <a href="https://github.com/nathanfaucett/js-virt-dom/tree/master/src/nativeDOM" target="_blank">Native DOM Elements</a>
+ </p>
+
+<div class="ace-editor code javascript">var virt = require("@nathanfaucett/virt");
 
 
-virtDOM.createRenderer("path-to-worker-script.js", document.getElementById("app"));
+function HelloWorld(props, children, context) {
+    virt.Component.call(this, props, children, context);
+}
+virt.Component.extend(HelloWorld, "example.HelloWorld");
+
+HelloWorld.prototype.componentDidMount = function(id) {
+    this.emitMessage("example.HelloWorld.mount", {
+            id: this.getInternalId()
+        },
+        // optional callback
+        function onHandled(error, data) {
+            if (error) {
+                // handle error
+            } else {
+                // handle any data send from the handler
+            }
+        }
+    );
+};
+
+HelloWorld.prototype.render = function() {
+    return virt.createView("div");
+};
+
+
+var virtDOM = require("@nathanfaucett/virt-dom");
+
+
+virtDOM.addNativeHandler(
+    "example.HelloWorld.mount",
+    function(data, doneCallback) {
+        var id = data.id,
+            node = findDOMNode(id);
+
+        if (node) {
+            node.innerHTML = "<p>Hello, world!<p>";
+
+            // optionally send data back
+            // doneCallback(undefined, data);
+            doneCallback();
+        } else {
+            doneCallback(new Error("No DOM node found with id " + data.id));
+        }
+    }
+);
+
+
+virtDOM.render(virt.createView(HelloWorld), document.getElementById("app"));
 </div>
+
+          <h1>Web Worker Example</h1>
+
+          <p>
+            When using a WebWorker the view processing is handled in the worker while
+            the main thread only responses to render calls and updates the DOM.
+          </p>
 
           <h3>Web Worker Script</h3>
 <div class="ace-editor code javascript">var virt = require("@nathanfaucett/virt"),
-    virtDOM = require("@nathanfaucett/virt-dom/src/worker/server");
+virtDOM = require("@nathanfaucett/virt-dom/src/worker/server");
 
 
 virtDOM.render(virt.createView("p", "Hello, world!"));
 </div>
 
+          <h3>Main thread</h3>
+<div class="ace-editor code javascript">var virtDOM = require("@nathanfaucett/virt-dom/src/worker/client");
+
+
+virtDOM.createRenderer(
+    "path-to-worker-script.js",
+    document.getElementById("app")
+);
+</div>
+
           <h1>WebSocket Example</h1>
+
+          <p>
+            When using WebSockets the main thread only responses to render calls and updates the DOM.
+          </p>
+
+          <p>
+            all the views are processed on
+          </p>
+
+          <h3>Server</h3>
+<div class="ace-editor code javascript">var virt = require("@nathanfaucett/virt"),
+    virtDOM = require("@nathanfaucett/virt-dom/src/websocket/server"),
+    socket_io = require("socket.io");
+
+
+var io = socket_io(),
+    root = null;
+
+
+io.on("connection", function(socket) {
+    virtDOM.render(
+        virt.createView(virt.createView("p", "Hello, world!")),
+        socket,
+        function attachMessage(socket, callback) {
+            socket.on("client-message", callback);
+        },
+        function sendMessage(socket, data) {
+            socket.emit("server-message", data);
+        }
+    );
+});
+
+console.log("listening on port 9999");
+io.listen(9999);
+</div>
 
           <h3>Client</h3>
 <div class="ace-editor code javascript">var io = require("socket.io-client"),
@@ -185,33 +296,6 @@ socket.on("connect", function onConnect() {
 socket.on("error", function(error) {
     console.log(error);
 });
-</div>
-
-          <h3>Server</h3>
-  <div class="ace-editor code javascript">var virt = require("@nathanfaucett/virt"),
-    virtDOM = require("@nathanfaucett/virt-dom/src/websocket/server"),
-    socket_io = require("socket.io");
-
-
-var io = socket_io(),
-    root = null;
-
-
-io.on("connection", function(socket) {
-    virtDOM.render(
-        virt.createView(virt.createView("p", "Hello, world!")),
-        socket,
-        function attachMessage(socket, callback) {
-            socket.on("client-message", callback);
-        },
-        function sendMessage(socket, data) {
-            socket.emit("server-message", data);
-        }
-    );
-});
-
-console.log("listening on port 9999");
-io.listen(9999);
 </div>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

@@ -16,7 +16,9 @@
             editor.setFontSize(fontSize);
             editor.setReadOnly(true);
             editor.getSession().setMode("ace/mode/" + style);
-            editor.container.style.height = (lineCount(editor.getValue()) * (fontSize * 1.2)) + "px";
+            lines = lineCount(editor.getValue());
+            editor.container.style.height = (lines * (fontSize * 1.2)) + "px";
+            editor.gotoLine(lines, 0, false);
         }
     }
 
